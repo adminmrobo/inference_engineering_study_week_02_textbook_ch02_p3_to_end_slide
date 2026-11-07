@@ -101,9 +101,9 @@ img.flip{transform:scaleX(-1)}
 #nav{position:fixed;right:max(12px,calc(env(safe-area-inset-right,0px) + 12px));bottom:calc(12px + env(safe-area-inset-bottom,0px));display:flex;gap:6px;z-index:10;align-items:center}
 #nav .bt{background:rgba(28,30,45,.92);font-size:14px;padding:6px 10px}
 #num{font-variant-numeric:tabular-nums;font-size:14px;color:var(--muted);padding:0 6px}
-#notes{position:fixed;left:max(12px,env(safe-area-inset-left,0px));right:max(12px,env(safe-area-inset-right,0px));bottom:calc(56px + env(safe-area-inset-bottom,0px));max-width:880px;margin:0 auto;background:rgba(14,15,23,.96);border:1px solid var(--amber);border-radius:12px;padding:12px 16px;font-size:15px;line-height:1.6;z-index:9}
+#notes{position:fixed;left:max(12px,env(safe-area-inset-left,0px));right:max(12px,env(safe-area-inset-right,0px));bottom:calc(56px + env(safe-area-inset-bottom,0px));max-width:880px;margin:0 auto;background:#0e0f17;border:1px solid var(--amber);border-radius:12px;padding:12px 16px;font-size:15px;line-height:1.6;z-index:9}
 #notes b{color:var(--amber)}
-#toc{position:fixed;inset:0;z-index:20;background:rgba(10,11,17,.94);overflow:auto;padding:24px max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px))}
+#toc{position:fixed;inset:0;z-index:20;background:#0a0b11;overflow:auto;padding:24px max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px))}
 #toc .grid{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px}
 #toc button{font:15px var(--font);text-align:left;background:var(--panel);color:var(--text);border:1px solid var(--rule);border-radius:10px;padding:8px 12px;cursor:pointer}
 #toc button span{color:var(--muted);margin-right:6px;font-variant-numeric:tabular-nums}
@@ -120,7 +120,7 @@ img.flip{transform:scaleX(-1)}
 .side{background:var(--panel);border:1px solid var(--rule);border-radius:14px;padding:12px 14px}
 .side h4{margin:0 0 6px;font-size:17px}
 .side.fac h4{color:var(--amber)}.side.inf h4{color:var(--info)}
-#gloss{position:fixed;inset:0;z-index:21;background:rgba(10,11,17,.96);overflow:auto;padding:24px max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px))}
+#gloss{position:fixed;inset:0;z-index:21;background:#0a0b11;overflow:auto;padding:24px max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px))}
 #gloss .gl{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px}
 #gloss .gl div{background:var(--panel);border:1px solid var(--rule);border-radius:10px;padding:8px 12px;font-size:14.5px}
 #gloss .gl b{color:var(--text)} #gloss .gl i{font-style:normal;color:var(--c-asst);margin-left:6px} #gloss .gl span{display:block;color:var(--muted);font-size:13.5px}
@@ -517,13 +517,13 @@ img.flip{transform:scaleX(-1)}
   </div>
 </section>
 
-<section class="slide" data-title="그림 2.12 · 2.13 루프라인" data-sec="2.4.1 · 그림 2.12–2.13" data-mod="roof" data-terms="ai,roofline,cbound,mbound" data-note="그림 2.12: intensity = work / memory_traffic (알고리즘 한 번 실행의 비율). 그림 2.13 루프라인: 대각선 = 대역폭 한도, 수평선 = 성능 한도. 산술 강도 < ops:byte면 메모리 병목. 배치 슬라이더로 디코드 점 이동. GPU 버튼으로 우리 서버 카드.">
+<section class="slide" data-title="그림 2.12 · 2.13 루프라인" data-sec="2.4.1 · 그림 2.12–2.13" data-mod="roof" data-terms="ai,roofline" data-note="그림 2.12: intensity = work / memory_traffic (알고리즘 한 번 실행의 비율). 그림 2.13 루프라인: 대각선 = 대역폭 한도, 수평선 = 성능 한도. 산술 강도 < ops:byte면 메모리 병목. 배치 슬라이더로 디코드 점 이동. GPU 버튼으로 우리 서버 카드.">
   <div class="kicker">2.4.1 <span class="sec">그림 2.12 · 그림 2.13</span></div>
   <h2>산술 강도를 지붕 그래프에 올려 보면</h2>
   <div class="row">
     <div class="col w2">
       <div class="fig" style="padding:8px 12px;flex:none"><span class="fignum">그림 2.12</span><div style="font-family:ui-monospace,Menlo,Consolas,monospace;font-size:24px;text-align:center;margin:20px 0 4px"><span class="g">intensity</span> = <span class="m">work</span> / <span class="a">memory_traffic</span></div><div class="figcap" style="text-align:center"><b>그림 2.12</b> 산술 강도의 식. 책 그림을 바탕으로 다시 씀</div></div>
-      <div class="fig" style="margin-top:8px"><span class="fignum">그림 2.13</span><canvas id="rfC" width="620" height="296"></canvas><div class="figcap"><b>그림 2.13</b> 루프라인 차트. 책 그림을 바탕으로 다시 그림(로그 눈금)</div></div>
+      <div class="fig" style="margin-top:8px"><span class="fignum">그림 2.13</span><canvas id="rfC" width="620" height="280"></canvas><div class="figcap"><b>그림 2.13</b> 루프라인 차트. 책 그림을 바탕으로 다시 그림(로그 눈금)</div></div>
     </div>
     <div class="col">
       <div class="ctrl" style="margin:0"><label>GPU</label><button class="bt" data-rg="h100" aria-pressed="true">H100</button><button class="bt" data-rg="q" aria-pressed="false">Quadro</button><button class="bt" data-rg="n" aria-pressed="false">5060 Ti</button></div>
@@ -622,7 +622,7 @@ img.flip{transform:scaleX(-1)}
   <a class="applink" data-go="aL16" href="#">부록: 그림 2.16·2.17 단독 상세 →</a>
 </section>
 
-<section class="slide" data-title="그림 2.18 산술 강도 62" data-sec="2.4.2 · 그림 2.18" data-mod="t218" data-terms="ai,opsbyte,mbound" data-note="그림 2.18: (4N²d+3N²)/(8N²+8Nd) = 62 ops:byte. 뜻: 어텐션은 창고에서 1바이트 꺼낼 때마다 계산을 62번 함. H100은 1바이트 들어오는 동안 295번 계산할 수 있음 → 기계는 62번 일하고 나머지 시간은 자재를 기다림, 가동률 약 21%. 그래서 메모리 병목: 더 빠른 계산기를 사도 그대로, 창고 왕복(특히 N×N 점수표)을 줄여야 빨라짐 → 2.5 FlashAttention. 책: 학습용 연습, 한 번 해 보면 직관이 생김. 덧붙여 N→∞에서 (4d+3)/8 ≈ 64에 수렴(이 발표의 계산).">
+<section class="slide" data-title="그림 2.18 산술 강도 62" data-sec="2.4.2 · 그림 2.18" data-mod="t218" data-terms="ai,opsbyte" data-note="그림 2.18: (4N²d+3N²)/(8N²+8Nd) = 62 ops:byte. 뜻: 어텐션은 창고에서 1바이트 꺼낼 때마다 계산을 62번 함. H100은 1바이트 들어오는 동안 295번 계산할 수 있음 → 기계는 62번 일하고 나머지 시간은 자재를 기다림, 가동률 약 21%. 그래서 메모리 병목: 더 빠른 계산기를 사도 그대로, 창고 왕복(특히 N×N 점수표)을 줄여야 빨라짐 → 2.5 FlashAttention. 책: 학습용 연습, 한 번 해 보면 직관이 생김. 덧붙여 N→∞에서 (4d+3)/8 ≈ 64에 수렴(이 발표의 계산).">
   <div class="kicker">2.4.2 <span class="sec">그림 2.18</span></div>
   <h2>62의 뜻: 1바이트에 일 62번, 기계는 295번 할 수 있다</h2>
   <div class="row">
@@ -1076,9 +1076,10 @@ MOD.moe=function(){function u(){var B=Math.pow(2,+$('#moeB').value);$('#moeBV').
   T(x,'켜진 전문가 '+cnt+'/128 (줄 하나 = GPU 한 대에 16개, 그림 2.9처럼)',16,x.H-12,C.muted,13);
   kp($('#moeK'),[[(cnt/128*100).toFixed(1)+'%','이번 시뮬레이션에서 켜짐','g'],[(exp*100).toFixed(1)+'%','기대값 1−(15/16)^'+B,'a']])}
   $('#moeB').oninput=u;u()};
-MOD.latent=function(){var res=1024,bs=$$('[data-res]');function u(){var lat=res/8,x=ctx2($('#ltC')),big=300*res/2048;
-  x.strokeStyle=C.eye;x.lineWidth=2;x.strokeRect(20,20,big,big);T(x,'픽셀 '+res+'×'+res,24,30,C.eye,13,'left',700);
-  x.fillStyle='rgba(94,227,156,.35)';x.fillRect(20,20,big/8,big/8);x.strokeStyle=C.gfp;x.strokeRect(20,20,big/8,big/8);T(x,'잠재 '+lat+'×'+lat,big/8+28,20+big/16,C.gfp,13,'left',700);
+MOD.latent=function(){var res=1024,bs=$$('[data-res]');function u(){var lat=res/8,x=ctx2($('#ltC')),big=Math.min(x.H-60,120+90*(Math.log2(res)-9)),X=20,Y=20,s=big/8;
+  x.strokeStyle=C.eye;x.lineWidth=2;x.strokeRect(X,Y,big,big);T(x,'픽셀 '+res+'×'+res,X,Y+big+18,C.eye,14,'left',700);
+  x.fillStyle='rgba(94,227,156,.35)';x.fillRect(X,Y,s,s);x.strokeStyle=C.gfp;x.strokeRect(X,Y,s,s);
+  x.strokeStyle=C.gfp;x.lineWidth=1.2;x.beginPath();x.moveTo(X+s,Y+s/2);x.lineTo(X+big+24,Y+s/2);x.stroke();T(x,'잠재 '+lat+'×'+lat,X+big+30,Y+s/2,C.gfp,14,'left',700);
   stamp(x,'설명용');var p=res*res,l=lat*lat;kp($('#ltK'),[[fmt(p),'픽셀 수','r'],[fmt(l),'잠재 값 수','g'],[(l/p*100).toFixed(2)+'%','비율','a']])}
   bs.forEach(function(b){b.onclick=function(){res=+b.dataset.res;press(bs,b);u()}});u()};
 MOD.denoise=function(){var st=40,step=40,play=false,acc=0;function u(){st=+$('#dnS').value;$('#dnSV').textContent=st;if(!play)step=st;draw();
@@ -1209,7 +1210,7 @@ MOD.autoreg=function(){var TOK=['오늘은','날씨가','맑고','따뜻해요',
     var busy=ph>.45&&ph<1.0;BX(x,524,96,118,70,'언어 모델',C.stain,busy,busy?'다음 하나 고르는 중':'기계');
     var sw=72,gap=6,X0=668;
     for(var i=0;i<TOK.length;i++){var X=X0+i*(sw+gap),Y=110,made=i<n,newi=i===n&&ph>=1.0&&ph<1.5;
-      if(made||newi){var off=newi?(1-(ph-1.0)/.5)*(X-650):0;RR(x,X-off,Y,sw,42,8);x.fillStyle=i===TOK.length-1?'rgba(240,96,77,.18)':'rgba(94,227,156,.16)';x.fill();x.strokeStyle=i===TOK.length-1?C.eye:C.gfp;x.lineWidth=1.4;x.stroke();T(x,TOK[i],X-off+sw/2,Y+21,C.text,14,'center',700)}
+      if(made||newi){var pr=newi?clamp((ph-1.0)/.5,0,1):1,off=(1-pr)*14;x.globalAlpha=.25+.75*pr;RR(x,X,Y+off,sw,42,8);x.fillStyle=i===TOK.length-1?'rgba(240,96,77,.18)':'rgba(94,227,156,.16)';x.fill();x.strokeStyle=i===TOK.length-1?C.eye:C.gfp;x.lineWidth=1.4;x.stroke();T(x,TOK[i],X+sw/2,Y+off+21,C.text,14,'center',700);x.globalAlpha=1}
       else{RR(x,X,Y,sw,42,8);x.strokeStyle=C.rule;x.setLineDash([3,4]);x.stroke();x.setLineDash([])}}
     AR(x,646,131,664,131,C.muted);
     if(n>0){var ex=X0+n*(sw+gap)-gap,fb=ph<.5&&play;x.strokeStyle=fb?C.amber:'rgba(241,182,70,.45)';x.lineWidth=fb?3:1.8;x.beginPath();x.moveTo(X0,104);x.lineTo(X0,66);x.lineTo(ex,66);x.moveTo(X0+4,66);x.lineTo(583,66);x.stroke();AR(x,583,66,583,92,fb?C.amber:'rgba(241,182,70,.45)',fb?3:1.8);
@@ -1271,10 +1272,9 @@ MOD.tiles=function(){var p=2,t=0,bs=$$('[data-tp]'),off=document.createElement('
     T(x,'잠재 그림 128×128 (칼선은 4×4로 줄임)',X0,20,C.muted,12,'left',700);x.drawImage(off,X0,Y0);x.strokeStyle='rgba(255,255,255,.75)';x.lineWidth=1;var gl=Math.min(1,ph/.8);
     for(var i=1;i<G;i++){x.globalAlpha=gl;x.beginPath();x.moveTo(X0+i*cs,Y0);x.lineTo(X0+i*cs,Y0+192);x.moveTo(X0,Y0+i*cs);x.lineTo(X0+192,Y0+i*cs);x.stroke();x.globalAlpha=1}
     T(x,'글 공장의 줄',250,30,C.info,13,'left',700);['오늘은','날씨가','맑고','따뜻해요'].forEach(function(s,i){RR(x,250+i*88,44,82,30,6);x.fillStyle='rgba(130,184,255,.14)';x.fill();x.strokeStyle=C.info;x.stroke();T(x,s,291+i*88,59,C.text,13,'center',700)});
-    T(x,'그림 공장의 줄 · 조각 하나 = 토큰 하나',250,104,C.gfp,13,'left',700);
     var mv=clamp((ph-.8)/1.4,0,1),pos=[];PICK.forEach(function(c,i){var sx=X0+c[0]*cs,sy=Y0+c[1]*cs,tx=250+i*44,ty=120,e=mv*mv*(3-2*mv),X=sx+(tx-sx)*e,Y=sy+(ty-sy)*e,s=cs+(38-cs)*e;
       x.drawImage(off,c[0]*cs,c[1]*cs,cs,cs,X,Y,s,s);x.strokeStyle=C.gfp;x.lineWidth=1.2;x.strokeRect(X,Y,s,s);pos.push([X+s/2,Y+s])});
-    if(mv>=1){T(x,'… 모두 '+fmt(toks)+'조각',250+8*44+6,139,C.gfp,13,'left',700);var a=clamp((ph-2.3)/1,0,1);
+    T(x,'그림 공장의 줄 · 조각 하나 = 토큰 하나',250,104,C.gfp,13,'left',700);if(mv>=1){T(x,'… 이렇게 모두 '+fmt(toks)+'조각',250,214,C.gfp,13,'left',700);var a=clamp((ph-2.3)/1,0,1);
       for(var i2=0;i2<8;i2++)for(var j2=i2+1;j2<8;j2++){x.strokeStyle='rgba(241,182,70,'+(.12+.5*a*(((i2+j2)%3)===0?1:.35))+')';x.lineWidth=1;x.beginPath();x.moveTo(pos[i2][0],pos[i2][1]);x.quadraticCurveTo((pos[i2][0]+pos[j2][0])/2,pos[i2][1]+18+(j2-i2)*9,pos[j2][0],pos[j2][1]);x.stroke()}
       if(a>0)T(x,'모든 조각이 서로를 봄 = 어텐션',250,236,C.amber,13,'left',700)}
     T(x,'조각 '+p+'×'+p+'칸 → '+n+'×'+n+' = '+fmt(toks)+'조각 = '+fmt(toks)+'단어짜리 글',X0,x.H-10,C.text,14,'left',700);
@@ -1301,7 +1301,7 @@ MOD.aifac=function(){var ai=1,t=0,bs=$$('[data-ai]'),OB=295;function setv(v){ai=
 MOD.pd=function(){var IN=['오늘','서울','날씨','어때','?','짧게','알려','줘'],OUT=['맑고','따뜻','해요','.'],t=0,play=!REDUCE;
   function draw(){var x=ctx2($('#pdC')),tp=1.6,dt1=1.2,ph=REDUCE?99:t,k=ph<tp?0:Math.min(OUT.length,Math.floor((ph-tp)/dt1)+1),inDec=ph>=tp&&k<=OUT.length&&ph<tp+OUT.length*dt1,sub=inDec?((ph-tp)%dt1)/dt1:0;
     T(x,ph<tp?'① 프리필: 질문 8토큰을 한꺼번에 읽는 중':inDec?'② 디코드: 토큰 하나마다 설계도 전체를 다시 들여오는 중':'끝 · 프리필 1번 + 디코드 '+OUT.length+'번',24,20,ph<tp?C.gfp:C.amber,15,'left',700);
-    var mv=clamp(ph/1.0,0,1);IN.forEach(function(s,i){var X=24+i*46+mv*(460-24-i*46)*(ph<tp?1:0),Y=58+(i%2)*28;if(ph>=tp)return;RR(x,X,Y,42,24,5);x.fillStyle='rgba(130,184,255,.16)';x.fill();x.strokeStyle=C.info;x.stroke();T(x,s,X+21,Y+12,C.text,11.5,'center',700)});
+    var mv=clamp(ph/1.0,0,1);if(ph<tp){x.globalAlpha=1-.8*mv;IN.forEach(function(s,i){var X=24+i*46+mv*84,Y=70;RR(x,X,Y,42,24,5);x.fillStyle='rgba(130,184,255,.16)';x.fill();x.strokeStyle=C.info;x.stroke();T(x,s,X+21,Y+12,C.text,11.5,'center',700)});x.globalAlpha=1;T(x,'질문 8토큰이 한 번에 기계로',24,108,C.info,12,'left',700)}
     if(ph>=tp)T(x,'질문은 작업 일지(KV 캐시)에 기록됨',24,78,C.muted,12,'left');
     BX(x,24,140,150,50,'창고: 설계도',C.amber,false,'가중치 전체');var on=ph<tp?ph>.8:sub>.55;BX(x,470,52,150,100,'기계',C.stain,on,ph<tp?'큰 행렬곱 한 번':'작은 계산 한 번');
     if(ph>=tp){RR(x,470,160,150,26,6);x.fillStyle='rgba(241,182,70,.12)';x.fill();x.strokeStyle=C.amber;x.stroke();T(x,'작업 일지 (KV 캐시)',545,173,C.amber,12,'center',700)}
@@ -1319,7 +1319,7 @@ MOD.attn=function(){var TK=['고양이가','생선을','훔쳤다','.','그래�
   function draw(){var x=ctx2($('#atC')),n=TK.length,w=80,g=6,X0=18,Y=140,cx=function(i){return X0+i*(w+g)+w/2};
     T(x,'"'+TK[sel]+'"이(가) 앞 단어들을 둘러보는 중 · 선 굵기 = 관심 비율',X0,20,C.amber,14,'left',700);
     for(var j=0;j<=sel;j++){var a=W[sel][j];if(j===sel)continue;x.strokeStyle='rgba(241,182,70,'+(.25+a*.75)+')';x.lineWidth=1+a*14;x.beginPath();x.moveTo(cx(sel),Y);x.quadraticCurveTo((cx(sel)+cx(j))/2,Y-30-Math.abs(sel-j)*16,cx(j),Y);x.stroke();
-      T(x,Math.round(a*100)+'%',(cx(sel)+cx(j))/2,Y-22-Math.abs(sel-j)*9,C.text,12,'center',700)}
+      var lx=(cx(sel)+cx(j))/2,ly=Y-15-Math.abs(sel-j)*8-12;x.fillStyle=C.bg;RR(x,lx-17,ly-9,34,18,5);x.fill();T(x,Math.round(a*100)+'%',lx,ly,C.text,12,'center',700)}
     TK.forEach(function(s,i){RR(x,X0+i*(w+g),Y,w,36,7);x.fillStyle=i===sel?'rgba(241,182,70,.22)':i>sel?C.bg:'rgba(130,184,255,.12)';x.fill();x.strokeStyle=i===sel?C.amber:i>sel?C.rule:C.info;x.lineWidth=i===sel?2.4:1.2;x.stroke();T(x,s,X0+i*(w+g)+w/2,Y+18,i>sel?C.muted:C.text,13,'center',700)});
     T(x,'뒤 단어는 아직 안 만들었으니 못 봄(글 공장)',X0,Y+52,C.muted,12);
     var cs=13,GX=X0,GY=Y+86;T(x,'점수표 S (N×N)',GX,GY-8,C.text,12.5,'left',700);for(var r=0;r<n;r++)for(var c=0;c<n;c++){var v=c<=r?W[r][c]:0;x.fillStyle=c>r?C.panel:'rgba(241,182,70,'+(.08+v*.9)+')';x.fillRect(GX+c*cs,GY+r*cs,cs-1,cs-1)}
