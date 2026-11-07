@@ -8,7 +8,7 @@
 <meta name="description" content="인퍼런스러닝 3주차 발표 슬라이드: 『Inference Engineering』 2장 2.3–2.5 (2.1–2.2 복습 포함).">
 <meta property="og:type" content="website">
 <meta property="og:title" content="병목을 찾아라 · 인퍼런스러닝 3주차 발표">
-<meta property="og:description" content="AI 공장은 어디서 막히는가 — 『Inference Engineering』 2장 2.3–2.5 발표 슬라이드(본편 34장 + 부록 17장)">
+<meta property="og:description" content="AI 공장은 어디서 막히는가 — 『Inference Engineering』 2장 2.3–2.5 발표 슬라이드(본편 39장 + 부록 17장)">
 <meta property="og:url" content="https://adminmrobo.github.io/inference_engineering_study_week_02_textbook_ch02_p3_to_end_slide/">
 <meta property="og:image" content="https://adminmrobo.github.io/inference_engineering_study_week_02_textbook_ch02_p3_to_end_slide/images/og_s03.webp">
 <meta name="twitter:card" content="summary_large_image">
@@ -260,7 +260,7 @@ img.flip{transform:scaleX(-1)}
   <div class="kicker">도입 <span class="sec">오늘의 지도</span></div>
   <h2>공장의 질문을 교재 순서대로 풉니다</h2>
   <div class="agenda" style="grid-template-columns:repeat(4,minmax(0,1fr))">
-    <a href="#pR" data-go="pR"><b>복습 · 2.1–2.2</b><span>토큰, 행렬곱, 프리필·디코드</span></a>
+    <a href="#pR" data-go="pR"><b>복습 · 2.1–2.2</b><span>글 공장·그림 공장, 기계가 하는 일(행렬곱)</span></a>
     <a href="#p23" data-go="p23"><b>2.3 · 그림 2.10–2.11</b><span>그림·영상 공장은 어떻게 돌아가나</span></a>
     <a href="#p24" data-go="p24"><b>2.4 · 그림 2.12–2.18</b><span>어디가 막혔는지 계산하기</span></a>
     <a href="#p25" data-go="p25"><b>2.5</b><span>가장 비싼 공정, 어텐션 줄이기</span></a>
@@ -273,25 +273,42 @@ img.flip{transform:scaleX(-1)}
 </section>
 
 <!-- ================= 본편: 복습 ================= -->
-<section class="slide" id="pR" data-title="복습 ① 두 방식" data-sec="복습 · 2.1–2.2" data-terms="token,autoreg,denoise" data-note="지난주: LLM은 토큰을 하나씩(자기회귀), 그림은 전체를 여러 번(디노이징). 그림 2.5 예문 6단어·41글자 → 8토큰.">
-  <div class="kicker">복습 · 2.1–2.2 <span class="sec">모델이 일하는 두 방식</span></div>
-  <h2>말은 하나씩, 그림은 전체를 여러 번</h2>
-  <div class="row">
-    <div class="card col"><h4 class="i">LLM · 자기회귀 생성</h4><ul class="b"><li>토큰 하나를 뽑으면 입력 끝에 붙여 다시 계산</li><li>그림 2.5 예문: 6단어, 41글자 → <b class="a">8토큰</b> <span class="chip book">책</span></li><li><b>프리필</b>(입력 전체 읽기) → <b>디코드</b>(한 토큰씩 쓰기)</li><li>앞 토큰의 계산을 <b>KV 캐시</b>에 저장해 재사용</li></ul></div>
-    <div class="card col"><h4 class="m">이미지 · 반복 디노이징</h4><ul class="b"><li>잡음으로 채운 공간 <b>전체</b>를 한 단계에 한 번씩 고침</li><li>30–50단계 <span class="chip book">책</span></li><li>오늘 2.3에서 자세히</li></ul></div>
+<section class="slide" id="pR" data-title="복습 ① 글 공장: 자기회귀" data-sec="복습 · 2.1–2.2" data-mod="autoreg" data-terms="token,autoreg,kv" data-note="보통 공장(분류)은 기계 1번에 답 1개. 글은 길고 앞뒤가 맞아야 하므로 토큰 하나씩: 만든 줄 전체를 다시 넣어 다음 하나를 고름(자기회귀). 장점: 다음 하나만 맞히는 쉬운 문제, 앞뒤 일관, 길이 자유. 대가: 순서대로라 느림 → 2.4의 디코드. 앞 계산은 KV 캐시(작업 일지). 지난주 그림 2.5 예문: 6단어·41글자 → 8토큰.">
+  <div class="kicker">복습 · 2.1–2.2 <span class="sec">생성 공장 ① 글은 조립 라인으로</span></div>
+  <h2>글 공장: 하나 만들고, 다시 넣고, 다음 하나</h2>
+  <div class="fig" style="flex:none"><canvas id="arC" width="1150" height="210"></canvas><div class="figcap">왼쪽 = 기계 한 번에 끝나는 보통 공장(분류), 오른쪽 = 자기회귀 조립 라인 <span class="chip toy">설명용</span></div></div>
+  <div class="ctrl" style="margin-top:6px"><button class="bt primary" id="arPlay">▶ 처음부터</button></div>
+  <div class="row" style="flex:none;margin-top:8px;gap:14px">
+    <div class="card col" style="padding:10px 16px"><h4 class="i">무엇인가</h4><p class="small">글은 길고 앞뒤가 맞아야 해서 한 번에 못 만듭니다. <b>토큰 하나</b>(글 조각)를 만들고, 지금까지 만든 줄을 다시 넣어 다음 하나를 고릅니다.</p></div>
+    <div class="card col" style="padding:10px 16px"><h4 class="g">왜 효과적인가</h4><p class="small">① 매번 "다음 하나"만 맞히는 쉬운 문제 ② 앞에 만든 것을 보고 고르니 앞뒤가 맞음 ③ 길이를 미리 정하지 않아도 됨</p></div>
+    <div class="card col" style="padding:10px 16px"><h4 class="r">대가</h4><p class="small">순서대로 하나씩이라 <b>느림</b>. 앞 계산은 작업 일지(KV 캐시)에 적어 다시 하지 않음. 이 "하나씩" 단계가 2.4의 <b>디코드</b></p></div>
   </div>
   <a class="applink" data-go="aR" href="#">부록: KV 캐시·MoE 복습, 지난주→오늘 대응표 →</a>
 </section>
 
-<section class="slide" data-title="복습 ② 행렬곱의 비율" data-sec="복습 · 2.2 · 그림 2.3" data-mod="matmul" data-terms="matmul,fp16,batch" data-note="토큰 하나를 디코드할 때 가중치 d×d를 통째로 읽지만 연산은 2d²뿐 → 읽은 바이트당 연산 약 1. 이것이 2.4에서 '디코드는 메모리 병목'의 씨앗. 배치를 올리면 같은 가중치로 더 많이 계산.">
+<section class="slide" data-title="복습 ② 그림 공장: 반복 디노이징" data-sec="복습 · 2.1–2.2" data-mod="polish" data-terms="denoise,step,iterative" data-note="그림을 글처럼 한 칸씩 만들면: 칸이 100만 개라 기계를 100만 번, 앞에서 틀린 칸은 못 고침. 그래서 그림 전체를 잡음으로 채워 놓고, 단계마다 '어디가 잡음인지' 예측해 조금씩 걷어 냄(30–50단계). 전체를 함께 보니 실수가 다음 단계에서 고쳐짐. 대신 한 단계가 그림 전체를 다루는 무거운 계산 → 2.4에서 계산 병목.">
+  <div class="kicker">복습 · 2.1–2.2 <span class="sec">생성 공장 ② 그림은 다듬기 공정으로</span></div>
+  <h2>그림 공장: 전체를 놓고 여러 번 다듬는다</h2>
+  <div class="row">
+    <div class="col w2"><div class="fig"><canvas id="poC" width="700" height="340"></canvas><div class="figcap">기계를 같은 횟수만큼 돌렸을 때 <span class="chip toy">설명용</span></div></div>
+      <div class="ctrl" style="margin-top:0"><button class="bt primary" id="poPlay">▶ 두 공장 같이 돌리기</button><button class="bt" id="poFast">왼쪽 끝까지 빨리 감기</button></div></div>
+    <div class="col" style="gap:10px">
+      <div class="card" style="padding:10px 16px"><h4 class="m">무엇인가</h4><p class="small">잡음으로 가득 찬 판(거친 원석)에서 시작해, 공정마다 기계가 <b>"어디가 잡음인지"</b> 예측하고 조금씩 걷어 냅니다. 30–50번이면 그림이 드러납니다 <span class="chip book">책</span></p></div>
+      <div class="card" style="padding:10px 16px"><h4 class="g">왜 이렇게 하나</h4><ul class="b small"><li>그림은 칸 100만 개가 서로 맞아야 함</li><li>한 칸씩이면 기계 100만 번, 앞의 실수는 못 고침</li><li>전체를 함께 다듬으면 30–50번, 실수도 다음 번에 고침</li></ul></div>
+      <div class="say" data-w="robo"><img data-who="robo" data-mood="calc" alt=""><div style="font-size:15.5px">대신 한 번 한 번이 그림 전체를 다루는 큰 일. 기계(계산)가 바빠지겠군.</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="복습 ③ 기계가 하는 일: 행렬곱" data-sec="복습 · 2.2 · 그림 2.3" data-mod="matmul" data-terms="matmul,weight,batch" data-note="앞 두 장의 '기계'가 실제로 하는 계산은 대부분 행렬곱. 기계는 일할 때마다 창고에서 설계도(가중치)를 가져와야 함. 토큰 하나를 디코드할 때 가중치 d×d를 통째로 읽지만 연산은 2d²뿐 → 읽은 바이트당 연산 약 1. 이것이 2.4에서 '디코드는 메모리 병목'의 씨앗. 배치를 올리면 같은 가중치로 더 많이 계산.">
   <div class="kicker">복습 · 2.2 <span class="sec">그림 2.3 행렬곱</span></div>
-  <h2>재료 한 번 가져와서, 몇 번 요리하나</h2>
+  <h2>설계도 한 번 들여와서, 제품 몇 개 만드나</h2>
   <div class="row">
     <div class="col">
-      <div class="card"><p class="small">선형층은 <b>y = xW + b</b>, 곧 행렬곱(그림 2.3). 입력 B개 × 가중치 d×d를 곱하면<br>연산 = 2·B·d², 가중치 읽기 = 2·d² 바이트(FP16)</p></div>
+      <div class="card"><p class="small">앞 두 장의 "기계"가 하는 일은 대부분 <b>행렬곱</b>(그림 2.3, y = xW + b). 기계는 일할 때마다 창고에서 <b>설계도(가중치 W)</b>를 들여와야 합니다. 입력(자재) B개를 한 번에 넣으면<br>연산 = 2·B·d², 설계도 읽기 = 2·d² 바이트(FP16)</p></div>
       <div class="ctrl"><label>폭 d</label><input type="range" id="mmD" min="9" max="14" value="12"><span class="val" id="mmDV"></span></div>
       <div class="ctrl" style="margin:0"><label>한 번에 처리하는 요청 B</label><input type="range" id="mmB" min="0" max="9" value="0"><span class="val" id="mmBV"></span></div>
-      <div class="say" data-w="robo"><img data-who="robo" data-mood="calc" alt=""><div>B=1이면 재료 한 트럭 받아서 요리 한 접시. 손해 보는 장사지.</div></div>
+      <div class="say" data-w="robo"><img data-who="robo" data-mood="calc" alt=""><div>B=1이면 설계도 한 트럭 들여와서 제품 하나. 손해 보는 장사지.</div></div>
     </div>
     <div class="col w2">
       <div class="kpis" style="--n:3" id="mmK"></div>
@@ -301,20 +318,14 @@ img.flip{transform:scaleX(-1)}
   </div>
 </section>
 <!-- ================= 본편: 2.3 ================= -->
-<section class="slide" id="p23" data-title="2.3 파이프라인 세 부품" data-sec="2.3" data-terms="textenc,denoiser,vae,lora" data-note="박사 질문: 그림 공장은 어떤 기계로 이뤄졌나? 이미지 모델은 거대 모델 하나가 아니라 세 부품의 파이프라인. LoRA·ControlNet을 끼우고 ComfyUI로 조립. Midjourney·Stable Diffusion은 2022년 여름 공개.">
+<section class="slide" id="p23" data-title="2.3 그림 공장의 세 기계" data-sec="2.3" data-mod="imgfac" data-terms="textenc,denoiser,vae,lora" data-note="박사 질문: 그림 공장에서 시간을 가장 많이 먹는 기계는? 세 기계: ① 텍스트 인코더(주문 접수: 글→숫자 지시서) ② 디노이저(다듬기를 30–50번 반복, 단계마다 순전파 2번) ③ VAE(작은 밑그림을 진짜 크기로 펼침). ▶로 공장을 돌리면 디노이저가 시간 대부분을 차지. 단계 슬라이더로 몫 변화. LoRA·ControlNet은 끼워 넣는 부품, ComfyUI는 조립 도구. Midjourney·Stable Diffusion 2022년 여름.">
   <div class="kicker">2.3 <span class="sec">Image Generation Inference Mechanics</span></div>
-  <h2>그림 공장의 기계는 세 대</h2>
-  <div class="row">
-    <div class="col">
-      <div class="card"><h4 class="r">① 텍스트 인코더</h4><p>프롬프트를 이미지 모델이 알아듣는 지시로 바꿈 <span class="chip book">책</span></p></div>
-      <div class="card"><h4 class="m">② 디노이징 모델</h4><p>모델의 심장. 프롬프트에 맞춰 잡음에서 그림으로 반복해서 고침 <span class="chip book">책</span></p></div>
-      <div class="card"><h4 class="i">③ VAE</h4><p>잠재 공간의 출력을 픽셀 공간으로 바꿈 <span class="chip book">책</span></p></div>
-    </div>
-    <div class="col">
-      <div class="card"><h4>끼워 넣는 부품 <span class="chip book">책</span></h4><ul class="b"><li><b>LoRA</b> · 화풍을 바꾸고 품질을 높이는 가벼운 미세조정</li><li><b>ControlNet</b> · 윤곽·외곽선으로 큰 모양과 색을 이끎</li><li><b>ComfyUI</b> · 부품을 바꿔 끼우며 파이프라인을 짜는 도구</li></ul></div>
-      <div class="card"><p class="small">Midjourney(폐쇄)와 Stable Diffusion(공개)이 2022년 여름 처음 공개, LLM의 대중화보다 조금 앞섬 <span class="chip book">책</span></p></div>
-      <div class="say" data-w="doc"><img data-who="doc" data-mood="think" alt=""><div>이 절의 질문: 그림 공장에서 시간을 가장 많이 먹는 기계는 어디일까?</div></div>
-    </div>
+  <h2>그림 공장의 기계는 세 대: 접수 → 다듬기 → 인쇄</h2>
+  <div class="fig" style="flex:none"><canvas id="ifC" width="1150" height="232"></canvas><div class="figcap">세 기계의 일과 시간 몫. 시간 몫은 설명용 <span class="chip toy">설명용</span> · 기계 셋은 <span class="chip book">책</span></div></div>
+  <div class="ctrl" style="margin-top:6px"><button class="bt primary" id="ifPlay">▶ 공장 돌리기</button><label>디노이징 단계</label><input type="range" id="ifS" min="10" max="50" step="5" value="40"><span class="val" id="ifSV"></span></div>
+  <div class="row" style="flex:none;margin-top:6px;gap:14px;align-items:center">
+    <div class="card col" style="padding:8px 14px"><p class="small"><b>끼워 넣는 부품</b> <span class="chip book">책</span> LoRA 화풍 바꾸기 · ControlNet 윤곽선으로 모양 이끌기 · ComfyUI 부품을 바꿔 끼우며 라인 짜기</p></div>
+    <div class="say col" data-w="doc" style="flex:1"><img data-who="doc" data-mood="think" alt=""><div style="font-size:15px">시간을 가장 많이 먹는 기계는 <b>디노이저</b>. 단계 수만큼 되풀이하니까요.</div></div>
   </div>
 </section>
 
@@ -332,33 +343,68 @@ img.flip{transform:scaleX(-1)}
   <a class="applink" data-go="aLatent" href="#">부록: 해상도별 잠재 공간 계산 →</a>
 </section>
 
-<section class="slide" data-title="한 단계 = 순전파 두 번" data-sec="2.3" data-mod="cfg" data-terms="fwd,cfg,neg" data-note="단계마다 조건 있는/없는 순전파 두 번 → 가이던스 스케일로 결합. 50단계 = 순전파 100번. 요청별 인자 다섯 개, 가이던스는 보통 4 안팎의 정수.">
+<section class="slide" data-title="순전파란? 라인을 한 바퀴" data-sec="2.3" data-mod="fwd" data-terms="fwd,layer,matmul" data-note="순전파(forward pass) = 입력을 모델의 첫 층부터 마지막 층까지 한 번 통과시켜 결과를 얻는 계산. 층마다 하는 일은 대부분 행렬곱. 학습 때는 결과를 보고 거꾸로 고치는 역전파도 하지만 추론에서는 순전파만. 글 공장: 토큰 하나 = 순전파 1번. 그림 공장: 디노이징 한 단계 = 반쯤 다듬은 밑그림을 한 바퀴 태워 '잡음은 여기'라는 답을 받음. 그런데 실제로는 단계마다 두 바퀴 → 다음 장.">
+  <div class="kicker">2.3 <span class="sec">용어 풀기 · Forward pass</span></div>
+  <h2>순전파 = 반제품을 라인에 한 바퀴 태우기</h2>
+  <div class="fig" style="flex:none"><canvas id="fwC" width="1150" height="190"></canvas><div class="figcap">모델은 여러 층(공정)이 이어진 라인. 층마다 하는 일은 대부분 행렬곱 <span class="chip toy">설명용</span></div></div>
+  <div class="ctrl" style="margin-top:6px"><button class="bt primary" id="fwPlay">▶ 다시 태우기</button></div>
+  <div class="row" style="flex:none;margin-top:8px;gap:14px">
+    <div class="card col" style="padding:10px 16px"><h4 class="g">순전파 (forward pass)</h4><p class="small">입력을 <b>첫 층부터 끝 층까지 한 번</b> 통과시켜 결과를 얻는 계산. 학습 땐 거꾸로 고치는 역전파도 하지만, 추론은 순전파만</p></div>
+    <div class="card col" style="padding:10px 16px"><h4 class="i">공장마다 한 바퀴의 뜻</h4><p class="small"><b>글 공장</b>: 한 바퀴 = 토큰 하나<br><b>그림 공장</b>: 한 바퀴 = 디노이징 한 단계 ("잡음은 여기"라는 답)</p></div>
+    <div class="card col" style="padding:10px 16px"><h4 class="a">그러면 50단계는?</h4><p class="small">라인 50바퀴…가 아니라 실제로는 <b>100바퀴</b>. 한 단계에 두 번 태우기 때문. 왜? → 다음 장</p></div>
+  </div>
+</section>
+
+<section class="slide" data-title="한 단계 = 순전파 두 번" data-sec="2.3" data-mod="cfg" data-terms="fwd,cfg,neg" data-note="단계마다 같은 반제품을 두 번 태움: ① 지시서(프롬프트) 없이 → '그냥 그럴듯한 그림' 쪽 ② 지시서 들고 → '웃는 로봇' 쪽. 차이 = 지시서의 효과. 이 차이를 가이던스 배(보통 4 안팎)만큼 키워 적용 → 프롬프트를 확실히 따름. 너무 크면 색이 과하고, 작으면 밋밋. 50단계 = 순전파 100번. 요청별 인자 다섯 개.">
   <div class="kicker">2.3 <span class="sec">조건부 · 무조건부, 그리고 추론 인자</span></div>
-  <h2>한 단계 안에 순전파가 두 번</h2>
+  <h2>한 단계에 두 바퀴: 지시서 없이 한 번, 지시서 들고 한 번</h2>
   <div class="row">
-    <div class="col">
-      <div class="fig"><canvas id="cfC" width="560" height="230"></canvas><div class="figcap">① 프롬프트 없음 + 가이던스 × (② 프롬프트 있음 − ①) <span class="chip toy">설명용</span></div></div>
-      <div class="ctrl"><label>단계</label><input type="range" id="cfS" min="10" max="60" step="5" value="50"><span class="val" id="cfSV"></span><label>가이던스</label><input type="range" id="cfG" min="1" max="12" value="4"><span class="val" id="cfGV"></span></div>
-      <div class="eq" id="cfEq"></div>
+    <div class="col" style="gap:10px">
+      <div class="card" style="padding:8px 14px"><p class="small">① <b>지시서 없이</b> → "그냥 그럴듯한 그림" 쪽 · ② <b>지시서 들고</b> → "웃는 로봇" 쪽. <b>차이 = 지시서의 효과</b>. 이 차이를 <b>가이던스 배</b>만큼 키워 적용 → 프롬프트를 확실히 따름 <span class="chip book">책</span></p></div>
+      <div class="fig"><canvas id="cfC" width="560" height="210"></canvas><div class="figcap">① + 가이던스 × (② − ①) <span class="chip toy">설명용</span></div></div>
+      <div class="ctrl" style="margin-top:0;gap:6px 10px"><label>단계</label><input type="range" style="width:120px" id="cfS" min="10" max="60" step="5" value="50"><span class="val" id="cfSV"></span><label>가이던스</label><input type="range" style="width:120px" id="cfG" min="1" max="12" value="4"><span class="val" id="cfGV"></span></div>
     </div>
-    <div class="col">
-      <table class="tb" style="font-size:16px"><thead><tr><th>요청별 인자 <span class="chip book">책</span></th><th>역할</th></tr></thead><tbody>
-        <tr><td>Prompt</td><td>이미지가 어떻게 보여야 하는지</td></tr>
-        <tr><td>Negative prompt</td><td>넣지 말아야 할 화풍·물체</td></tr>
-        <tr><td>Number of steps</td><td>속도와 품질의 맞바꿈, 대부분 30–50</td></tr>
-        <tr><td>Guidance scale</td><td>창의성 vs 프롬프트 충실도, 보통 4 안팎의 정수</td></tr>
-        <tr><td>Image size</td><td>정해진 해상도·비율 메뉴에서 선택</td></tr>
+    <div class="col" style="gap:10px">
+      <table class="tb" style="font-size:15px"><thead><tr><th>요청별 인자 <span class="chip book">책</span></th><th>공장 말로</th></tr></thead><tbody>
+        <tr><td>Prompt</td><td>주문서: 어떻게 보여야 하나</td></tr>
+        <tr><td>Negative prompt</td><td>금지 목록: 넣지 말 화풍·물체</td></tr>
+        <tr><td>Number of steps</td><td>다듬기 횟수: 속도↔품질, 대부분 30–50</td></tr>
+        <tr><td>Guidance scale</td><td>지시서를 얼마나 세게: 보통 4 안팎</td></tr>
+        <tr><td>Image size</td><td>제품 규격: 정해진 해상도 메뉴</td></tr>
       </tbody></table>
-      <div class="say" data-w="robo"><img data-who="robo" data-mood="calc" alt=""><div>50단계면 기계를 100번 돌리는 셈. 공장 원가가 두 배로 잡혀요.</div></div>
+      <div class="eq" id="cfEq" style="padding:6px 14px"></div>
+      <div class="say" data-w="robo"><img data-who="robo" data-mood="calc" alt=""><div style="font-size:15.5px">50단계면 라인을 100바퀴. 공장 원가가 두 배로 잡혀요.</div></div>
     </div>
   </div>
 </section>
 
-<section class="slide" data-title="그림 2.11 SDXL 파이프라인" data-sec="2.3.1 · 그림 2.11" data-mod="sdxl" data-terms="dit,patch,refiner" data-note="2.3.1: 이미지 모델은 확산 트랜스포머. 토큰 대신 이미지 패치(2×2·4×4)를 처리. 그림 2.11 SDXL: 잡음 128² → 베이스 → 미정제 잠재 → 리파이너 → 정제 잠재 → VAE 디코더 → 1024². 프롬프트는 베이스와 리파이너 모두에.">
-  <div class="kicker">2.3.1 <span class="sec">Image Generation Model Architecture · 그림 2.11</span></div>
-  <h2>확산 트랜스포머, 그리고 디노이저가 둘인 SDXL</h2>
-  <div class="card" style="flex:none;padding:10px 16px"><p class="small">이미지 모델도 <b>트랜스포머</b>입니다(확산 트랜스포머). LLM과 아주 비슷하지만 토큰 대신 <b>이미지 조각(패치)</b>을 다룹니다. 학습 때 이미지를 2×2·4×4 픽셀의 겹치는 패치로 잠재 공간에 넣고, 추론은 거꾸로 잠재 공간을 픽셀로 되돌립니다 <span class="chip book">책</span></p></div>
-  <div class="fig" style="flex:none;margin-top:10px"><span class="fignum">그림 2.11</span><canvas id="sxC" width="1150" height="270"></canvas>
+<section class="slide" data-title="SDXL과 확산 트랜스포머" data-sec="2.3.1" data-mod="tiles" data-terms="sdxl,dit,patch" data-note="SDXL = Stable Diffusion XL, Stability AI가 2023년 공개한 이미지 생성 모델(누구나 내려받아 씀, 기본 1024×1024, 디노이저 두 대). 확산 트랜스포머: 글 공장의 트랜스포머를 그림에 쓴 것. 글은 토큰, 그림은 잠재 그림을 2×2·4×4칸씩 자른 조각(패치)을 단어처럼 줄 세움. 128×128을 2×2로 자르면 64×64 = 4,096조각 = 4,096단어짜리 글. 모든 조각이 서로를 봄(어텐션) → 쌍은 조각 수의 제곱. SDXL 디노이저는 U-Net 안에 트랜스포머 블록을 넣은 구조, Qwen Image 등 최신 모델은 통째로 확산 트랜스포머.">
+  <div class="kicker">2.3.1 <span class="sec">Image Generation Model Architecture · 용어 풀기</span></div>
+  <h2>그림을 타일로 잘라 단어처럼 줄 세운다</h2>
+  <div class="row">
+    <div class="col" style="gap:10px">
+      <div class="card" style="padding:10px 16px"><h4 class="i">SDXL이란</h4><p class="small"><b>Stable Diffusion XL</b>. Stability AI가 2023년 공개한 이미지 생성 모델로, 누구나 내려받아 쓸 수 있습니다. 1024×1024 그림이 기본이고 <b>디노이저가 두 대</b>(다음 장)인 것이 특징입니다.</p></div>
+      <div class="card" style="padding:10px 16px"><h4 class="m">확산 트랜스포머란</h4><p class="small">글 공장의 기계(트랜스포머)를 그림에 쓴 것. 글은 <b>토큰</b>을, 그림은 밑그림을 2×2·4×4칸씩 자른 <b>조각(패치)</b>을 단어처럼 줄 세워 처리합니다 <span class="chip book">책</span>. 다 다듬으면 VAE가 다시 큰 그림으로 펼칩니다.</p></div>
+      <p class="tiny">SDXL의 디노이저는 U-Net 안에 트랜스포머 블록을 넣은 구조, Qwen Image 같은 최신 모델은 통째로 확산 트랜스포머</p>
+    </div>
+    <div class="col w2" style="gap:8px">
+      <div class="fig"><canvas id="tpC" width="660" height="270"></canvas></div>
+      <div class="ctrl" style="margin-top:0"><label>조각 크기</label><button class="bt" data-tp="2" aria-pressed="true">2×2</button><button class="bt" data-tp="4" aria-pressed="false">4×4</button><button class="bt" data-tp="8" aria-pressed="false">8×8</button></div>
+      <div class="kpis" style="--n:2" id="tpK"></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="그림 2.11 SDXL 공정도" data-sec="2.3.1 · 그림 2.11" data-mod="sdxl" data-terms="refiner,vae" data-note="그림 2.11 SDXL을 공장 공정으로: 잡음 128² → 거친 다듬기(베이스: 큰 형태) → 마감 다듬기(리파이너: 디테일·프롬프트 충실도) → 펼쳐서 인쇄(VAE 디코더) → 1024² 완성품. 주문서(프롬프트)는 두 다듬기 기계 모두에 들어감. 처음 세 칸은 모두 작은 128² 밑그림 위의 작업.">
+  <div class="kicker">2.3.1 <span class="sec">그림 2.11</span></div>
+  <h2>SDXL 공정: 거친 다듬기 → 마감 다듬기 → 인쇄</h2>
+  <div class="row" style="flex:none;gap:10px">
+    <div class="card col" style="padding:8px 14px"><h4 class="r" style="margin:0">주문서</h4><p class="small">프롬프트. 두 다듬기 기계에 모두 들어감</p></div>
+    <div class="card col" style="padding:8px 14px"><h4 class="m" style="margin:0">거친 다듬기</h4><p class="small">베이스 디노이저: 잡음에서 큰 형태</p></div>
+    <div class="card col" style="padding:8px 14px"><h4 class="i" style="margin:0">마감 다듬기</h4><p class="small">리파이너: 디테일과 주문 충실도</p></div>
+    <div class="card col" style="padding:8px 14px"><h4 class="a" style="margin:0">펼쳐서 인쇄</h4><p class="small">VAE 디코더: 128² → 1024²</p></div>
+  </div>
+  <div class="fig" style="flex:none;margin-top:10px"><span class="fignum">그림 2.11</span><canvas id="sxC" width="1150" height="250"></canvas>
     <div class="figcap"><b>그림 2.11</b> SDXL 아키텍처 파이프라인. 책 그림(Podell 외 2023에서 옮김)을 바탕으로 다시 그림</div></div>
   <div class="ctrl"><button class="bt primary" id="sxPlay">▶ 흐름 따라가기</button><span class="small" id="sxMsg"></span></div>
   <a class="applink" data-go="aPatch" href="#">부록: 패치 크기와 조각 수 대시보드 →</a>
@@ -453,6 +499,24 @@ img.flip{transform:scaleX(-1)}
   </div>
 </section>
 
+<section class="slide" data-title="산술 강도: 작업의 성질" data-sec="2.4.1" data-mod="aifac" data-terms="ai,opsbyte,mbound,cbound" data-note="왜 산술 강도가 필요한가: ops:byte는 공장(GPU)의 성질, 산술 강도는 작업의 성질. 산술 강도 = 이 작업이 자재(데이터) 1바이트를 받을 때마다 계산을 몇 번 하나. ops:byte = 이 공장이 1바이트 들어오는 동안 몇 번 계산할 수 있나(H100 295). 비교만으로 측정 없이 고칠 곳을 앎: 작업 < 공장이면 기계가 자재를 기다림(메모리 병목) → 메모리 이동 줄이기. 작업 > 공장이면 자재가 쌓임(계산 병목) → 계산 줄이기·빠른 기계. 다음 장 루프라인의 가로축이 이 값. 프리셋: 디코드 행렬곱 1, 어텐션 62(책), 프리필 행렬곱 약 1,365(설명용).">
+  <div class="kicker">2.4.1 <span class="sec">용어 풀기 · Arithmetic intensity</span></div>
+  <h2>산술 강도: 자재 1바이트에 일을 몇 번 하나</h2>
+  <div class="row">
+    <div class="col" style="gap:10px">
+      <div class="card" style="padding:10px 16px"><h4 class="i">두 숫자, 두 주인</h4><p class="small"><b class="a">ops:byte</b>는 <b>공장(GPU)의 성질</b>: 자재 1바이트가 들어오는 동안 기계가 할 수 있는 계산 수(H100은 295).<br><b class="g">산술 강도</b>는 <b>작업의 성질</b>: 이 작업이 자재 1바이트를 받을 때마다 실제로 하는 계산 수.</p></div>
+      <div class="card" style="padding:10px 16px"><h4 class="g">왜 필요한가</h4><p class="small">둘을 <b>비교만 해도</b> 어디를 고칠지 압니다. 작업 &lt; 공장 → 기계가 자재를 기다림(<b class="a">메모리 병목</b>): 이동을 줄여야. 작업 &gt; 공장 → 자재가 쌓임(<b class="g">계산 병목</b>): 계산을 줄이거나 빠른 기계를.</p></div>
+      <p class="small" id="afMsg" style="margin:0"></p>
+    </div>
+    <div class="col w2" style="gap:8px">
+      <div class="fig"><canvas id="afC" width="700" height="226"></canvas></div>
+      <div class="ctrl" style="margin-top:0"><button class="bt" data-ai="1">디코드 행렬곱 1</button><button class="bt" data-ai="62">어텐션 62 (책)</button><button class="bt" data-ai="1365">프리필 행렬곱 ≈1,365</button></div>
+      <div class="ctrl" style="margin-top:0"><label>작업의 산술 강도</label><input type="range" id="afS" min="0" max="3.5" step="0.01" value="0"><span class="val" id="afSV"></span></div>
+      <div class="kpis" style="--n:3" id="afK"></div>
+    </div>
+  </div>
+</section>
+
 <section class="slide" data-title="그림 2.12 · 2.13 루프라인" data-sec="2.4.1 · 그림 2.12–2.13" data-mod="roof" data-terms="ai,roofline,cbound,mbound" data-note="그림 2.12: intensity = work / memory_traffic (알고리즘 한 번 실행의 비율). 그림 2.13 루프라인: 대각선 = 대역폭 한도, 수평선 = 성능 한도. 산술 강도 < ops:byte면 메모리 병목. 배치 슬라이더로 디코드 점 이동. GPU 버튼으로 우리 서버 카드.">
   <div class="kicker">2.4.1 <span class="sec">그림 2.12 · 그림 2.13</span></div>
   <h2>산술 강도를 지붕 그래프에 올려 보면</h2>
@@ -465,6 +529,7 @@ img.flip{transform:scaleX(-1)}
       <div class="ctrl" style="margin:0"><label>GPU</label><button class="bt" data-rg="h100" aria-pressed="true">H100</button><button class="bt" data-rg="q" aria-pressed="false">Quadro</button><button class="bt" data-rg="n" aria-pressed="false">5060 Ti</button></div>
       <div class="ctrl"><button class="bt" data-wk="dec" aria-pressed="true">디코드 행렬곱</button><button class="bt" data-wk="att" aria-pressed="false">어텐션 62</button><button class="bt" data-wk="pre" aria-pressed="false">프리필 행렬곱</button><button class="bt" data-wk="img" aria-pressed="false">이미지 디노이저</button></div>
       <div class="ctrl"><label>디코드 배치</label><input type="range" id="rfB" min="0" max="10" value="0"><span class="val" id="rfBV"></span></div>
+      <p class="small" style="margin:0">가로축 = 작업의 <b>산술 강도</b>, 꺾이는 점 = 공장의 <b>ops:byte</b>. 점이 <b class="a">비탈(왼쪽)</b>이면 통로가, <b class="g">지붕(오른쪽)</b>이면 기계가 한도</p>
       <div class="kpis" style="--n:2" id="rfK"></div>
       <p class="small" id="rfMsg"></p>
       <p class="tiny">행렬곱 점은 B·d/(2B+d)로 구한 <span class="chip toy">설명용</span>, 어텐션 62는 <span class="chip book">책</span></p>
@@ -473,19 +538,37 @@ img.flip{transform:scaleX(-1)}
   <a class="applink" data-go="aAI" href="#">부록: 그림 2.12 직접 계산해 보기 →</a>
 </section>
 
-<section class="slide" data-title="2.4.2 프리필과 디코드" data-sec="2.4.2" data-terms="prefill,decode,vecmat" data-note="프리필은 TTFT, 계산 병목: 가중치를 한 번 읽고 큰 행렬곱. 디코드는 TPS, 메모리 병목: 토큰마다 가중치를 읽고 싼 벡터-행렬곱. 둘 다 가장 비싼 연산은 어텐션. 예제 조건 d=128, N=4096, 최적화 없는 표준 알고리즘.">
+<section class="slide" data-title="2.4.2 프리필과 디코드" data-sec="2.4.2" data-mod="pd" data-terms="prefill,decode,ttft,tps" data-note="LLM이 답하는 두 단계. 프리필: 질문 전체를 한꺼번에 읽어 작업 일지(KV 캐시)를 만들고 첫 토큰을 냄 → 설계도 한 번에 큰 계산 → 계산 병목, 사용자가 느끼는 '첫 글자까지 대기(TTFT)'. 디코드: 답을 한 토큰씩, 토큰마다 설계도 전체를 다시 들여오지만 계산은 조금 → 메모리 병목, '글자가 흘러나오는 속도(TPS)'. 둘 다 가장 비싼 연산은 어텐션. 예제 조건 d=128, N=4096.">
   <div class="kicker">2.4.2 <span class="sec">LLM Inference Bottlenecks</span></div>
-  <h2>프리필은 계산, 디코드는 메모리</h2>
-  <div class="row">
-    <div class="card col"><h4 class="g">프리필 (Prefill) <span class="tiny">· 공장: 주문서를 한꺼번에 읽고 대량 작업</span></h4><ul class="b"><li>첫 토큰까지의 시간 <b>TTFT</b>, 계산 병목</li><li>입력 전체를 <b>병렬로</b> 처리</li><li>가중치를 한 번 읽고 큰 행렬곱 → 계산 많음 → <b>높은 산술 강도</b></li></ul></div>
-    <div class="card col"><h4 class="a">디코드 (Decode) <span class="tiny">· 공장: 하나 만들 때마다 재료를 다시 가져옴</span></h4><ul class="b"><li>초당 토큰 <b>TPS</b>, 메모리 병목</li><li>토큰을 <b>하나씩</b> 생성</li><li>토큰마다 가중치를 읽고 싼 벡터-행렬곱 → 계산 적음 → <b>낮은 산술 강도</b></li></ul></div>
+  <h2>프리필은 질문 한꺼번에(계산), 디코드는 답 하나씩(메모리)</h2>
+  <div class="fig" style="flex:none"><canvas id="pdC" width="1150" height="226"></canvas></div>
+  <div class="ctrl" style="margin-top:6px"><button class="bt primary" id="pdPlay">▶ 질문 하나 처리하기</button></div>
+  <div class="row" style="flex:none;margin-top:8px;gap:14px">
+    <div class="card col" style="padding:10px 16px"><h4 class="g">프리필 (Prefill) = 질문 읽기</h4><p class="small">질문 전체를 <b>한꺼번에</b> 읽고 작업 일지(KV 캐시)를 만듦. 설계도 한 번에 큰 계산 → <b>계산 병목</b>. 사용자에겐 <b>첫 글자까지 대기(TTFT)</b></p></div>
+    <div class="card col" style="padding:10px 16px"><h4 class="a">디코드 (Decode) = 답 쓰기</h4><p class="small">답을 <b>한 토큰씩</b>. 토큰마다 설계도 전체를 들여오는데 계산은 조금 → <b>메모리 병목</b>. 사용자에겐 <b>글자가 흘러나오는 속도(TPS)</b></p></div>
+    <div class="card col" style="padding:10px 16px"><h4 class="r">공통</h4><p class="small">두 단계 모두 가장 비싼 연산은 <b>어텐션</b> <span class="chip book">책</span>. 다음 장에서 어텐션이 무엇인지 보고, 직접 계산합니다(d = 128, N = 4096)</p></div>
   </div>
-  <div class="card" style="margin-top:8px;padding:10px 16px"><p class="small">두 단계 모두 가장 비싼 연산은 <b>어텐션</b>. 정확한 산술 강도는 모델 구조, 입력 길이, 어텐션 구현에 따라 다름. 이제 한 번 직접 계산: <b>d = 128, N = 4096</b>, 최적화 없는 표준 알고리즘 <span class="chip book">책</span></p></div>
+</section>
+
+<section class="slide" data-title="어텐션이란? 왜 등장했나" data-sec="2.4.2 · 용어 풀기" data-mod="attn" data-terms="attn,rnn,qkv,quad" data-note="어텐션의 역할: 각 단어가 앞 단어들을 둘러보고, 지금 자기에게 중요한 단어의 정보를 끌어와 뜻을 정함. 예: '그것은'이 누구? → '고양이가'에 가장 큰 관심. 등장 배경: 예전 RNN은 앞에서부터 한 단어씩 전달(전달 게임) → 멀리 떨어진 정보가 흐려지고, 순서대로라 한꺼번에 계산 불가. 2017년 트랜스포머('Attention Is All You Need')가 모든 단어가 서로 직접 보게 함. 공장 비유: 회의 — 질문표(Q)를 들고 다른 담당자의 이름표(K)와 맞춰 보고(점수표 S), 관심 비율(softmax → P)대로 내용물(V)을 모아 옴. 대가: N명이 모두와 대화 → N×N, 길이의 제곱. 비율 숫자는 설명용. 캔버스의 단어를 누르면 바꿔 볼 수 있음.">
+  <div class="kicker">2.4.2 <span class="sec">용어 풀기 · Attention</span></div>
+  <h2>어텐션: 단어마다 "누구를 얼마나 볼까"</h2>
+  <div class="row">
+    <div class="col" style="gap:10px">
+      <div class="card" style="padding:10px 16px"><h4 class="a">하는 일</h4><p class="small">각 단어가 앞 단어들을 둘러보고 중요한 단어의 정보를 끌어와 뜻을 정함. "그것은"이 누구? → <b>"고양이가"</b>를 가장 많이 봄</p></div>
+      <div class="card" style="padding:10px 16px"><h4 class="i">왜 등장했나</h4><p class="small">예전(RNN)은 앞에서부터 하나씩 전하는 <b>전달 게임</b>: 멀면 흐려지고 한꺼번에 계산 불가. 2017년 <b>트랜스포머</b>는 모든 단어가 서로 <b>직접</b> 봄</p></div>
+      <div class="card" style="padding:10px 16px"><h4 class="m">공장 말로: 담당자 회의</h4><p class="small">질문표(<b>Q</b>)와 이름표(<b>K</b>)를 맞춰 점수(<b>S</b>) → 비율(<b>P</b>) → 내용물(<b>V</b>)을 모아 옴. 모두가 모두와 대화하니 <b class="r">N×N</b></p></div>
+    </div>
+    <div class="col w2" style="gap:8px">
+      <div class="fig"><canvas id="atC" width="640" height="320"></canvas></div>
+      <p class="tiny" style="margin:0">자동으로 단어가 바뀝니다. 단어를 누르면 그 단어로 볼 수 있어요.</p>
+    </div>
+  </div>
 </section>
 
 <section class="slide" data-title="그림 2.14 표준 어텐션" data-sec="2.4.2 · 그림 2.14" data-mod="alg" data-terms="hbm,qkv,softmax" data-note="그림 2.14(Dao 외 2022): 세 줄 모두 HBM에서 읽기 → 계산 → HBM에 쓰기. 행렬 크기: Q·K·V·O는 N×d(4096×128), S·P는 N×N(4096×4096). FP16 값 하나 2바이트, 4096×4096 행렬 ≈ 32 MiB(RAW 사진 한 장).">
   <div class="kicker">2.4.2 <span class="sec">그림 2.14</span></div>
-  <h2>표준 어텐션: 읽고, 계산하고, 쓰고 × 3</h2>
+  <h2>표준 어텐션: 창고에서 꺼내고, 계산하고, 다시 넣고 × 3</h2>
   <div class="row">
     <div class="col">
       <div class="fig"><span class="fignum">그림 2.14</span>
@@ -501,7 +584,7 @@ img.flip{transform:scaleX(-1)}
       <p class="small">크기: Q·K·V·O = N×d = 4096×128 · <b class="r">S·P = N×N = 4096×4096 ≈ 32 MiB</b> (FP16) <span class="chip book">책</span></p>
     </div>
     <div class="col">
-      <div class="fig"><canvas id="algC" width="520" height="300"></canvas><div class="figcap">창고(HBM) ↔ 조리대(계산 장치)를 오가는 행렬. N×N 행렬은 빨강</div></div>
+      <div class="fig"><canvas id="algC" width="520" height="300"></canvas><div class="figcap">창고(HBM) ↔ 작업대(계산 장치)를 오가는 행렬. N×N 점수표(S·P)는 빨강</div></div>
       <p class="small" id="algMsg"></p>
     </div>
   </div>
@@ -539,27 +622,27 @@ img.flip{transform:scaleX(-1)}
   <a class="applink" data-go="aL16" href="#">부록: 그림 2.16·2.17 단독 상세 →</a>
 </section>
 
-<section class="slide" data-title="그림 2.18 산술 강도 62" data-sec="2.4.2 · 그림 2.18" data-mod="t218" data-terms="ai" data-note="그림 2.18: (4N²d+3N²)/(8N²+8Nd) = 62 ops:byte. H100의 295보다 훨씬 낮아 메모리 병목. 책: 학습용 연습, 한 번 해 보면 직관이 생김. 덧붙여 N→∞에서 (4d+3)/8 ≈ 64에 수렴(이 발표의 계산).">
+<section class="slide" data-title="그림 2.18 산술 강도 62" data-sec="2.4.2 · 그림 2.18" data-mod="t218" data-terms="ai,opsbyte,mbound" data-note="그림 2.18: (4N²d+3N²)/(8N²+8Nd) = 62 ops:byte. 뜻: 어텐션은 창고에서 1바이트 꺼낼 때마다 계산을 62번 함. H100은 1바이트 들어오는 동안 295번 계산할 수 있음 → 기계는 62번 일하고 나머지 시간은 자재를 기다림, 가동률 약 21%. 그래서 메모리 병목: 더 빠른 계산기를 사도 그대로, 창고 왕복(특히 N×N 점수표)을 줄여야 빨라짐 → 2.5 FlashAttention. 책: 학습용 연습, 한 번 해 보면 직관이 생김. 덧붙여 N→∞에서 (4d+3)/8 ≈ 64에 수렴(이 발표의 계산).">
   <div class="kicker">2.4.2 <span class="sec">그림 2.18</span></div>
-  <h2>나누면 62 — 기준선 295에 한참 못 미친다</h2>
+  <h2>62의 뜻: 1바이트에 일 62번, 기계는 295번 할 수 있다</h2>
   <div class="row">
-    <div class="col">
+    <div class="col" style="gap:10px">
       <div class="fig"><span class="fignum">그림 2.18</span><div class="code" style="margin-top:30px">
         <div class="on"># 산술 강도</div><div class="on">= 4(N²)d + 3N² 연산 / 8N² + 8Nd 바이트</div><div class="on" style="color:var(--gfp)">= 62 ops:byte</div></div>
         <div class="figcap"><b>그림 2.18</b> 산술 강도 = 총 연산 ÷ 메모리 이동. 책 그림을 바탕으로 다시 씀</div></div>
-      <div class="ctrl"><label>N</label><input type="range" class="ledN" min="8" max="15" value="12"><span class="val ledNV"></span><label>d</label><button class="bt" data-ld="64" aria-pressed="false">64</button><button class="bt" data-ld="128" aria-pressed="true">128</button><button class="bt" data-ld="256" aria-pressed="false">256</button></div>
-      <div class="card"><p class="small">"이 계산은 학습용 연습이지 일상 업무는 아니다. 한 번 보면 직관이 생긴다" <span class="chip book">책 요지</span></p></div>
+      <div class="ctrl" style="margin-top:0"><label>N</label><input type="range" class="ledN" min="8" max="15" value="12"><span class="val ledNV"></span><label>d</label><button class="bt" data-ld="64" aria-pressed="false">64</button><button class="bt" data-ld="128" aria-pressed="true">128</button><button class="bt" data-ld="256" aria-pressed="false">256</button></div>
+      <div class="card" style="padding:10px 16px"><h4 class="a">무슨 뜻인가</h4><ul class="b small"><li>어텐션은 창고에서 <b>1바이트</b> 꺼낼 때마다 <b>62번</b> 계산</li><li>H100은 1바이트 들어오는 동안 <b>295번</b> 계산 가능</li><li>→ 기계는 약 <b class="r">21%</b>만 일하고 나머지는 자재를 기다림 = <b class="a">메모리 병목</b></li><li>→ 더 빠른 계산기가 아니라 <b>창고 왕복을 줄여야</b> 빨라짐 (2.5)</li></ul></div>
     </div>
-    <div class="col"><div class="fig"><canvas id="m218" width="500" height="236"></canvas><div class="figcap">산술 강도 계기판. 기준선 295(H100 FP16) 왼쪽이면 메모리 병목</div></div><div class="kpis" style="--n:2" id="k218"></div><p class="small" id="m218Msg"></p></div>
+    <div class="col"><div class="fig"><canvas id="m218" width="500" height="236"></canvas><div class="figcap">산술 강도 계기판. 기준선 295(H100 FP16) 왼쪽이면 메모리 병목</div></div><div class="kpis" style="--n:3" id="k218"></div><p class="small" id="m218Msg"></p></div>
   </div>
 </section>
 
-<section class="slide" data-title="2.4.3 이미지 생성 병목" data-sec="2.4.3" data-mod="imgb" data-terms="cbound,iterative" data-note="이미지·영상 모델은 프런티어 LLM의 약 1/10 파라미터지만 어텐션은 똑같이 비쌈. 반복 디노이징, 잠재 공간 전체를 한 번에 = 프리필과 같은 모양 → 계산 병목. 구체 기법은 책 6.5·6.6절. 오른쪽: 연산 ×2 vs 대역폭 ×2.">
+<section class="slide" data-title="2.4.3 이미지 생성 병목" data-sec="2.4.3" data-mod="imgb" data-terms="cbound,iterative,prefill" data-note="이미지·영상 모델은 프런티어 LLM의 약 1/10 파라미터지만 어텐션은 똑같이 비쌈. 반복 디노이징, 잠재 공간 전체를 한 번에 = 프리필과 같은 모양 → 계산 병목. 구체 기법은 책 6.5·6.6절. 오른쪽: 연산 ×2 vs 대역폭 ×2.">
   <div class="kicker">2.4.3 <span class="sec">Image Generation Inference Bottlenecks</span></div>
   <h2>그림 공장은 프리필을 닮았다 → 계산 병목</h2>
   <div class="row">
     <div class="col">
-      <div class="card"><ul class="b"><li>이미지·영상 모델은 비교적 작다: 프런티어 LLM의 <b>약 10분의 1</b> 파라미터 <span class="chip book">책</span></li><li>그래도 어텐션은 똑같이 계산이 많다</li><li>자기회귀가 아닌 <b>반복 디노이징</b>: 이미지·영상 전체를 한꺼번에 봄 = 프리필과 같은 모양</li><li>그래서 <b class="g">계산 병목</b>. 구체적인 최적화는 책 6.5·6.6절 <span class="chip book">책</span></li></ul></div>
+      <div class="card"><ul class="b"><li>이미지·영상 모델은 비교적 작다: 최첨단 대형 LLM의 <b>약 10분의 1</b> 파라미터 <span class="chip book">책</span></li><li>그래도 어텐션은 똑같이 계산이 많다</li><li>자기회귀가 아닌 <b>반복 디노이징</b>: 단계마다 그림 전체(조각 수천 개)를 한꺼번에 다룸 = 질문 전체를 한꺼번에 읽는 <b>프리필과 같은 모양</b></li><li>그래서 <b class="g">계산 병목</b>. 구체적인 최적화는 책 6.5·6.6절 <span class="chip book">책</span></li></ul></div>
       <div class="say" data-w="fly"><img class="flip" data-who="fly" data-mood="point" alt=""><div>디코드랑 반대네. 같은 카드라도 작업마다 고칠 곳이 달라.</div></div>
     </div>
     <div class="col"><div class="fig"><canvas id="ibC" width="520" height="290"></canvas><div class="figcap">H100에서 연산 ×2 또는 대역폭 ×2를 했을 때 속도 향상 <span class="chip toy">설명용 크기</span></div></div></div>
@@ -571,11 +654,11 @@ img.flip{transform:scaleX(-1)}
   <div class="kicker">2.5 <span class="sec">Optimizing Attention</span></div>
   <h2>가장 비싸고 예민한 공정, 어텐션</h2>
   <div class="row">
-    <div class="card col"><h4 class="r">왜 비싸고 예민한가 <span class="chip book">책</span></h4><ul class="b"><li>입력 길이의 <b>제곱</b>으로 늘어남</li><li>디코드에서는 KV 캐시 덕분에 <b>선형</b>이지만, 선형조차 길면 매우 비쌈</li><li>각 토큰이 앞의 <b>모든</b> 토큰에 기대서, 작은 오차가 빠르게 쌓임</li><li>표준 구현은 S·P를 저장하고 곧바로 다시 읽음(그림 2.14)</li></ul></div>
+    <div class="card col"><h4 class="r">왜 비싸고 예민한가 <span class="chip book">책</span></h4><ul class="b"><li>입력 길이의 <b>제곱</b>으로 늘어남</li><li>디코드에서는 KV 캐시 덕분에 <b>선형</b>(길이에 비례)이지만, 그것조차 길면 매우 비쌈</li><li>각 토큰이 앞의 <b>모든</b> 토큰에 기대서, 작은 오차가 빠르게 쌓임</li><li>표준 구현은 S·P를 저장하고 곧바로 다시 읽음(그림 2.14)</li></ul></div>
     <div class="col">
-      <div class="card"><h4 class="g">전략 1 · 구현 개선</h4><p class="small">더 좋은 커널. <b>품질 손실 없음</b>, 여전히 제곱. 공장으로 치면 <b>동선 개선</b> <span class="chip book">책</span></p></div>
-      <div class="card"><h4 class="a">전략 2 · 새 알고리즘</h4><p class="small">제곱보다 나은 복잡도, 품질을 조금 내주고 훈련으로 보완. 공장으로 치면 <b>공법 변경</b> <span class="chip book">책</span></p></div>
-      <div class="say" data-w="doc"><img data-who="doc" data-mood="think" alt=""><div>이 절의 질문: 맛을 지키며 동선을 줄일까, 레시피를 바꿀까?</div></div>
+      <div class="card"><h4 class="g">전략 1 · 구현 개선</h4><p class="small">더 좋은 커널(GPU에서 도는 작업 프로그램). 결과는 똑같아 <b>품질 손실 없음</b>, 일의 양은 여전히 제곱. 공장으로 치면 <b>동선 개선</b> <span class="chip book">책</span></p></div>
+      <div class="card"><h4 class="a">전략 2 · 새 알고리즘</h4><p class="small">일의 양이 제곱보다 천천히 늘게(더 나은 복잡도) 계산 방식을 바꿈. 품질을 조금 내주고 훈련으로 보완. 공장으로 치면 <b>공법 변경</b> <span class="chip book">책</span></p></div>
+      <div class="say" data-w="doc"><img data-who="doc" data-mood="think" alt=""><div>이 절의 질문: 품질을 지키며 동선을 줄일까, 공법을 바꿀까?</div></div>
     </div>
   </div>
 </section>
@@ -585,7 +668,7 @@ img.flip{transform:scaleX(-1)}
   <h2>중간 재고를 창고에 넣지 않는다</h2>
   <div class="row">
     <div class="col">
-      <div class="card"><ul class="b"><li>가장 유명한 어텐션 구현 계열 <span class="chip book">책</span></li><li>기본 알고리즘은 몇 줄, FlashAttention은 <b>수만 줄</b>의 손으로 합친(fused) 커널</li><li><b>GPU마다 다른 코드</b>: H100용 ≠ B200용 <span class="chip book">책</span></li><li>불필요한 읽기·쓰기를 없앰 → 프리필·영상 생성에 특히 유용</li></ul></div>
+      <div class="card"><ul class="b"><li>가장 유명한 어텐션 구현 계열 <span class="chip book">책</span></li><li>기본 알고리즘은 몇 줄, FlashAttention은 <b>수만 줄</b>의 손으로 합친(fused) 커널</li><li><b>GPU마다 다른 코드</b>: H100용 ≠ B200용 <span class="chip book">책</span></li><li>N×N 점수표(S·P)를 창고에 넣었다 빼지 않고, 작업대에서 조각(블록)씩 이어 처리 → 프리필·영상 생성에 특히 유용</li></ul></div>
       <div class="ctrl"><button class="bt" id="flT" aria-pressed="false">S·P를 HBM에 쓰지 않기</button></div>
       <div class="say" data-w="fly"><img class="flip" data-who="fly" data-mood="clip" alt=""><div>GPU마다 코드가 다르다면… 2018년 우리 Quadro용 최신 커널은 누가 만들어 주지?</div></div>
     </div>
@@ -973,11 +1056,11 @@ function att(ai,p,b){return Math.min(p,b*ai)}
 /* ===== 모듈 ===== */
 var MOD={},TICK=null;
 MOD.matmul=function(s){var d=4096,B=1;function u(){d=Math.pow(2,+$('#mmD').value);B=Math.pow(2,+$('#mmB').value);$('#mmDV').textContent=fmt(d);$('#mmBV').textContent=B;
-  var fl=2*B*d*d,by=2*d*d,ai=fl/by;kp($('#mmK'),[[fmt(by/1048576,0)+' MiB','가중치 읽기 (FP16)','a'],[fmt(fl/1e9,2)+' G','연산 (2·B·d²)','g'],[ai.toFixed(0),'읽은 바이트당 연산',ai<295?'r':'g']]);
+  var fl=2*B*d*d,by=2*d*d,ai=fl/by;kp($('#mmK'),[[fmt(by/1048576,0)+' MiB','설계도(가중치) 읽기','a'],[fmt(fl/1e9,2)+' G','연산 (2·B·d²)','g'],[ai.toFixed(0),'읽은 바이트당 연산',ai<295?'r':'g']]);
   $('#mmEq').innerHTML='연산 ÷ 가중치 바이트 = 2·<i>'+B+'</i>·d² ÷ 2·d² = <b>'+B+'</b> → H100 기준선 295보다 '+(B<295?'<em>낮음</em>':'<b>높음</b>');
-  var x=ctx2($('#mmC'));T(x,'가중치 '+d+'×'+d,20,18,C.amber,14,'left',700);x.fillStyle='rgba(241,182,70,.6)';x.fillRect(20,34,150,150);
+  var x=ctx2($('#mmC'));T(x,'설계도(가중치) '+d+'×'+d,20,18,C.amber,14,'left',700);x.fillStyle='rgba(241,182,70,.6)';x.fillRect(20,34,150,150);
   T(x,'→ 한 번 읽고',190,110,C.muted,14);var n=Math.min(B,64),cols=Math.ceil(Math.sqrt(n));for(var i=0;i<n;i++){x.fillStyle=C.gfp;x.fillRect(300+(i%cols)*(150/cols),34+Math.floor(i/cols)*(150/cols),150/cols-2,150/cols-2)}
-  T(x,'토큰 '+B+'개 계산'+(B>64?' (64칸까지 표시)':''),300,200,C.gfp,14,'left',700);T(x,B===1?'토큰 하나 = 가중치를 다 읽고 연산은 조금 → 디코드의 모습':'배치를 늘리면 같은 읽기로 계산이 늘어남',20,226,C.text,14)}
+  T(x,'제품(토큰) '+B+'개'+(B>64?' (64칸까지 표시)':''),300,200,C.gfp,14,'left',700);T(x,B===1?'제품 하나 만들려고 설계도를 통째로 들여옴 → 디코드의 모습':'여러 주문을 묶으면(배치) 같은 설계도로 더 많이 만듦',20,226,C.text,14)}
   $('#mmD').oninput=u;$('#mmB').oninput=u;u()};
 MOD.kv=function(){function u(){var N=+$('#kvN').value;$('#kvNV').textContent=N;var no=N*(N+1)/2,yes=N;
   var x=ctx2($('#kvC')),L=50,Bt=x.H-36,Tp=20,R=x.W-20,mx=64*65/2;
@@ -1018,12 +1101,12 @@ MOD.patch=function(){var p=2,l=128,pb=$$('[data-pt]'),lb=$$('[data-lt]');functio
   stamp(x,'설명용');kp($('#ptK'),[[fmt(toks),'패치(조각) 수','g'],[fmt(toks*toks/1e6,1)+'M','조각 쌍(어텐션)','a']])}
   pb.forEach(function(b){b.onclick=function(){p=+b.dataset.pt;press(pb,b);u()}});lb.forEach(function(b){b.onclick=function(){l=+b.dataset.lt;press(lb,b);u()}});u()};
 MOD.sdxl=function(){var k=-1,t=0,play=false;var NODES=[['잡음','128×128',C.muted],['베이스','디노이저',C.stain],['미정제 잠재','128×128',C.muted],['리파이너','디노이저',C.info],['정제 잠재','128×128',C.muted],['VAE 디코더','',C.amber],['최종 이미지','1024×1024',C.gfp]];
-  var MSG=['순수 잡음 128×128에서 시작','베이스가 잡음에서 형태를 잡음(프롬프트 입력)','형태가 잡힌 미정제 잠재 128×128','리파이너가 디테일과 프롬프트 충실도를 더함(프롬프트 입력)','정제된 잠재 128×128','VAE 디코더가 잠재를 픽셀로','최종 이미지 1024×1024'];
+  var MSG=['원자재: 순수 잡음 128×128 밑그림','거친 다듬기: 베이스가 큰 형태를 잡음(주문서 입력)','반제품: 형태만 잡힌 밑그림 128×128','마감 다듬기: 리파이너가 디테일·주문 충실도를 더함(주문서 입력)','마감된 밑그림 128×128','펼쳐서 인쇄: VAE 디코더가 밑그림을 픽셀로','완성품: 1024×1024 그림'];
   function draw(){var x=ctx2($('#sxC')),n=NODES.length,w=130,gap=(x.W-n*w-40)/(n-1);
     NODES.forEach(function(nd,i){var X=20+i*(w+gap),Y=60,on=i<=k;RR(x,X,Y,w,90,10);x.fillStyle=on?'rgba(94,227,156,.12)':C.panel;x.fill();x.strokeStyle=i===k?C.gfp:nd[2];x.lineWidth=i===k?3:1.2;x.stroke();
       T(x,nd[0],X+w/2,Y+34,on?C.text:C.muted,15,'center',700);T(x,nd[1],X+w/2,Y+60,C.muted,13,'center');
       if(i<n-1){x.strokeStyle=i<k?C.gfp:C.rule;x.lineWidth=2;x.beginPath();x.moveTo(X+w,Y+45);x.lineTo(X+w+gap,Y+45);x.stroke()}});
-    var pX=20,pY=230;RR(x,pX,pY,130,40,8);x.setLineDash([4,4]);x.strokeStyle=C.eye;x.stroke();x.setLineDash([]);T(x,'프롬프트',pX+65,pY+20,C.eye,14,'center',700);
+    var pX=20,pY=206;RR(x,pX,pY,130,40,8);x.setLineDash([4,4]);x.strokeStyle=C.eye;x.stroke();x.setLineDash([]);T(x,'프롬프트',pX+65,pY+20,C.eye,14,'center',700);
     [1,3].forEach(function(i){var X=20+i*(w+gap)+w/2;x.strokeStyle=k>=i?C.eye:'rgba(240,96,77,.35)';x.lineWidth=1.5;x.beginPath();x.moveTo(pX+130,pY+20);x.lineTo(X,pY+20);x.lineTo(X,150);x.stroke()});
     $('#sxMsg').textContent=k>=0?(k+1)+'/7 · '+MSG[k]:'버튼을 누르면 한 칸씩 따라갑니다.'}
   $('#sxPlay').onclick=function(){if(k>=NODES.length-1)k=-1;play=true;t=1};
@@ -1076,7 +1159,7 @@ MOD.t218=function(){function u(){var L=led(),ai=L.ops/L.mem,x=ctx2($('#m218')),c
   x.strokeStyle='rgba(241,182,70,.5)';x.beginPath();x.arc(cx,cy,r,Math.PI,Math.PI+Math.PI*295/mx);x.stroke();x.strokeStyle='rgba(94,227,156,.5)';x.beginPath();x.arc(cx,cy,r,Math.PI+Math.PI*295/mx,2*Math.PI);x.stroke();
   var a=Math.PI+Math.PI*Math.min(ai,mx)/mx;x.strokeStyle=C.text;x.lineWidth=4;x.beginPath();x.moveTo(cx,cy);x.lineTo(cx+Math.cos(a)*(r-20),cy+Math.sin(a)*(r-20));x.stroke();
   T(x,ai.toFixed(1),cx,cy-50,ai<295?C.eye:C.gfp,40,'center',700);T(x,'메모리 병목',cx-r,cy+22,C.amber,13,'left',700);T(x,'계산 병목',cx+r,cy+22,C.gfp,13,'right',700);T(x,'295',cx+Math.cos(Math.PI+Math.PI*295/mx)*(r+24),cy+Math.sin(Math.PI+Math.PI*295/mx)*(r+24),C.info,13,'center',700);
-  kp($('#k218'),[[ai.toFixed(1),'산술 강도 (ops/byte)',ai<295?'r':'g'],[((4*L.d+3)/8).toFixed(1),'N→∞일 때의 한계 (4d+3)/8','i']]);
+  kp($('#k218'),[[ai.toFixed(1),'산술 강도 (ops/byte)',ai<295?'r':'g'],[Math.round(Math.min(1,ai/295)*100)+'%','H100 기계 가동률',ai<295?'r':'g'],[((4*L.d+3)/8).toFixed(1),'N→∞ 한계 (4d+3)/8','i']]);
   $('#m218Msg').innerHTML=(L.N===4096&&L.d===128?'<b class="g">책의 62와 같음.</b> ':'')+'표준 구현은 N을 늘려도 약 '+((4*L.d+3)/8).toFixed(0)+'에서 멈춤(이 발표의 계산) → 295에 닿을 수 없음'}ledBind(u);u()};
 MOD.imgb=function(){var x=ctx2($('#ibC')),a1=mmAI(4096,3072),a2=mmAI(1,4096),rows=[['이미지 디노이저',a1],['디코드 (배치 1)',a2]];
   rows.forEach(function(r,i){var b=att(r[1],GPU.peak,GPU.bw),fc=att(r[1],GPU.peak*2,GPU.bw)/b,fm=att(r[1],GPU.peak,GPU.bw*2)/b,Y=40+i*130;T(x,r[0]+' (산술 강도 '+(r[1]<10?r[1].toFixed(1):fmt(r[1]))+')',20,Y,C.text,15,'left',700);
@@ -1106,6 +1189,145 @@ MOD.cost=function(){var w=8192,bs=$$('[data-cw]');function u(){var nE=+$('#csN')
   $('#csN').oninput=u;bs.forEach(function(b){b.onclick=function(){w=+b.dataset.cw;press(bs,b);u()}});u()};
 
 
+/* ===== 쉬운 설명용 공장 대시보드 (11·12·14·16·18·22·24·26장) ===== */
+function BX(x,X,Y,w,h,lab,col,on,sub){RR(x,X,Y,w,h,10);x.fillStyle=on?'rgba(94,227,156,.14)':C.panel;x.fill();x.strokeStyle=col||C.rule;x.lineWidth=on?2.6:1.4;x.stroke();
+  T(x,lab,X+w/2,Y+(sub?h/2-10:h/2),on?C.text:(col||C.text),14,'center',700);if(sub)T(x,sub,X+w/2,Y+h/2+12,C.muted,12,'center')}
+function AR(x,x1,y1,x2,y2,col,w){x.strokeStyle=col||C.muted;x.fillStyle=col||C.muted;x.lineWidth=w||2;x.beginPath();x.moveTo(x1,y1);x.lineTo(x2,y2);x.stroke();
+  var a=Math.atan2(y2-y1,x2-x1);x.beginPath();x.moveTo(x2,y2);x.lineTo(x2-9*Math.cos(a-.45),y2-9*Math.sin(a-.45));x.lineTo(x2-9*Math.cos(a+.45),y2-9*Math.sin(a+.45));x.closePath();x.fill()}
+function BAR(x,X,Y,w,h,f,col,lab){x.fillStyle=C.panel2;x.fillRect(X,Y,w,h);x.fillStyle=col;x.fillRect(X,Y,w*clamp(f,0,1),h);if(lab)T(x,lab,X+w+10,Y+h/2,C.text,13,'left',700)}
+
+/* 11 · 글 공장: 자기회귀 */
+MOD.autoreg=function(){var TOK=['오늘은','날씨가','맑고','따뜻해요','.','[끝]'],n=0,t=0,play=true;
+  function draw(){var x=ctx2($('#arC')),ph=play?t:9;
+    T(x,'보통 공장 · 한 번에 끝',20,20,C.muted,13,'left',700);
+    BX(x,20,62,112,46,'리뷰 한 줄',C.info,false,'"배송 빨라요"');AR(x,136,85,160,85);BX(x,164,55,78,60,'기계',C.stain);AR(x,246,85,268,85);BX(x,272,62,56,46,'칭찬',C.gfp);
+    var d=(Date.now()/900)%1;x.fillStyle=C.amber;x.beginPath();x.arc(40+d*270,135,5,0,7);x.fill();
+    T(x,'기계 1번 → 답 1개',20,165,C.text,13,'left',700);T(x,'답이 짧을 때는 이걸로 충분',20,188,C.muted,12);
+    x.strokeStyle=C.rule;x.setLineDash([4,5]);x.beginPath();x.moveTo(345,12);x.lineTo(345,x.H-10);x.stroke();x.setLineDash([]);
+    T(x,'글 공장 · 자기회귀 조립 라인',365,20,C.gfp,13,'left',700);
+    BX(x,365,108,128,46,'질문',C.info,false,'"오늘 날씨 어때?"');AR(x,497,131,520,131);
+    var busy=ph>.45&&ph<1.0;BX(x,524,96,118,70,'언어 모델',C.stain,busy,busy?'다음 하나 고르는 중':'기계');
+    var sw=72,gap=6,X0=668;
+    for(var i=0;i<TOK.length;i++){var X=X0+i*(sw+gap),Y=110,made=i<n,newi=i===n&&ph>=1.0&&ph<1.5;
+      if(made||newi){var off=newi?(1-(ph-1.0)/.5)*(X-650):0;RR(x,X-off,Y,sw,42,8);x.fillStyle=i===TOK.length-1?'rgba(240,96,77,.18)':'rgba(94,227,156,.16)';x.fill();x.strokeStyle=i===TOK.length-1?C.eye:C.gfp;x.lineWidth=1.4;x.stroke();T(x,TOK[i],X-off+sw/2,Y+21,C.text,14,'center',700)}
+      else{RR(x,X,Y,sw,42,8);x.strokeStyle=C.rule;x.setLineDash([3,4]);x.stroke();x.setLineDash([])}}
+    AR(x,646,131,664,131,C.muted);
+    if(n>0){var ex=X0+n*(sw+gap)-gap,fb=ph<.5&&play;x.strokeStyle=fb?C.amber:'rgba(241,182,70,.45)';x.lineWidth=fb?3:1.8;x.beginPath();x.moveTo(X0,104);x.lineTo(X0,66);x.lineTo(ex,66);x.moveTo(X0+4,66);x.lineTo(583,66);x.stroke();AR(x,583,66,583,92,fb?C.amber:'rgba(241,182,70,.45)',fb?3:1.8);
+      x.strokeStyle=fb?C.amber:'rgba(241,182,70,.45)';x.beginPath();x.moveTo(ex,104);x.lineTo(ex,66);x.stroke();
+      T(x,'만든 줄 전체를 다시 기계로',Math.max(700,(X0+ex)/2),52,C.amber,13,'center',700)}
+    T(x,'기계 가동 '+n+'번 = 토큰 '+n+'개'+(n>=TOK.length?' · [끝]이 나와 멈춤':''),365,196,C.text,14,'left',700);
+    T(x,'앞에서 한 계산은 작업 일지(KV 캐시)에 적어 두고 다시 쓰기',x.W-14,196,C.muted,12,'right')}
+  $('#arPlay').onclick=function(){n=0;t=0;play=!REDUCE;if(REDUCE)n=TOK.length;draw()};
+  TICK=function(dt){if(!play)return;t+=dt;if(t>1.6){t=0;n++;if(n>=TOK.length){play=false}}draw()};if(REDUCE){play=false;n=TOK.length}draw()};
+
+/* 12 · 그림 공장: 한 칸씩 vs 전체를 여러 번 */
+MOD.polish=function(){var S=32,P=30,k=0,acc=0,play=false,fast=false,r=rng(77),ERR={},keys=[];for(var i=0;i<S*S;i++){if(r()<.035){ERR[i]='hsl('+Math.floor(r()*360)+',85%,60%)';keys.push(i)}}
+  function draw(){var x=ctx2($('#poC')),sz=230,LX=36,RX=420,Y=52,px=sz/S,cells=Math.min(S*S,fast?k:k),pass=Math.min(P,k);
+    T(x,'한 칸씩 순서대로',LX,22,C.eye,15,'left',700);T(x,'전체를 놓고 여러 번 다듬기',RX,22,C.gfp,15,'left',700);
+    PIC.draw(x,LX,Y,sz,{t:1,resid:0});x.fillStyle=C.bg;for(var c=cells;c<S*S;c++){x.fillRect(LX+(c%S)*px,Y+Math.floor(c/S)*px,Math.ceil(px),Math.ceil(px))}
+    for(var j=0;j<keys.length;j++){var q=keys[j];if(q<cells){x.fillStyle=ERR[q];x.fillRect(LX+(q%S)*px,Y+Math.floor(q/S)*px,Math.ceil(px),Math.ceil(px))}}
+    x.strokeStyle=C.rule;x.strokeRect(LX,Y,sz,sz);
+    PIC.draw(x,RX,Y,sz,{t:pass/P,resid:0});
+    T(x,'기계 '+fmt(cells)+' / '+fmt(S*S)+'번',LX,Y+sz+22,C.text,14,'left',700);T(x,keys.filter(function(q){return q<cells}).length+'칸 틀렸지만 고칠 수 없음',LX,Y+sz+44,C.eye,13,'left',700);
+    T(x,'기계 '+pass+' / '+P+'번',RX,Y+sz+22,C.text,14,'left',700);T(x,pass>=P?'완성 · 중간 실수도 다음 번에 고쳐짐':'매번 모든 칸을 함께 고침',RX,Y+sz+44,C.gfp,13,'left',700);
+    T(x,'vs',(LX+sz+RX)/2,Y+sz/2,C.muted,18,'center',700);stamp(x,'설명용 32×32')}
+  $('#poPlay').onclick=function(){k=0;acc=0;fast=false;play=!REDUCE;if(REDUCE)k=P;draw()};
+  $('#poFast').onclick=function(){if(k<P)k=P;fast=true;play=!REDUCE;if(REDUCE)k=S*S;draw()};
+  play=!REDUCE;TICK=function(dt){if(!play)return;acc+=dt*(fast?300:10);var s=Math.floor(acc);if(s){acc-=s;k=Math.min(fast?S*S:P,k+s);draw();if((!fast&&k>=P)||k>=S*S)play=false}};k=0;draw()};
+
+/* 14 · 그림 공장 세 기계가 돌아가는 모습 */
+MOD.imgfac=function(){var t=99,play=false;function S(){return +$('#ifS').value}
+  function draw(){var x=ctx2($('#ifC')),st=S(),dn=st*0.07,t1=1,t2=1.6,t3=t2+dn,t4=t3+.9,k=t<t2?0:Math.min(st,Math.floor((t-t2)/dn*st));$('#ifSV').textContent=st;
+    var pp=clamp(t/t1,0,1);if(t<t1){RR(x,24+pp*40,96,130,48,8);x.fillStyle='#f4efe2';x.fill();T(x,'"웃는 로봇 그림"',89+pp*40,120,'#2b2b33',13,'center',700)}else{T(x,'주문서',60,108,C.muted,13,'center',700);T(x,'"웃는 로봇 그림"',90,130,C.muted,12,'center')}AR(x,160,120,186,120,C.rule);
+    BX(x,190,70,170,100,'① 텍스트 인코더',C.eye,t>=t1&&t<t2,'주문 접수: 글 → 숫자 지시서');
+    if(t>=t1){var q=clamp((t-t1)/(t2-t1),0,1),sx=365+q*(410-365);for(var i=0;i<8;i++){x.fillStyle='hsl('+(i*40+200)+',70%,'+(55+(i%3)*8)+'%)';x.fillRect(sx+i*5,112,4,16)}}
+    var dOn=t>=t2&&t<t3;BX(x,460,30,280,170,'',C.stain,dOn,'');T(x,'② 디노이저 · 다듬기 반복',600,48,dOn?C.text:C.stain,14,'center',700);
+    PIC.draw(x,478,78,100,{t:t<t2?0:k/st,resid:resid(st)});T(x,'잠재 128×128',528,190,C.muted,11,'center');
+    T(x,'단계',600,100,C.muted,13,'left');T(x,(t<t2?0:k)+' / '+st,600,124,dOn?C.gfp:C.text,22,'left',700);T(x,'순전파 '+(t<t2?0:2*k)+'번',600,154,C.amber,13,'left',700);
+    if(dOn){x.strokeStyle=C.stain;x.lineWidth=2;x.beginPath();x.arc(600,40,16,Math.PI,2*Math.PI);x.stroke();AR(x,616,38,617,44,C.stain)}
+    AR(x,745,120,786,120,t>=t3?C.gfp:C.rule);BX(x,790,70,150,100,'③ VAE',C.amber,t>=t3&&t<t4,'펼쳐서 인쇄: 128² → 1024²');AR(x,944,120,968,120,t>=t4?C.gfp:C.rule);
+    if(t>=t4)PIC.draw(x,972,50,150,{t:1,resid:0});else{RR(x,972,50,150,150,6);x.strokeStyle=C.rule;x.setLineDash([3,4]);x.stroke();x.setLineDash([]);T(x,'완성품 자리',1047,125,C.muted,12,'center')}
+    var a=1,b=2*st,c=4,tot=a+b+c,X=190,W=x.W-210,Y=210;T(x,'시간 몫',24,Y+8,C.muted,13,'left',700);
+    [[a,C.eye,'인코더'],[b,C.stain,'디노이저 '+Math.round(b/tot*100)+'%'],[c,C.amber,'VAE']].forEach(function(s){var w=W*s[0]/tot;x.fillStyle=s[1];x.globalAlpha=.85;x.fillRect(X,Y,w,16);x.globalAlpha=1;if(w>60)T(x,s[2],X+6,Y+8,'#14141c',12,'left',700);X+=w});stamp(x,'시간 몫은 설명용')}
+  $('#ifPlay').onclick=function(){t=0;play=!REDUCE;if(REDUCE)t=99;draw()};$('#ifS').oninput=function(){if(!play)t=99;draw()};
+  TICK=function(dt){if(!play)return;t+=dt;var st=S();if(t>1.6+st*.07+.9+.4)play=false;draw()};draw()};
+
+/* 16 · 순전파 = 라인을 한 바퀴 */
+MOD.fwd=function(){var t=0,n=0,play=!REDUCE,L=6;
+  function draw(){var x=ctx2($('#fwC')),X0=230,w=96,g=22,Y=46,h=80,pos=t/2.4*(L+1)-.5;
+    T(x,'들어감: 반쯤 다듬은 밑그림',24,18,C.muted,13,'left',700);PIC.draw(x,40,38,96,{t:.35,resid:0});
+    for(var i=0;i<L;i++){var X=X0+i*(w+g),on=Math.floor(pos)===i;BX(x,X,Y,w,h,i<L-1?'층 '+(i+1):'층 N',on?C.gfp:C.stain,on,'행렬곱 + α');if(i<L-1)AR(x,X+w+2,Y+h/2,X+w+g-2,Y+h/2,C.rule)}
+    AR(x,140,Y+h/2,X0-6,Y+h/2,C.rule);var ex=X0+L*(w+g)-g;AR(x,ex+4,Y+h/2,ex+30,Y+h/2,C.rule);
+    var ip=clamp(pos,-.5,L),tx=ip<0?150:X0+ip*(w+g)+w/2-11;if(play){RR(x,tx,Y+h+6,22,22,5);x.fillStyle=C.amber;x.fill()}
+    T(x,'나옴: "잡음은 여기"',ex+40,18,C.muted,13,'left',700);PIC.draw(x,ex+40,38,96,{t:.5,resid:0});
+    T(x,'첫 층부터 마지막 층까지 한 번 통과 = 순전파 1번 · 지금까지 '+n+'번',24,x.H-12,C.text,14,'left',700);T(x,'노란 상자 = 지금 라인을 지나는 반제품',x.W-14,x.H-12,C.amber,12,'right')}
+  $('#fwPlay').onclick=function(){t=0;play=!REDUCE;draw()};
+  TICK=function(dt){if(!play)return;t+=dt;if(t>2.4){t=0;n++}draw()};draw()};
+
+/* 18 · 그림을 조각(패치)으로 잘라 단어처럼 */
+MOD.tiles=function(){var p=2,t=0,bs=$$('[data-tp]'),off=document.createElement('canvas');off.width=off.height=192;var ox=off.getContext('2d');PIC.draw(ox,0,0,192,{t:1,resid:0});
+  var PICK=[[0,0],[1,0],[2,0],[3,0],[0,1],[1,1],[2,1],[3,1]];
+  function draw(){var x=ctx2($('#tpC')),n=128/p,toks=n*n,ph=REDUCE?9:t,G=4,cs=48,X0=20,Y0=40;
+    T(x,'잠재 그림 128×128 (칼선은 4×4로 줄임)',X0,20,C.muted,12,'left',700);x.drawImage(off,X0,Y0);x.strokeStyle='rgba(255,255,255,.75)';x.lineWidth=1;var gl=Math.min(1,ph/.8);
+    for(var i=1;i<G;i++){x.globalAlpha=gl;x.beginPath();x.moveTo(X0+i*cs,Y0);x.lineTo(X0+i*cs,Y0+192);x.moveTo(X0,Y0+i*cs);x.lineTo(X0+192,Y0+i*cs);x.stroke();x.globalAlpha=1}
+    T(x,'글 공장의 줄',250,30,C.info,13,'left',700);['오늘은','날씨가','맑고','따뜻해요'].forEach(function(s,i){RR(x,250+i*88,44,82,30,6);x.fillStyle='rgba(130,184,255,.14)';x.fill();x.strokeStyle=C.info;x.stroke();T(x,s,291+i*88,59,C.text,13,'center',700)});
+    T(x,'그림 공장의 줄 · 조각 하나 = 토큰 하나',250,104,C.gfp,13,'left',700);
+    var mv=clamp((ph-.8)/1.4,0,1),pos=[];PICK.forEach(function(c,i){var sx=X0+c[0]*cs,sy=Y0+c[1]*cs,tx=250+i*44,ty=120,e=mv*mv*(3-2*mv),X=sx+(tx-sx)*e,Y=sy+(ty-sy)*e,s=cs+(38-cs)*e;
+      x.drawImage(off,c[0]*cs,c[1]*cs,cs,cs,X,Y,s,s);x.strokeStyle=C.gfp;x.lineWidth=1.2;x.strokeRect(X,Y,s,s);pos.push([X+s/2,Y+s])});
+    if(mv>=1){T(x,'… 모두 '+fmt(toks)+'조각',250+8*44+6,139,C.gfp,13,'left',700);var a=clamp((ph-2.3)/1,0,1);
+      for(var i2=0;i2<8;i2++)for(var j2=i2+1;j2<8;j2++){x.strokeStyle='rgba(241,182,70,'+(.12+.5*a*(((i2+j2)%3)===0?1:.35))+')';x.lineWidth=1;x.beginPath();x.moveTo(pos[i2][0],pos[i2][1]);x.quadraticCurveTo((pos[i2][0]+pos[j2][0])/2,pos[i2][1]+18+(j2-i2)*9,pos[j2][0],pos[j2][1]);x.stroke()}
+      if(a>0)T(x,'모든 조각이 서로를 봄 = 어텐션',250,236,C.amber,13,'left',700)}
+    T(x,'조각 '+p+'×'+p+'칸 → '+n+'×'+n+' = '+fmt(toks)+'조각 = '+fmt(toks)+'단어짜리 글',X0,x.H-10,C.text,14,'left',700);
+    kp($('#tpK'),[[fmt(toks),'조각(패치) 수 = 토큰 수','g'],[fmt(toks*toks/1e6,1)+'M','서로 보는 쌍(어텐션)','a']])}
+  bs.forEach(function(b){b.onclick=function(){p=+b.dataset.tp;press(bs,b);t=0;draw()}});
+  TICK=function(dt){if(t>3.6)return;t+=dt;draw()};draw()};
+
+/* 22 · 산술 강도 = 작업의 성질, ops:byte = 공장의 성질 */
+MOD.aifac=function(){var ai=1,t=0,bs=$$('[data-ai]'),OB=295;function setv(v){ai=v;$('#afS').value=Math.log10(v);u()}
+  function u(){$('#afSV').textContent=fmt(ai,ai<10?1:0);var mu=Math.min(1,ai/OB),cu=Math.min(1,OB/ai);
+    kp($('#afK'),[[Math.round(mu*100)+'%','기계 가동률 (계산)',mu<1?'r':'g'],[Math.round(cu*100)+'%','통로 가동률 (메모리)',cu<1?'a':'g'],[ai<OB?'통로(메모리)':ai>OB?'기계(계산)':'균형',  '병목',ai<OB?'a':'g']]);
+    $('#afMsg').innerHTML=ai<OB?'작업이 자재 1바이트에 <b>'+fmt(ai,ai<10?1:0)+'</b>번만 일함 → 기계는 295번 할 수 있으니 <b class="r">대부분 자재를 기다림</b>. 고칠 곳: 메모리 이동 줄이기':ai>OB?'작업이 자재 1바이트에 <b>'+fmt(ai)+'</b>번 일함 → 기계가 못 따라가 <b class="g">자재가 쌓임</b>. 고칠 곳: 계산 줄이기·빠른 기계':'딱 균형점: 기계와 통로가 함께 꽉 참'}
+  function draw(){var x=ctx2($('#afC')),mu=Math.min(1,ai/OB),cu=Math.min(1,OB/ai),q=ai>OB?Math.min(6,Math.ceil(Math.log2(ai/OB)*1.6)):0;
+    BX(x,16,70,110,110,'창고',C.amber,false,'메모리(HBM)');T(x,'통로 = 메모리 대역폭',240,52,C.muted,12,'center');
+    x.fillStyle=C.panel2;x.fillRect(132,118,250,14);for(var i=0;i<6;i++){var f=((t*.45*cu)+i/6)%1;RR(x,132+f*236,108,16,16,3);x.fillStyle=C.amber;x.fill()}
+    for(var j=0;j<q;j++){RR(x,388,160-j*18,16,16,3);x.fillStyle=C.amber;x.fill()}if(q)T(x,'쌓임',396,182,C.amber,11,'center',700);
+    var blink=mu<1&&(Math.floor(t*2)%2===0);BX(x,412,62,150,126,'기계',C.gfp,mu>=1||!blink,mu<1?(blink?'자재 기다리는 중…':'일하는 중'):'쉬지 않고 일함');
+    T(x,'1바이트 들어오는 동안 295번 계산 가능',487,206,C.muted,12,'center');
+    T(x,'작업의 산술 강도',586,82,C.text,13,'left',700);T(x,fmt(ai,ai<10?1:0),586,112,ai<OB?C.eye:C.gfp,26,'left',700);T(x,'번 / 바이트',586,140,C.muted,12);T(x,'공장의 ops:byte',586,170,C.text,13,'left',700);T(x,'295',586,196,C.info,22,'left',700);stamp(x,'H100 FP16 기준')}
+  $('#afS').oninput=function(){ai=Math.pow(10,+this.value);press(bs,null);u()};bs.forEach(function(b){b.onclick=function(){press(bs,b);setv(+b.dataset.ai)}});
+  TICK=function(dt){if(REDUCE)return;t+=dt;draw()};setv(1);press(bs,bs[0]);draw()};
+
+/* 24 · 프리필과 디코드가 돌아가는 모습 */
+MOD.pd=function(){var IN=['오늘','서울','날씨','어때','?','짧게','알려','줘'],OUT=['맑고','따뜻','해요','.'],t=0,play=!REDUCE;
+  function draw(){var x=ctx2($('#pdC')),tp=1.6,dt1=1.2,ph=REDUCE?99:t,k=ph<tp?0:Math.min(OUT.length,Math.floor((ph-tp)/dt1)+1),inDec=ph>=tp&&k<=OUT.length&&ph<tp+OUT.length*dt1,sub=inDec?((ph-tp)%dt1)/dt1:0;
+    T(x,ph<tp?'① 프리필: 질문 8토큰을 한꺼번에 읽는 중':inDec?'② 디코드: 토큰 하나마다 설계도 전체를 다시 들여오는 중':'끝 · 프리필 1번 + 디코드 '+OUT.length+'번',24,20,ph<tp?C.gfp:C.amber,15,'left',700);
+    var mv=clamp(ph/1.0,0,1);IN.forEach(function(s,i){var X=24+i*46+mv*(460-24-i*46)*(ph<tp?1:0),Y=58+(i%2)*28;if(ph>=tp)return;RR(x,X,Y,42,24,5);x.fillStyle='rgba(130,184,255,.16)';x.fill();x.strokeStyle=C.info;x.stroke();T(x,s,X+21,Y+12,C.text,11.5,'center',700)});
+    if(ph>=tp)T(x,'질문은 작업 일지(KV 캐시)에 기록됨',24,78,C.muted,12,'left');
+    BX(x,24,140,150,50,'창고: 설계도',C.amber,false,'가중치 전체');var on=ph<tp?ph>.8:sub>.55;BX(x,470,52,150,100,'기계',C.stain,on,ph<tp?'큰 행렬곱 한 번':'작은 계산 한 번');
+    if(ph>=tp){RR(x,470,160,150,26,6);x.fillStyle='rgba(241,182,70,.12)';x.fill();x.strokeStyle=C.amber;x.stroke();T(x,'작업 일지 (KV 캐시)',545,173,C.amber,12,'center',700)}
+    var tr=ph<tp?clamp(ph/1.0,0,1):clamp(sub/.55,0,1);if(play&&(ph<tp||inDec)){var X=180+tr*(460-180-60);RR(x,X,150,60,30,6);x.fillStyle=C.amber;x.fill();T(x,'설계도',X+30,165,'#1a1a22',12,'center',700)}
+    AR(x,628,102,660,102,C.rule);for(var j=0;j<OUT.length;j++){var X2=668+j*90;RR(x,X2,82,82,40,8);if(j<k){x.fillStyle='rgba(94,227,156,.16)';x.fill();x.strokeStyle=C.gfp;x.stroke();T(x,OUT[j],X2+41,102,C.text,14,'center',700)}else{x.strokeStyle=C.rule;x.setLineDash([3,4]);x.stroke();x.setLineDash([])}}
+    T(x,k>=1?'첫 토큰까지 = TTFT (프리필이 정함)':'',668,140,C.gfp,12.5,'left',700);T(x,k>=2?'그다음 토큰이 흘러나오는 속도 = TPS (디코드가 정함)':'',668,162,C.amber,12.5,'left',700);
+    var cb=ph<tp?.95:.12,mb=ph<tp?.25:.95;T(x,'기계(계산)',668,190,C.muted,12);BAR(x,760,183,200,12,cb,C.gfp);T(x,'통로(메모리)',668,212,C.muted,12);BAR(x,760,205,200,12,mb,C.amber);
+    T(x,ph<tp?'계산 병목':'메모리 병목',980,198,ph<tp?C.gfp:C.amber,15,'left',700);stamp(x,'설명용')}
+  $('#pdPlay').onclick=function(){t=0;play=!REDUCE;draw()};
+  TICK=function(dt){if(!play)return;t+=dt;if(t>1.6+4*1.2+.6)play=false;draw()};draw()};
+
+/* 26 · 어텐션: 누구를 얼마나 볼까 */
+MOD.attn=function(){var TK=['고양이가','생선을','훔쳤다','.','그래서','그것은','혼났다'],
+  W=[[1],[.45,.55],[.4,.35,.25],[.1,.1,.5,.3],[.15,.05,.45,.15,.2],[.62,.08,.12,.02,.04,.12],[.35,.05,.25,.02,.08,.2,.05]],sel=5,t=0,ORD=[5,6,2,4,1],oi=0,hold=0;
+  function draw(){var x=ctx2($('#atC')),n=TK.length,w=80,g=6,X0=18,Y=140,cx=function(i){return X0+i*(w+g)+w/2};
+    T(x,'"'+TK[sel]+'"이(가) 앞 단어들을 둘러보는 중 · 선 굵기 = 관심 비율',X0,20,C.amber,14,'left',700);
+    for(var j=0;j<=sel;j++){var a=W[sel][j];if(j===sel)continue;x.strokeStyle='rgba(241,182,70,'+(.25+a*.75)+')';x.lineWidth=1+a*14;x.beginPath();x.moveTo(cx(sel),Y);x.quadraticCurveTo((cx(sel)+cx(j))/2,Y-30-Math.abs(sel-j)*16,cx(j),Y);x.stroke();
+      T(x,Math.round(a*100)+'%',(cx(sel)+cx(j))/2,Y-22-Math.abs(sel-j)*9,C.text,12,'center',700)}
+    TK.forEach(function(s,i){RR(x,X0+i*(w+g),Y,w,36,7);x.fillStyle=i===sel?'rgba(241,182,70,.22)':i>sel?C.bg:'rgba(130,184,255,.12)';x.fill();x.strokeStyle=i===sel?C.amber:i>sel?C.rule:C.info;x.lineWidth=i===sel?2.4:1.2;x.stroke();T(x,s,X0+i*(w+g)+w/2,Y+18,i>sel?C.muted:C.text,13,'center',700)});
+    T(x,'뒤 단어는 아직 안 만들었으니 못 봄(글 공장)',X0,Y+52,C.muted,12);
+    var cs=13,GX=X0,GY=Y+86;T(x,'점수표 S (N×N)',GX,GY-8,C.text,12.5,'left',700);for(var r=0;r<n;r++)for(var c=0;c<n;c++){var v=c<=r?W[r][c]:0;x.fillStyle=c>r?C.panel:'rgba(241,182,70,'+(.08+v*.9)+')';x.fillRect(GX+c*cs,GY+r*cs,cs-1,cs-1)}
+    x.strokeStyle=C.amber;x.lineWidth=2;x.strokeRect(GX-1,GY+sel*cs-1,n*cs+1,cs+1);
+    T(x,'단어 7개 → 7×7 = 49칸',GX+n*cs+16,GY+16,C.text,13,'left',700);T(x,'단어 4,096개 → 4096×4096 ≈ 1,678만 칸',GX+n*cs+16,GY+40,C.eye,13,'left',700);T(x,'길이가 2배면 칸은 4배 = 제곱',GX+n*cs+16,GY+64,C.muted,12.5,'left');stamp(x,'비율은 설명용')}
+  $('#atC').onclick=function(e){var r=this.getBoundingClientRect(),X=(e.clientX-r.left)/r.width*(+this.dataset.w),i=Math.floor((X-18)/86);if(i>=1&&i<7){sel=i;hold=6;draw()}};
+  TICK=function(dt){if(REDUCE)return;if(hold>0){hold-=dt;return}t+=dt;if(t>2.6){t=0;oi=(oi+1)%ORD.length;sel=ORD[oi];draw()}};draw()};
+
 /* ===== GPU 사양 (교재 H100 + 우리 서버 카드) ===== */
 var GP={h100:{n:'H100 FP16 (책)',f:989,b:3.35,w:null},q:{n:'Quadro RTX 5000',f:89.2,b:0.448,w:265},n:{n:'RTX 5060 Ti',f:190,b:0.448,w:180}};
 
@@ -1120,27 +1342,27 @@ var TERM={
  watt:['W (와트)','소비전력','1초에 쓰는 전기의 세기'],
  kwh:['kWh','전력량','1kW로 1시간 쓴 전기의 양. 전기요금의 단위'],
  defect:['Defect rate','불량률','만든 것 중 다시 해야 하는 비율'],
- step:['Denoising step','디노이징 단계','잡음을 한 번 걷어 내는 작업 한 회'],
+ step:['Denoising step','디노이징 단계','다듬기 공정 한 회. 잡음을 한 번 걷어 내는 일'],
  vram:['VRAM','GPU 메모리','GPU에 붙은 작업대. 모델과 중간 결과가 여기 올라가야 빠름'],
  traceback:['Traceback','오류 추적','프로그램이 멈춘 자리까지의 호출 기록. 맨 아래 줄이 진짜 원인'],
- token:['Token','토큰','글을 모델이 다루는 조각으로 자른 단위'],
- autoreg:['Autoregressive','자기회귀','앞에서 만든 결과를 다시 입력으로 넣어 하나씩 이어 만드는 방식'],
- denoise:['Denoising','디노이징','잡음을 조금씩 걷어 내며 그림을 만드는 과정'],
- matmul:['Matrix multiplication','행렬곱','숫자 표 두 개를 곱하는 계산. 신경망 계산의 대부분'],
+ token:['Token','토큰','글을 모델이 다루는 조각으로 자른 단위. 글 공장의 부품 하나'],
+ autoreg:['Autoregressive','자기회귀','부품 하나를 만들고, 지금까지 만든 줄을 다시 넣어 다음 하나를 고르는 조립 방식'],
+ denoise:['Denoising','디노이징','잡음으로 가득 찬 판에서 "어디가 잡음인지" 예측해 조금씩 걷어 내며 그림 전체를 다듬는 방식'],
+ matmul:['Matrix multiplication','행렬곱','숫자 표 두 개를 곱하는 계산. AI 기계가 하는 일의 대부분'],
  fp16:['FP16','16비트 부동소수점','숫자 하나를 2바이트로 저장하는 형식'],
- batch:['Batching','배칭','여러 요청을 한 번에 묶어 처리하기'],
- textenc:['Text encoder','텍스트 인코더','프롬프트를 모델이 알아듣는 숫자 지시로 바꾸는 부품'],
- denoiser:['Denoising model','디노이저','잡음에서 그림을 다듬는 이미지 모델의 심장'],
- vae:['VAE','변분 오토인코더','잠재 공간의 결과를 픽셀 그림으로 바꾸는 부품'],
+ batch:['Batching','배칭','여러 주문을 한 번에 묶어 처리하기. 같은 설계도로 더 많이 만듦'],
+ textenc:['Text encoder','텍스트 인코더','글로 쓴 주문(프롬프트)을 기계가 읽는 숫자 지시서로 바꾸는 접수 창구'],
+ denoiser:['Denoising model','디노이저','잡음에서 그림을 다듬는 기계. 단계 수만큼 되풀이해 시간을 가장 많이 씀'],
+ vae:['VAE','변분 오토인코더','작게 접은 밑그림(잠재)을 진짜 크기 그림으로 펼치는 인쇄기'],
  lora:['LoRA','저랭크 미세조정','큰 모델은 두고 작은 행렬만 학습해 화풍을 바꾸는 방법'],
- latent:['Latent space','잠재 공간','그림을 작게 압축해 나타낸 공간. 1024² 대신 128²'],
+ latent:['Latent space','잠재 공간','그림을 작게 접은 밑그림. 1024² 대신 128²에서 작업해 일을 줄임'],
  pixel:['Pixel space','픽셀 공간','우리가 보는 그림 그대로의 칸들'],
- fwd:['Forward pass','순전파','모델을 입력에서 출력까지 한 번 계산하기'],
- cfg:['Guidance scale','가이던스 스케일','프롬프트를 얼마나 세게 따를지 정하는 섞기 비율'],
+ fwd:['Forward pass','순전파','입력을 모델의 첫 층부터 끝 층까지 한 번 통과시키는 계산. 라인 한 바퀴'],
+ cfg:['Guidance scale','가이던스 스케일','지시서 없이 한 결과와 지시서대로 한 결과의 차이를 몇 배로 키울지'],
  neg:['Negative prompt','네거티브 프롬프트','그림에 넣지 말아야 할 것을 적는 칸'],
- dit:['Diffusion transformer','확산 트랜스포머','토큰 대신 그림 조각을 처리하는 트랜스포머'],
- patch:['Patch','패치','그림을 2×2·4×4 픽셀로 자른 조각'],
- refiner:['Refiner','리파이너','SDXL에서 디테일과 프롬프트 충실도를 더하는 두 번째 디노이저'],
+ dit:['Diffusion transformer','확산 트랜스포머','그림을 조각(패치)으로 잘라 단어처럼 줄 세워 처리하는 트랜스포머'],
+ patch:['Patch','패치','밑그림을 2×2·4×4칸씩 자른 조각. 글 공장의 토큰에 해당'],
+ refiner:['Refiner','리파이너','SDXL의 두 번째 다듬기 기계. 디테일과 주문 충실도를 더하는 마감 공정'],
  clip:['CLIP','클립','그림과 글을 같은 공간에 놓도록 학습한 비교적 작은 모델'],
  llm:['LLM','대규모 언어 모델','글을 이해하고 쓰는 큰 모델'],
  few:['Few-step model','퓨스텝 모델','8단계 이하로 그리도록 훈련한 빠른 모델'],
@@ -1152,41 +1374,46 @@ var TERM={
  ttft:['TTFT','첫 토큰 시간','요청 후 첫 글자가 나오기까지 걸리는 시간'],
  tps:['TPS','초당 토큰','1초에 만들어 내는 글자 조각 수'],
  selff:['Self Forcing','셀프 포싱','전체 품질을 보면서도 조금씩 이어 만드는 영상 생성 기법'],
- compute:['Compute','연산 성능','GPU가 1초에 하는 계산 수(FLOPS)'],
- bw:['Memory bandwidth','메모리 대역폭','GPU 메모리가 1초에 옮기는 바이트 수'],
- opsbyte:['Ops:byte ratio','ops:byte 비율','GPU의 연산 성능 ÷ 대역폭. 균형점'],
- ai:['Arithmetic intensity','산술 강도','데이터 1바이트를 옮길 때마다 하는 계산 수'],
- roofline:['Roofline model','루프라인 모델','성능의 지붕(대각선·수평선)에 작업을 올려 병목을 보는 그래프'],
- cbound:['Compute bound','계산 병목','기계(연산)가 꽉 차서 더 못 빨라지는 상태'],
- mbound:['Memory bound','메모리 병목','자재 통로(메모리)가 꽉 차서 기계가 기다리는 상태'],
- prefill:['Prefill','프리필','입력 전체를 한꺼번에 읽어 KV 캐시를 만드는 단계'],
- decode:['Decode','디코드','토큰을 하나씩 만들어 내는 단계'],
- vecmat:['Vector-matrix multiply','벡터-행렬곱','한 줄짜리 입력에 큰 표를 곱하는 가벼운 계산'],
- hbm:['HBM','고대역폭 메모리','GPU의 주 메모리. 창고에 해당'],
- qkv:['Q·K·V','질의·키·값','어텐션에서 "무엇을 찾나 · 무엇이 있나 · 무엇을 줄까"'],
- softmax:['Softmax','소프트맥스','점수를 합이 1인 비율로 바꾸는 계산'],
- read:['Read','읽기','메모리에서 데이터를 가져오기'],
- write:['Write','쓰기','결과를 메모리에 저장하기'],
+ compute:['Compute','연산 성능','기계의 손 빠르기: GPU가 1초에 하는 계산 수(FLOPS)'],
+ bw:['Memory bandwidth','메모리 대역폭','통로의 폭: GPU 메모리(창고)가 1초에 옮기는 바이트 수'],
+ opsbyte:['Ops:byte ratio','ops:byte 비율','공장의 성질: 자재 1바이트가 들어오는 동안 기계가 할 수 있는 계산 수'],
+ ai:['Arithmetic intensity','산술 강도','작업의 성질: 자재 1바이트를 받을 때마다 실제로 하는 계산 수'],
+ roofline:['Roofline model','루프라인 모델','작업을 한도선(비탈=통로, 지붕=기계) 위에 올려 어디에 걸렸는지 보는 그래프'],
+ cbound:['Compute bound','계산 병목','기계(계산)가 꽉 차 자재가 쌓이는 상태. 계산을 줄여야 빨라짐'],
+ mbound:['Memory bound','메모리 병목','통로(메모리)가 꽉 차 기계가 자재를 기다리는 상태. 이동을 줄여야 빨라짐'],
+ prefill:['Prefill','프리필','질문 전체를 한꺼번에 읽고 작업 일지(KV 캐시)를 만드는 단계. 첫 글자까지의 대기'],
+ decode:['Decode','디코드','답을 한 토큰씩 만드는 단계. 토큰마다 설계도 전체를 다시 들여옴'],
+ vecmat:['Vector-matrix multiply','벡터-행렬곱','입력 한 줄에 큰 표를 곱하는 가벼운 계산. 설계도는 통째로 오는데 일은 조금'],
+ hbm:['HBM','고대역폭 메모리','GPU의 주 메모리. 공장의 창고'],
+ qkv:['Q·K·V','질의·키·값','어텐션의 질문표(Q)·이름표(K)·내용물(V)'],
+ softmax:['Softmax','소프트맥스','점수를 합이 1인 비율로 바꾸는 계산. 관심을 나눠 주는 비율표'],
+ read:['Read','읽기','창고에서 작업대로 꺼내 오기(입고)'],
+ write:['Write','쓰기','결과를 창고에 다시 넣기(출고)'],
  flop:['FLOP','부동소수점 연산','덧셈·곱셈 한 번'],
  sum:['Total','합계','표의 열을 모두 더한 값'],
- iterative:['Iterative denoising','반복 디노이징','전체를 여러 번 고쳐 가며 만드는 방식'],
- quad:['Quadratic','제곱','길이가 두 배면 일이 네 배'],
- kv:['KV cache','KV 캐시','앞 토큰의 키·값을 저장해 두고 다시 쓰는 메모리'],
- impl:['Implementation','구현 개선','결과는 같게, 계산 방법만 효율적으로'],
- algo:['New algorithm','새 알고리즘','결과를 근사해 계산량 자체를 줄이기'],
- fused:['Fused kernel','합친 커널','여러 단계를 한 번에 처리해 메모리 왕복을 줄인 GPU 프로그램'],
- flash:['FlashAttention','플래시어텐션','중간 행렬을 메모리에 쓰지 않는 어텐션 커널'],
- page:['PagedAttention','페이지드어텐션','KV 캐시를 블록으로 나눠 빈칸 어디에나 담는 방법'],
+ iterative:['Iterative denoising','반복 디노이징','그림 전체를 놓고 여러 번 고쳐 가며 만드는 방식'],
+ quad:['Quadratic','제곱','길이가 2배면 일이 4배. 모두가 모두와 대화하기 때문'],
+ kv:['KV cache','KV 캐시','앞에서 한 계산(키·값)을 적어 두는 작업 일지. 같은 계산을 다시 하지 않게 함'],
+ impl:['Implementation','구현 개선','결과는 같게, 일하는 동선만 효율적으로'],
+ algo:['New algorithm','새 알고리즘','결과를 조금 근사해 일의 양 자체를 줄이는 공법 변경'],
+ fused:['Fused kernel','합친 커널','여러 공정을 한 작업대에서 이어 처리해 창고 왕복을 줄인 GPU 프로그램'],
+ flash:['FlashAttention','플래시어텐션','중간 점수표를 창고에 넣지 않고 작업대에서 바로 이어 처리하는 어텐션'],
+ page:['PagedAttention','페이지드어텐션','작업 일지(KV 캐시)를 작은 칸으로 나눠 창고 빈칸 어디에나 담는 방법'],
  frag:['Fragmentation','단편화','빈 메모리가 여기저기 조각나 큰 덩어리를 못 쓰는 상태'],
- swa:['Sliding window','슬라이딩 윈도우','직전 w개 토큰만 보는 어텐션'],
- linear:['Linear attention','선형 어텐션','제곱 계산을 길이에 비례하는 계산으로 근사'],
- mamba:['Mamba','맘바','어텐션 대신 상태를 계속 갱신하는 상태 공간 모델'],
+ swa:['Sliding window','슬라이딩 윈도우','직전 w개 토큰만 보는 어텐션. 회의에서 가까운 몇 명과만 상의'],
+ linear:['Linear attention','선형 어텐션','모두와 대화하는 제곱 계산을 길이에 비례하는 계산으로 근사'],
+ mamba:['Mamba','맘바','어텐션 대신 요약 메모 하나를 계속 고쳐 쓰며 읽어 나가는 모델'],
  quant:['Quantization','양자화','숫자를 더 적은 비트(FP8 등)로 줄여 메모리를 아끼기'],
  offload:['Offloading','오프로딩','GPU에 다 안 들어가는 부분을 시스템 램에 두고 필요할 때 옮기기'],
  moe:['MoE','전문가 혼합','작은 전문가 여럿 중 일부만 골라 쓰는 모델'],
  ep:['Expert parallelism','전문가 병렬화','전문가들을 여러 GPU에 나눠 싣기'],
  pose:['Pose estimation','포즈 추정','사람 사진에서 머리·팔·다리 관절 위치를 찾아 막대 인형으로 바꾸기'],
  gen:['Generative AI','생성형 AI','글·그림·영상·동작을 새로 만들어 내는 AI'],
+ weight:['Weights','가중치','학습으로 정해진 모델의 숫자들. 기계가 일할 때마다 들여오는 설계도'],
+ layer:['Layer','층','모델을 이루는 공정 하나. 층마다 대부분 행렬곱을 함'],
+ sdxl:['SDXL','스테이블 디퓨전 XL','Stability AI가 2023년 공개한 이미지 생성 모델. 1024² 기본, 디노이저 두 대'],
+ attn:['Attention','어텐션','각 단어(조각)가 다른 단어들을 둘러보고 중요한 정보를 끌어오는 계산'],
+ rnn:['RNN','순환 신경망','단어를 앞에서부터 하나씩 전달하며 읽던 옛 방식. 전달 게임처럼 멀리 갈수록 흐려짐'],
  pcie:['PCIe','PCI 익스프레스','GPU와 메인보드를 잇는 통로. 버전·레인 수가 폭을 정함']
 };
 
