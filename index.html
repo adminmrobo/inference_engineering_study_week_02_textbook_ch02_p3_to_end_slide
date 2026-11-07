@@ -343,14 +343,14 @@ img.flip{transform:scaleX(-1)}
   <a class="applink" data-go="aLatent" href="#">부록: 해상도별 잠재 공간 계산 →</a>
 </section>
 
-<section class="slide" data-title="순전파란? 라인을 한 바퀴" data-sec="2.3" data-mod="fwd" data-terms="fwd,layer,sampler" data-note="순전파 = 입력을 모델의 첫 층부터 마지막 층까지 한 번 통과시켜 결과를 얻는 계산(층마다 행렬곱·어텐션). 층 하나하나가 잡음을 지우는 게 아님: 층들이 함께 '잡음 지도'(입력과 같은 크기의 숫자판, 어디에 잡음이 얼마나)를 예측. 실제로 덜어내는 건 모델 밖의 샘플러가 하는 간단한 빼기: 밑그림 − 일부 × 잡음 지도 → 조금 깨끗해진 밑그림 → 다음 단계 입력. 분류 모델이 아님: 분류는 답 하나(칭찬/불만)를 고르지만, 디노이저는 칸마다 숫자를 맞히는 예측(회귀). 학습: 진짜 그림에 잡음을 섞고, 섞은 잡음을 맞히게 해 차이를 줄임. 글 공장은 한 바퀴 = 다음 토큰 하나(이건 어휘 중 하나를 고르는 분류에 가까움). 실제로는 단계마다 두 바퀴 → 다음 장.">
+<section class="slide" data-title="순전파란? 라인을 한 바퀴" data-sec="2.3" data-mod="fwd" data-terms="fwd,layer,sampler" data-note="순전파 = 입력을 모델의 첫 층부터 마지막 층까지 한 번 통과시켜 결과를 얻는 계산(층마다 행렬곱·어텐션). 층 하나하나가 잡음을 지우는 게 아님: 층들이 함께 '잡음 지도'(입력과 같은 크기의 숫자판, 어디에 잡음이 얼마나)를 예측. 실제로 덜어내는 건 모델 밖의 샘플러가 하는 간단한 빼기: 밑그림 − 일부 × 잡음 지도 → 조금 깨끗해진 밑그림 → 다음 단계 입력. 분류 모델이 아님: 분류는 답 하나(칭찬/불만)를 고르지만, 디노이저는 칸마다 숫자를 맞히는 예측(회귀). 학습: 진짜 그림에 잡음을 섞고, 섞은 잡음을 맞히게 해 차이를 줄임. 손실함수는 -log 확률(분류의 교차 엔트로피)이 아니라 칸마다 (예측 잡음 − 실제 잡음)²의 평균(MSE). 값이 연속이라 '가짓수'가 없음. 가짓수가 있는 분류는 글 공장: 다음 토큰을 어휘(수만~십수만 개) 중에서 고르고 -log 확률로 학습. 글 공장은 한 바퀴 = 다음 토큰 하나(이건 어휘 중 하나를 고르는 분류에 가까움). 실제로는 단계마다 두 바퀴 → 다음 장.">
   <div class="kicker">2.3 <span class="sec">용어 풀기 · Forward pass</span></div>
   <h2>순전파 = 라인 한 바퀴, 나오는 것은 "잡음 지도"</h2>
   <div class="fig" style="flex:none"><canvas id="fwC" width="1150" height="190"></canvas><div class="figcap">모델은 층(공정)이 이어진 라인. 층들이 함께 잡음 지도를 예측하고, 덜어내기는 모델 밖에서 <span class="chip toy">설명용</span></div></div>
   <div class="ctrl" style="margin-top:6px"><button class="bt primary" id="fwPlay">▶ 다시 태우기</button></div>
   <div class="row" style="flex:none;margin-top:8px;gap:14px">
     <div class="card col" style="padding:10px 16px"><h4 class="g">순전파 (forward pass)</h4><p class="small">입력을 <b>첫 층부터 끝 층까지 한 번</b> 통과시키는 계산. 층 하나가 잡음을 지우는 게 아니라, 층들이 <b>함께</b> "어디에 잡음이 얼마나"를 계산합니다. 추론은 순전파만 합니다.</p></div>
-    <div class="card col" style="padding:10px 16px"><h4 class="i">분류 모델인가? 아니요</h4><p class="small">분류는 답 <b>하나</b>(칭찬/불만)를 고릅니다. 디노이저는 밑그림과 <b>같은 크기의 숫자판</b>(잡음 지도)을 칸마다 맞히는 예측입니다. 학습 때 섞은 잡음을 맞히게 가르칩니다.</p></div>
+    <div class="card col" style="padding:10px 16px"><h4 class="i">분류 모델인가? 아니요</h4><p class="small">분류는 답 <b>하나</b>를 고름. 디노이저는 밑그림과 <b>같은 크기의 숫자판</b>(잡음 지도)을 칸마다 맞힘. 학습 손실도 −log가 아니라 차이의 제곱 평균</p></div>
     <div class="card col" style="padding:10px 16px"><h4 class="a">그러면 50단계는?</h4><p class="small">빼기는 모델 밖(샘플러)의 간단한 계산. 무거운 건 순전파입니다. 50단계면 50바퀴…가 아니라 실제로는 <b>100바퀴</b>. 왜? → 다음 장</p></div>
   </div>
 </section>
@@ -453,7 +453,7 @@ img.flip{transform:scaleX(-1)}
       <div class="ctrl"><button class="bt primary" id="vdPlay">▶ 다시 생성</button><label>한 프레임 오차</label><input type="range" id="vdE" min="1" max="10" value="4"><span class="val" id="vdEV"></span></div>
     </div>
     <div class="col w2">
-      <div class="fig"><canvas id="vdC" width="620" height="330"></canvas><div class="figcap">회색 = 정답 궤적, 빨강 = 한 프레임씩, 초록 = 전체를 함께. 아래는 정답과의 거리 <span class="chip toy">설명용</span></div></div>
+      <div class="fig"><canvas id="vdC" width="620" height="330"></canvas><div class="figcap">빨강 = 한 프레임씩 이어 만들기, 초록 = 전체를 함께. 아래 = 만들어진 공이 원래 길에서 벗어난 거리(학습용 손실이 아니라 결과를 잰 값) <span class="chip toy">설명용</span></div></div>
     </div>
   </div>
 </section>
@@ -1117,12 +1117,19 @@ MOD.few=function(){var bs=$$('[data-fw]'),s=50;function u(){var x=ctx2($('#fwC')
   [[50,'보통 50단계',C.stain],[s,'지금 '+s+'단계',C.gfp]].forEach(function(r,i){var Y=40+i*70;T(x,r[1],20,Y,C.text,15,'left',700);x.fillStyle=C.panel2;x.fillRect(20,Y+16,bw,22);x.fillStyle=r[2];x.fillRect(20,Y+16,bw*r[0]/50,22);T(x,Math.round(r[0]/50*100)+'%',28+bw*r[0]/50,Y+27,C.muted,13)});
   T(x,s<=8?'퓨스텝 모델 영역: 빠르지만 품질 하락':'보통 모델 영역',20,200,s<=8?C.amber:C.muted,15,'left',700);T(x,'책: 80–90% 빠름',20,228,C.amber,14);stamp(x,'설명용')}
   bs.forEach(function(b){b.onclick=function(){s=+b.dataset.fw;press(bs,b);u()}});u()};
-MOD.video=function(){var E=4,F=32,shown=32,play=false,acc=0,D;function gen(){var r=rng(7+F*13+E),tr=[],fw=[],jt=[],px=0,py=0,e=E*.004;for(var t=0;t<F;t++)tr.push([.08+.84*t/(F-1),.5+.28*Math.sin(t/(F-1)*Math.PI*1.6)]);
-    for(var t2=0;t2<F;t2++){if(!t2){px=tr[0][0]+gauss(r)*e;py=tr[0][1]+gauss(r)*e}else{px+=tr[t2][0]-tr[t2-1][0]+gauss(r)*e;py+=tr[t2][1]-tr[t2-1][1]+gauss(r)*e}fw.push([px,py]);jt.push([tr[t2][0]+gauss(r)*e,tr[t2][1]+gauss(r)*e])}
-    D={tr:tr,fw:fw,jt:jt,ef:fw.map(function(p,i){return Math.hypot(p[0]-tr[i][0],p[1]-tr[i][1])}),ej:jt.map(function(p,i){return Math.hypot(p[0]-tr[i][0],p[1]-tr[i][1])})}}
-  function draw(){var x=ctx2($('#vdC')),h1=180;function path(a,col){x.strokeStyle=col;x.lineWidth=2;x.beginPath();for(var i=0;i<Math.min(shown,F);i++){var X=a[i][0]*x.W,Y=10+a[i][1]*(h1-20);i?x.lineTo(X,Y):x.moveTo(X,Y)}x.stroke()}
-    path(D.tr,'rgba(157,155,184,.6)');path(D.fw,C.eye);path(D.jt,C.gfp);var gy=h1+20,gh=x.H-gy-14,mx=Math.max.apply(null,D.ef.concat(D.ej))*1.1;x.strokeStyle=C.rule;x.strokeRect(10,gy,x.W-20,gh);
-    function cv(a,col){x.strokeStyle=col;x.lineWidth=2.5;x.beginPath();for(var i=0;i<Math.min(shown,F);i++){var X=10+i/(F-1)*(x.W-20),Y=gy+gh-a[i]/mx*gh;i?x.lineTo(X,Y):x.moveTo(X,Y)}x.stroke()}cv(D.ef,C.eye);cv(D.ej,C.gfp);T(x,'정답과의 거리 · 프레임 →',16,gy+12,C.muted,12);stamp(x,'설명용')}
+MOD.video=function(){var E=4,F=32,shown=32,play=false,acc=0,D;function gen(){var r=rng(11),tr=[],fw=[],jt=[],dx=0,dy=0,e=E*.0045;for(var t=0;t<F;t++)tr.push([.08+.84*t/(F-1),.5+.28*Math.sin(t/(F-1)*Math.PI*1.6)]);
+    for(var t2=0;t2<F;t2++){dx+=gauss(r)*e*.5;dy+=gauss(r)*e+e*.55;fw.push([tr[t2][0]+dx,tr[t2][1]+dy]);jt.push([tr[t2][0]+gauss(r)*e*.35,tr[t2][1]+gauss(r)*e*.6])}
+    var px=function(p,i){return Math.hypot((p[0]-tr[i][0])*620,(p[1]-tr[i][1])*160)};D={tr:tr,fw:fw,jt:jt,ef:fw.map(px),ej:jt.map(px)}}
+  function draw(){var x=ctx2($('#vdC')),h1=170;function Y1(v){return 12+v*(h1-24)}
+    function path(a,col,w){x.strokeStyle=col;x.lineWidth=w;x.beginPath();for(var i=0;i<Math.min(shown,F);i++){var X=a[i][0]*x.W,Y=Y1(a[i][1]);i?x.lineTo(X,Y):x.moveTo(X,Y)}x.stroke()}
+    function ball(a,col){var i=Math.min(shown,F)-1;x.fillStyle=col;x.beginPath();x.arc(a[i][0]*x.W,Y1(a[i][1]),6,0,7);x.fill()}
+    path(D.tr,'rgba(157,155,184,.7)',5);path(D.fw,C.eye,2);path(D.jt,C.gfp,2);ball(D.fw,C.eye);ball(D.jt,C.gfp);
+    T(x,'공이 굴러가는 영상 · 회색 굵은 선 = 원래 가야 할 길',12,h1-2,C.muted,12);
+    var gy=h1+22,gh=x.H-gy-24,mx=Math.max(8,Math.max.apply(null,D.ef.concat(D.ej))*1.15);x.strokeStyle=C.rule;x.strokeRect(46,gy,x.W-56,gh);
+    T(x,'0',40,gy+gh,C.muted,11,'right');T(x,Math.round(mx)+'px',40,gy+8,C.muted,11,'right');
+    function cv(a,col){x.strokeStyle=col;x.lineWidth=2.5;x.beginPath();for(var i=0;i<Math.min(shown,F);i++){var X=46+i/(F-1)*(x.W-56),Y=gy+gh-a[i]/mx*gh;i?x.lineTo(X,Y):x.moveTo(X,Y)}x.stroke()}cv(D.ef,C.eye);cv(D.ej,C.gfp);
+    T(x,'길에서 벗어난 거리(px) — 결과를 잰 자, 손실함수 아님',52,gy+12,C.muted,12);T(x,'프레임 →',x.W-12,gy+gh+14,C.muted,11,'right');
+    T(x,'━ 한 프레임씩: 실수가 쌓여 커짐',52,gy+32,C.eye,12.5,'left',700);T(x,'━ 전체를 함께: 커지지 않음',52,gy+50,C.gfp,12.5,'left',700);stamp(x,'설명용')}
   function u(){E=+$('#vdE').value;$('#vdEV').textContent=E;gen();shown=F;draw()}
   $('#vdE').oninput=u;$('#vdPlay').onclick=function(){shown=REDUCE?F:1;acc=0;play=!REDUCE;draw()};
   TICK=function(dt){if(!play)return;acc+=dt*F/2.2;var k=Math.floor(acc);if(k){acc-=k;shown=Math.min(F,shown+k);draw();if(shown>=F)play=false}};u()};
