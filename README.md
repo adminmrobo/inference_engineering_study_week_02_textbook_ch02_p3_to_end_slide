@@ -11,6 +11,15 @@
 
 ---
 
+## 이번 주 자료 모음
+
+| 자료 | 무엇 | 열기 |
+|---|---|---|
+| 읽기용 해설 | 아홉 걸음 인터랙티브 해설 (블로그) | https://adminmrobo.github.io/inference_engineering_study_week_02_textbook_ch02_p3_to_end/ |
+| 본 발표 슬라이드 | 본편 42장 + 부록 17장, 공장 비유·GPU 10종 대시보드 | https://adminmrobo.github.io/inference_engineering_study_week_02_textbook_ch02_p3_to_end_slide/ |
+| 쉬운 가이드 | 도입 12장 + 핵심만 쉽게 13장(흰 배경, 초보자용) | https://adminmrobo.github.io/inference_engineering_study_week_02_textbook_ch02_p3_to_end_slide/easy_guide.html |
+| "캐릭터 춤춰" GPU 시뮬레이터 | 춤 영상이 만들어지는 동안 GPU의 열·전력·시간·데드락·병목을 직접 일으켜 보는 4쪽 시뮬레이터, 연구실 캐릭터 튜토리얼 13단계 | https://adminmrobo.github.io/inference_engineering_study_week_02_textbook_ch02_p3_to_end_slide/gpu_dance_simulator.html |
+
 ## 구성: 본편 42장 + 부록 17장
 
 발표는 본편 42장으로 하고(용어를 공장 비유로 푸는 장 7개와 현실 점검 1장을 더해 약 35–40분), 질의응답과 복습에 쓸 상세 내용은 부록 17장(A1–A17)에 남겼습니다. 슬라이드 흐름은 교재 순서를 따르고, 책의 그림 번호(그림 2.10–2.18)는 그대로 씁니다.
@@ -82,3 +91,22 @@
 - 캐릭터(박사·조수(하루)·초파리 연구원·주판봇) 기준 그림: [adminmrobo/fruitfly-lab-expressions](https://github.com/adminmrobo/fruitfly-lab-expressions)
 
 © 안상선 ((주)M-Robo)
+
+## 쉬운 가이드 (easy_guide.html)
+
+본 발표의 도입 12장에, 12장 이후 내용을 핵심 키워드 위주로 쉽게 줄인 13장을 붙인 25장짜리 합본입니다. 흰 배경이며, 대시보드도 쉬운 버전(잡음 걷기, 잠재 공간, 순전파, 정리)으로 바꿨습니다. 조작은 본 발표와 같습니다.
+
+## 시뮬레이터 (gpu_dance_simulator.html)
+
+생성형 AI에 "캐릭터 춤춰"라고 했을 때 GPU 안에서 일어나는 일을 직접 조절하며 보는 4쪽 시뮬레이터입니다.
+
+| 쪽 | 내용 |
+|---|---|
+| ① 공정 보기 | 춤 이벤트 6칸(프롬프트 → 텍스트 인코더 → 동작 생성 → 포즈 맵 → 포즈 기반 생성 → 영상), GPU 실물(팬·열·전력)과 구조도(SM·L2·메모리 칩·PCIe, 실행 중인 커널과 병목), 도전 모드(성공하면 "어쭈!" 하며 360p → 4K), 공장 공정도 |
+| ② 조절판 · 계기판 | GPU 10종, 보드 PCIe, 모델(Wan 2.1 1.3B·14B), 정밀도, 해상도, 프레임, 단계, 가이던스, FlashAttention, 오프로딩, 동시 요청, 작업 배분, 봇 응답 제한, 전력 제한, 냉각, 실내 온도 |
+| ③ 사건 로그 · 해설 | 드라이버 로그처럼 쌓이는 사건 19종, 교재 표현을 빌린 해설과 처방 |
+| ④ GPU 10종 비교 · 진단 | 같은 설정으로 10종을 돌린 시간(로그 눈금)·전기요금·최고 온도, 카드별 실효 계산, 진단 |
+
+맨 위 **튜토리얼** 버튼을 누르면 박사·조수·초파리 연구원·주판봇이 13단계로 실험을 안내합니다(OOM·데드락 일으키기, FlashAttention 처방, 도전 모드).
+
+숫자는 사양표와 공식으로 만든 어림값입니다. 실효 계산은 NVIDIA 현행 카드에 사양의 60%를, 사양표만 큰 카드에는 공개 확산 모델 측정에 맞춘 낮은 비율(Quadro RTX 5000 23%, Radeon 18%, Arc 22%)을 씁니다. 막대 인형·조수 영상은 「동작 AI · 5-5 "춤춰"에서 춤 영상으로」(안상선)의 생성 영상입니다.
