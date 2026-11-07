@@ -329,13 +329,13 @@ img.flip{transform:scaleX(-1)}
   </div>
 </section>
 
-<section class="slide" data-title="그림 2.10 디노이징" data-sec="2.3 · 그림 2.10" data-mod="denoise" data-terms="latent,denoise,pixel" data-note="잠재 공간: 1024² 픽셀 100만 개 이상 → 128×128(값의 약 1%). 디노이저가 이미지 전체에 어텐션을 병렬로 계산해야 하므로 픽셀 공간은 불가능. 그림 2.10: 잡음에서 30–50단계. 각 단계는 잠재 공간 전체를 갱신.">
+<section class="slide" data-title="그림 2.10 디노이징" data-sec="2.3 · 그림 2.10" data-mod="denoise" data-terms="latent,denoise,pixel" data-note="잠재 값은 정답이 아니라 작업 중인 밑그림의 숫자: 추론에서는 무작위 잡음으로 시작해 디노이저가 단계마다 고치고, 끝나면 VAE가 픽셀로 펼침. 정답에 해당하는 것은 학습 때만 있음(진짜 그림을 접고 잡음을 섞은 뒤 그 잡음을 맞히게 함). 16,384는 칸 수, SDXL은 칸마다 4채널이라 숫자로는 65,536개. 잠재 공간: 1024² 픽셀 100만 개 이상 → 128×128(값의 약 1%). 디노이저가 이미지 전체에 어텐션을 병렬로 계산해야 하므로 픽셀 공간은 불가능. 그림 2.10: 잡음에서 30–50단계. 각 단계는 잠재 공간 전체를 갱신.">
   <div class="kicker">2.3 <span class="sec">잠재 공간 · 그림 2.10</span></div>
   <h2>작은 밑그림 위에서, 30–50번 닦는다</h2>
   <div class="row" style="flex:none;gap:12px">
     <div class="kpi" style="flex:1"><b class="r">1,048,576</b><span>1024×1024 픽셀 수 <span class="chip book">책: 100만 개 이상</span></span></div>
-    <div class="kpi" style="flex:1"><b class="g">16,384</b><span>128×128 잠재 값 수 <span class="chip book">책: 약 1%</span></span></div>
-    <div class="kpi" style="flex:2"><span style="font-size:14.5px;color:var(--text)">디노이저는 그림 <u>전체</u>에 어텐션을 계산 → 픽셀로는 감당 불가 → 잠재 공간에서 <span class="chip book">책</span></span></div>
+    <div class="kpi" style="flex:1"><b class="g">16,384</b><span>128×128 잠재 칸 수 · 칸마다 숫자 4개(SDXL) <span class="chip book">책: 약 1%</span></span></div>
+    <div class="kpi" style="flex:2"><span style="font-size:14px;color:var(--text);line-height:1.45"><strong style="color:var(--gfp)">잠재 값 ≠ 정답</strong> · 지금 다듬는 중인 밑그림의 숫자(처음엔 잡음). 그림 <u>전체</u>에 어텐션을 계산하니 픽셀로는 감당 불가 → 작게 접어 작업 <span class="chip book">책</span></span></div>
   </div>
   <div class="fig" style="flex:none;margin-top:6px"><span class="fignum">그림 2.10</span><canvas id="dnC" width="1150" height="236"></canvas>
     <div class="figcap"><b>그림 2.10</b> 확산 모델은 보통 30–50단계에 걸쳐 잡음에서 이미지를 반복 생성한다. 책 그림을 바탕으로 다시 그림 · 그림 내용은 <span class="chip toy">설명용</span></div></div>
@@ -343,15 +343,15 @@ img.flip{transform:scaleX(-1)}
   <a class="applink" data-go="aLatent" href="#">부록: 해상도별 잠재 공간 계산 →</a>
 </section>
 
-<section class="slide" data-title="순전파란? 라인을 한 바퀴" data-sec="2.3" data-mod="fwd" data-terms="fwd,layer,matmul" data-note="순전파(forward pass) = 입력을 모델의 첫 층부터 마지막 층까지 한 번 통과시켜 결과를 얻는 계산. 층마다 하는 일은 대부분 행렬곱. 학습 때는 결과를 보고 거꾸로 고치는 역전파도 하지만 추론에서는 순전파만. 글 공장: 토큰 하나 = 순전파 1번. 그림 공장: 디노이징 한 단계 = 반쯤 다듬은 밑그림을 한 바퀴 태워 '잡음은 여기'라는 답을 받음. 그런데 실제로는 단계마다 두 바퀴 → 다음 장.">
+<section class="slide" data-title="순전파란? 라인을 한 바퀴" data-sec="2.3" data-mod="fwd" data-terms="fwd,layer,sampler" data-note="순전파 = 입력을 모델의 첫 층부터 마지막 층까지 한 번 통과시켜 결과를 얻는 계산(층마다 행렬곱·어텐션). 층 하나하나가 잡음을 지우는 게 아님: 층들이 함께 '잡음 지도'(입력과 같은 크기의 숫자판, 어디에 잡음이 얼마나)를 예측. 실제로 덜어내는 건 모델 밖의 샘플러가 하는 간단한 빼기: 밑그림 − 일부 × 잡음 지도 → 조금 깨끗해진 밑그림 → 다음 단계 입력. 분류 모델이 아님: 분류는 답 하나(칭찬/불만)를 고르지만, 디노이저는 칸마다 숫자를 맞히는 예측(회귀). 학습: 진짜 그림에 잡음을 섞고, 섞은 잡음을 맞히게 해 차이를 줄임. 글 공장은 한 바퀴 = 다음 토큰 하나(이건 어휘 중 하나를 고르는 분류에 가까움). 실제로는 단계마다 두 바퀴 → 다음 장.">
   <div class="kicker">2.3 <span class="sec">용어 풀기 · Forward pass</span></div>
-  <h2>순전파 = 반제품을 라인에 한 바퀴 태우기</h2>
-  <div class="fig" style="flex:none"><canvas id="fwC" width="1150" height="190"></canvas><div class="figcap">모델은 여러 층(공정)이 이어진 라인. 층마다 하는 일은 대부분 행렬곱 <span class="chip toy">설명용</span></div></div>
+  <h2>순전파 = 라인 한 바퀴, 나오는 것은 "잡음 지도"</h2>
+  <div class="fig" style="flex:none"><canvas id="fwC" width="1150" height="190"></canvas><div class="figcap">모델은 층(공정)이 이어진 라인. 층들이 함께 잡음 지도를 예측하고, 덜어내기는 모델 밖에서 <span class="chip toy">설명용</span></div></div>
   <div class="ctrl" style="margin-top:6px"><button class="bt primary" id="fwPlay">▶ 다시 태우기</button></div>
   <div class="row" style="flex:none;margin-top:8px;gap:14px">
-    <div class="card col" style="padding:10px 16px"><h4 class="g">순전파 (forward pass)</h4><p class="small">입력을 <b>첫 층부터 끝 층까지 한 번</b> 통과시켜 결과를 얻는 계산. 학습 땐 거꾸로 고치는 역전파도 하지만, 추론은 순전파만</p></div>
-    <div class="card col" style="padding:10px 16px"><h4 class="i">공장마다 한 바퀴의 뜻</h4><p class="small"><b>글 공장</b>: 한 바퀴 = 토큰 하나<br><b>그림 공장</b>: 한 바퀴 = 디노이징 한 단계 ("잡음은 여기"라는 답)</p></div>
-    <div class="card col" style="padding:10px 16px"><h4 class="a">그러면 50단계는?</h4><p class="small">라인 50바퀴…가 아니라 실제로는 <b>100바퀴</b>. 한 단계에 두 번 태우기 때문. 왜? → 다음 장</p></div>
+    <div class="card col" style="padding:10px 16px"><h4 class="g">순전파 (forward pass)</h4><p class="small">입력을 <b>첫 층부터 끝 층까지 한 번</b> 통과시키는 계산. 층 하나가 잡음을 지우는 게 아니라, 층들이 <b>함께</b> "어디에 잡음이 얼마나"를 계산합니다. 추론은 순전파만 합니다.</p></div>
+    <div class="card col" style="padding:10px 16px"><h4 class="i">분류 모델인가? 아니요</h4><p class="small">분류는 답 <b>하나</b>(칭찬/불만)를 고릅니다. 디노이저는 밑그림과 <b>같은 크기의 숫자판</b>(잡음 지도)을 칸마다 맞히는 예측입니다. 학습 때 섞은 잡음을 맞히게 가르칩니다.</p></div>
+    <div class="card col" style="padding:10px 16px"><h4 class="a">그러면 50단계는?</h4><p class="small">빼기는 모델 밖(샘플러)의 간단한 계산. 무거운 건 순전파입니다. 50단계면 50바퀴…가 아니라 실제로는 <b>100바퀴</b>. 왜? → 다음 장</p></div>
   </div>
 </section>
 
@@ -1080,7 +1080,7 @@ MOD.latent=function(){var res=1024,bs=$$('[data-res]');function u(){var lat=res/
   x.strokeStyle=C.eye;x.lineWidth=2;x.strokeRect(X,Y,big,big);T(x,'픽셀 '+res+'×'+res,X,Y+big+18,C.eye,14,'left',700);
   x.fillStyle='rgba(94,227,156,.35)';x.fillRect(X,Y,s,s);x.strokeStyle=C.gfp;x.strokeRect(X,Y,s,s);
   x.strokeStyle=C.gfp;x.lineWidth=1.2;x.beginPath();x.moveTo(X+s,Y+s/2);x.lineTo(X+big+24,Y+s/2);x.stroke();T(x,'잠재 '+lat+'×'+lat,X+big+30,Y+s/2,C.gfp,14,'left',700);
-  stamp(x,'설명용');var p=res*res,l=lat*lat;kp($('#ltK'),[[fmt(p),'픽셀 수','r'],[fmt(l),'잠재 값 수','g'],[(l/p*100).toFixed(2)+'%','비율','a']])}
+  stamp(x,'설명용');var p=res*res,l=lat*lat;kp($('#ltK'),[[fmt(p),'픽셀 수','r'],[fmt(l),'잠재 칸 수','g'],[(l/p*100).toFixed(2)+'%','비율','a']])}
   bs.forEach(function(b){b.onclick=function(){res=+b.dataset.res;press(bs,b);u()}});u()};
 MOD.denoise=function(){var st=40,step=40,play=false,acc=0;function u(){st=+$('#dnS').value;$('#dnSV').textContent=st;if(!play)step=st;draw();
   $('#dnMsg').textContent=st<8?'단계가 너무 적어 잡음이 남아요(설명용).':st<30?'보통 범위(30–50)보다 적어요.':'대부분의 모델이 쓰는 범위예요.'}
@@ -1253,17 +1253,23 @@ MOD.imgfac=function(){var t=99,play=false;function S(){return +$('#ifS').value}
   $('#ifPlay').onclick=function(){t=0;play=!REDUCE;if(REDUCE)t=99;draw()};$('#ifS').oninput=function(){if(!play)t=99;draw()};
   TICK=function(dt){if(!play)return;t+=dt;var st=S();if(t>1.6+st*.07+.9+.4)play=false;draw()};draw()};
 
-/* 16 · 순전파 = 라인을 한 바퀴 */
-MOD.fwd=function(){var t=0,n=0,play=!REDUCE,L=6;
-  function draw(){var x=ctx2($('#fwC')),X0=230,w=96,g=22,Y=46,h=80,pos=t/2.4*(L+1)-.5;
-    T(x,'들어감: 반쯤 다듬은 밑그림',24,18,C.muted,13,'left',700);PIC.draw(x,40,38,96,{t:.35,resid:0});
-    for(var i=0;i<L;i++){var X=X0+i*(w+g),on=Math.floor(pos)===i;BX(x,X,Y,w,h,i<L-1?'층 '+(i+1):'층 N',on?C.gfp:C.stain,on,'행렬곱 + α');if(i<L-1)AR(x,X+w+2,Y+h/2,X+w+g-2,Y+h/2,C.rule)}
-    AR(x,140,Y+h/2,X0-6,Y+h/2,C.rule);var ex=X0+L*(w+g)-g;AR(x,ex+4,Y+h/2,ex+30,Y+h/2,C.rule);
-    var ip=clamp(pos,-.5,L),tx=ip<0?150:X0+ip*(w+g)+w/2-11;if(play){RR(x,tx,Y+h+6,22,22,5);x.fillStyle=C.amber;x.fill()}
-    T(x,'나옴: "잡음은 여기"',ex+40,18,C.muted,13,'left',700);PIC.draw(x,ex+40,38,96,{t:.5,resid:0});
-    T(x,'첫 층부터 마지막 층까지 한 번 통과 = 순전파 1번 · 지금까지 '+n+'번',24,x.H-12,C.text,14,'left',700);T(x,'노란 상자 = 지금 라인을 지나는 반제품',x.W-14,x.H-12,C.amber,12,'right')}
+/* 16 · 순전파 = 라인을 한 바퀴 → 잡음 지도 → 덜어내기 */
+function NMAP(x,X,Y,s){var r=rng(5),n=16,c=s/n;for(var i=0;i<n;i++)for(var j=0;j<n;j++){var v=Math.floor(60+r()*170);x.fillStyle='rgb('+v+','+v+','+v+')';x.fillRect(X+j*c,Y+i*c,Math.ceil(c),Math.ceil(c))}x.strokeStyle=C.rule;x.strokeRect(X,Y,s,s)}
+MOD.fwd=function(){var t=0,n=0,play=!REDUCE,L=5,CY=3.2;
+  function draw(){var x=ctx2($('#fwC')),X0=196,w=86,g=20,Y=50,h=78,ph=REDUCE?CY:t,pos=ph/2.2*(L+1)-.5,sz=86,OX=X0+L*(w+g)-g+34,SX=OX+sz+70;
+    T(x,'들어감: 잡음 섞인 밑그림',20,18,C.muted,12.5,'left',700);PIC.draw(x,24,42,sz,{t:.35,resid:0});T(x,'+ 주문서 · 단계 번호',24,150,C.muted,11.5,'left');
+    AR(x,116,Y+h/2,X0-6,Y+h/2,C.rule);
+    for(var i=0;i<L;i++){var X=X0+i*(w+g),on=ph<2.2&&Math.floor(pos)===i;BX(x,X,Y,w,h,i<L-1?'층 '+(i+1):'층 N',on?C.gfp:C.stain,on,'행렬곱·어텐션');if(i<L-1)AR(x,X+w+2,Y+h/2,X+w+g-2,Y+h/2,C.rule)}
+    var ex=X0+L*(w+g)-g;AR(x,ex+4,Y+h/2,OX-6,Y+h/2,C.rule);
+    if(play&&ph<2.2){var ip=clamp(pos,-.5,L),tx=ip<0?126:X0+ip*(w+g)+w/2-11;RR(x,tx,Y+h+8,22,22,5);x.fillStyle=C.amber;x.fill()}
+    var outOn=ph>=2.2;x.globalAlpha=outOn?1:.25;T(x,'나옴: 잡음 지도',OX,18,C.amber,12.5,'left',700);NMAP(x,OX,42,sz);T(x,'"어디에 잡음이 얼마나"',OX,150,C.muted,11.5,'left');x.globalAlpha=1;
+    var subOn=ph>=2.7;x.globalAlpha=subOn?1:.2;BX(x,OX+sz+10,64,50,40,'빼기',C.eye,subOn&&ph<CY);x.globalAlpha=1;
+    x.globalAlpha=subOn?1:.2;T(x,'결과: 조금 깨끗해짐',SX,18,C.gfp,12.5,'left',700);PIC.draw(x,SX,42,sz,{t:.5,resid:0});T(x,'→ 다음 단계의 입력',SX,150,C.muted,11.5,'left');x.globalAlpha=1;
+    x.strokeStyle='rgba(241,182,70,.5)';x.setLineDash([5,5]);x.lineWidth=1.4;x.strokeRect(X0-14,Y-30,ex-X0+28,h+58);x.setLineDash([]);T(x,'모델(디노이저) 안 = 순전파',X0-8,Y-18,C.amber,12,'left',700);
+    T(x,'모델 밖 (샘플러)',OX+sz+35,Y+h+38,C.eye,12,'center',700);
+    T(x,'순전파 '+n+'번 · 한 바퀴 = 첫 층부터 끝 층까지 한 번 통과',20,x.H-12,C.text,14,'left',700)}
   $('#fwPlay').onclick=function(){t=0;play=!REDUCE;draw()};
-  TICK=function(dt){if(!play)return;t+=dt;if(t>2.4){t=0;n++}draw()};draw()};
+  TICK=function(dt){if(!play)return;t+=dt;if(t>CY+.8){t=0;n++}draw()};draw()};
 
 /* 18 · 그림을 조각(패치)으로 잘라 단어처럼 */
 MOD.tiles=function(){var p=2,t=0,bs=$$('[data-tp]'),off=document.createElement('canvas');off.width=off.height=192;var ox=off.getContext('2d');PIC.draw(ox,0,0,192,{t:1,resid:0});
@@ -1355,7 +1361,7 @@ var TERM={
  denoiser:['Denoising model','디노이저','잡음에서 그림을 다듬는 기계. 단계 수만큼 되풀이해 시간을 가장 많이 씀'],
  vae:['VAE','변분 오토인코더','작게 접은 밑그림(잠재)을 진짜 크기 그림으로 펼치는 인쇄기'],
  lora:['LoRA','저랭크 미세조정','큰 모델은 두고 작은 행렬만 학습해 화풍을 바꾸는 방법'],
- latent:['Latent space','잠재 공간','그림을 작게 접은 밑그림. 1024² 대신 128²에서 작업해 일을 줄임'],
+ latent:['Latent space','잠재 공간','그림을 작게 접은 밑그림. 1024² 대신 128²에서 작업. 칸의 숫자(잠재 값)는 정답이 아니라 다듬는 중인 작업물'],
  pixel:['Pixel space','픽셀 공간','우리가 보는 그림 그대로의 칸들'],
  fwd:['Forward pass','순전파','입력을 모델의 첫 층부터 끝 층까지 한 번 통과시키는 계산. 라인 한 바퀴'],
  cfg:['Guidance scale','가이던스 스케일','지시서 없이 한 결과와 지시서대로 한 결과의 차이를 몇 배로 키울지'],
@@ -1410,6 +1416,7 @@ var TERM={
  pose:['Pose estimation','포즈 추정','사람 사진에서 머리·팔·다리 관절 위치를 찾아 막대 인형으로 바꾸기'],
  gen:['Generative AI','생성형 AI','글·그림·영상·동작을 새로 만들어 내는 AI'],
  weight:['Weights','가중치','학습으로 정해진 모델의 숫자들. 기계가 일할 때마다 들여오는 설계도'],
+ sampler:['Sampler','샘플러','모델이 예측한 잡음 지도를 보고, 밑그림에서 잡음을 얼마만큼 덜어 낼지 정해 빼는 단계. 모델 밖의 간단한 계산'],
  layer:['Layer','층','모델을 이루는 공정 하나. 층마다 대부분 행렬곱을 함'],
  sdxl:['SDXL','스테이블 디퓨전 XL','Stability AI가 2023년 공개한 이미지 생성 모델. 1024² 기본, 디노이저 두 대'],
  attn:['Attention','어텐션','각 단어(조각)가 다른 단어들을 둘러보고 중요한 정보를 끌어오는 계산'],
