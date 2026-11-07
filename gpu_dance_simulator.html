@@ -224,11 +224,11 @@ body.tutOn main{padding-bottom:230px}body.tutOn .toast{bottom:210px}
     <div class="card"><h3>계산 방법 <span class="tag est">어림</span></h3><ul class="small" style="margin:0;padding-left:18px">
       <li>토큰 수 = (프레임÷4 묶음) × (가로÷16) × (세로÷16)</li>
       <li>순전파 1번 계산량 = 2 × 파라미터 × 토큰 + 4 × 토큰² × 폭 × 층</li>
-      <li>실효 계산 = 사양 × 카드별 실효율. NVIDIA 현행은 60%(28장 가정), 사양표만 큰 카드는 공개 확산 모델 실측에 맞춰 낮춤: Quadro RTX 5000 23%, Radeon 18%, Arc 22%. 대역폭은 80%</li>
+      <li>실효 계산 = 사양 × 카드별 실효율. NVIDIA 현행은 60%(32장 가정), 사양표만 큰 카드는 공개 확산 모델 실측에 맞춰 낮춤: Quadro RTX 5000 23%, Radeon 18%, Arc 22%. 대역폭은 80%</li>
       <li>FlashAttention이 꺼지면 N×N 점수표가 창고를 오감 (교재 2.5)</li>
-      <li>VRAM에 안 들어가는 가중치는 순전파마다 PCIe로 옮김 (29장 현실 점검)</li>
+      <li>VRAM에 안 들어가는 가중치는 순전파마다 PCIe로 옮김 (33장 현실 점검)</li>
       <li>온도 = 실내 + 냉각별 상승폭 × 전력 비율, 83°C에서 클럭 15% 낮춤</li>
-      <li>GPU 사양: 본 발표 28장 표 (텐서 FP16 밀집, GeForce는 FP32 누산)</li></ul></div>
+      <li>GPU 사양: 본 발표 32장 표 (텐서 FP16 밀집, GeForce는 FP32 누산)</li></ul></div>
   </div>
 </section>
 
@@ -262,7 +262,7 @@ function ctx(cv){if(!cv.dataset.w){cv.dataset.w=cv.getAttribute('width');cv.data
 function T(x,s,X,Y,c,sz,al,wt){x.font=(wt||400)+' '+(sz||14)+'px '+FONT;x.fillStyle=c||CL.text;x.textAlign=al||'left';x.textBaseline='middle';x.fillText(s,X,Y)}
 function RR(x,X,Y,w,h,r){x.beginPath();x.moveTo(X+r,Y);x.arcTo(X+w,Y,X+w,Y+h,r);x.arcTo(X+w,Y+h,X,Y+h,r);x.arcTo(X,Y+h,X,Y,r);x.arcTo(X,Y,X+w,Y,r);x.closePath()}
 
-/* ===== GPU 10종 (본 발표 28장과 같은 값: 텐서 FP16 밀집, GeForce는 FP32 누산) ===== */
+/* ===== GPU 10종 (본 발표 32장과 같은 값: 텐서 FP16 밀집, GeForce는 FP32 누산) ===== */
 var GPUS={
  h100:{n:'H100 SXM (책)',f:989,b:3.35,m:80,w:700,pc:[5,16],sm:132,u:'SM',fp8:true,fa:true,e:0.6,en:'책 기준 60%',sw:'CUDA'},
  q:{n:'Quadro RTX 5000',f:89.2,b:.448,m:16,w:265,pc:[3,16],sm:48,u:'SM',fp8:false,fa:false,e:0.23,en:'Turing: 실측 SD에서 RTX 3060 Ti 급',sw:'CUDA · Turing'},
@@ -288,7 +288,7 @@ var EV={
  MOT_M:{t:'동작 생성: 메모리 병목',tag:'book',book:'디코드는 토큰마다 가중치를 모두 읽어야 해서 메모리에서 막힌다. 메모리 병목인 작업은 계산을 아무리 최적화해도 빨라지지 않는다. (교재 2.4)',easy:'춤 동작을 한 프레임씩 이어 만드는 작은 모델은 LLM의 디코드와 같은 모양입니다. 작업대는 놀고 통로만 바쁩니다.',fix:'여러 요청을 묶으면(배치) 같은 읽기로 더 많이 만듭니다.'},
  DEN_C:{t:'영상 디노이징: 계산 병목',tag:'book',book:'이미지·영상 생성은 잠재 공간 전체를 단계마다 다시 계산하므로 계산에서 막힌다. (교재 2.4.3) 영상 모델은 파라미터 3–5배, 잠재 정보 10–100배라 GPU 8장 노드에서도 배치 1로 돈다. (교재 2.3.3)',easy:'작업대가 쉬지 않고 일합니다. 단계 수 × 2(가이던스)만큼 모델을 통째로 돌리니 시간 대부분이 여기서 듭니다.',fix:'단계 줄이기(퓨스텝은 8단계 이하로 80–90% 빨라짐, 교재 2.3.2) · FP8 · 계산이 빠른 카드'},
  DEN_M:{t:'디노이징이 메모리 병목으로: 어텐션 점수표',tag:'book',book:'표준 어텐션은 N×N 점수표를 창고에 썼다 다시 읽는다. FlashAttention은 불필요한 읽기·쓰기를 없애 품질 손실 없이 빠르게 한다. (교재 2.5)',easy:'토큰이 수만 개라 N×N 점수표가 엄청나게 커서, 계산보다 창고 왕복이 더 오래 걸립니다.',fix:'FlashAttention 켜기. Turing(Quadro RTX 5000)은 FA2가 없어 메모리 효율 커널로 대체합니다.'},
- DEN_P:{t:'PCIe 병목: 창고에 안 들어간 설계도',tag:'ops',book:'메모리 병목인 작업은 계산을 아무리 최적화해도 빨라지지 않는다. (교재 2.4)',easy:'VRAM에 안 들어간 가중치를 순전파마다 트럭(PCIe)으로 실어 와야 합니다. 트럭 길은 창고 통로보다 수십 배 좁아 작업대가 대부분 기다립니다. 루프라인은 "다 들어갈 때"의 그림입니다(본 발표 29장).',fix:'FP8·4비트로 모델 줄이기, VRAM이 큰 카드, PCIe 4.0 이상 보드'},
+ DEN_P:{t:'PCIe 병목: 창고에 안 들어간 설계도',tag:'ops',book:'메모리 병목인 작업은 계산을 아무리 최적화해도 빨라지지 않는다. (교재 2.4)',easy:'VRAM에 안 들어간 가중치를 순전파마다 트럭(PCIe)으로 실어 와야 합니다. 트럭 길은 창고 통로보다 수십 배 좁아 작업대가 대부분 기다립니다. 루프라인은 "다 들어갈 때"의 그림입니다(본 발표 33장).',fix:'FP8·4비트로 모델 줄이기, VRAM이 큰 카드, PCIe 4.0 이상 보드'},
  OFFLOAD:{t:'오프로딩 시작',tag:'ops',easy:'창고(VRAM)에 다 안 들어가는 가중치를 바깥 창고(시스템 RAM)에 두고 필요할 때 옮기기로 했습니다. 멈추지는 않지만 느려집니다.',fix:'모델을 작게(FP8·4비트) 하거나 큰 VRAM'},
  OOM:{t:'CUDA out of memory (작업 중단)',tag:'ops',easy:'창고에 자리가 없어 작업이 멈췄습니다. 오프로딩을 꺼 두었거나, 작업 메모리(활성값·점수표)만으로도 창고가 넘쳤습니다.',fix:'오프로딩 허용, FlashAttention 켜기(점수표 없앰), 해상도·프레임 줄이기, 큰 VRAM'},
  DEADLOCK:{t:'데드락: 서로가 쥔 창고를 기다림',tag:'ops',easy:'요청 A는 창고 절반을 쥔 채 B가 쥔 나머지를 기다리고, B도 A를 기다립니다. 아무도 내려놓지 않아 공장이 통째로 멈춥니다(순환 대기). GPU 사용률은 0%인데 응답이 없습니다.',fix:'작업 배분을 "순서대로(큐)"로, 기다리다 시간이 지나면 반납, 한 GPU에 모델 하나만 띄우기'},

@@ -8,7 +8,7 @@
 <meta name="description" content="인퍼런스러닝 3주차 발표 슬라이드: 『Inference Engineering』 2장 2.3–2.5 (2.1–2.2 복습 포함).">
 <meta property="og:type" content="website">
 <meta property="og:title" content="병목을 찾아라 · 인퍼런스러닝 3주차 발표">
-<meta property="og:description" content="AI 공장은 어디서 막히는가 — 『Inference Engineering』 2장 2.3–2.5 발표 슬라이드(본편 42장 + 부록 17장)">
+<meta property="og:description" content="AI 공장은 어디서 막히는가 — 『Inference Engineering』 2장 2.3–2.5 발표 슬라이드(본편 46장 + 부록 17장)">
 <meta property="og:url" content="https://adminmrobo.github.io/inference_engineering_study_week_02_textbook_ch02_p3_to_end_slide/">
 <meta property="og:image" content="https://adminmrobo.github.io/inference_engineering_study_week_02_textbook_ch02_p3_to_end_slide/images/og_s03.webp">
 <meta name="twitter:card" content="summary_large_image">
@@ -372,6 +372,65 @@ img.flip{transform:scaleX(-1)}
     <div class="col w2" style="gap:8px">
       <div class="fig"><canvas id="trC" width="660" height="290"></canvas></div>
       <div class="ctrl" style="margin-top:0"><button class="bt primary" id="trPlay">▶ 학습 시키기</button><span class="small">학습이 진행될수록 빨간 칸(틀린 곳)이 사라집니다</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="학습 한 바퀴: 퀴즈 내고 채점하기" data-sec="2.3 · 용어 풀기" data-mod="quizloop" data-terms="loss,mse" data-note="학습 = 정답을 아는 퀴즈를 수백만 번. ① 진짜 그림 꺼내기 ② 잡음을 뽑아 섞기(이 잡음이 정답, 내가 섞었으니 앎) ③ 모델이 섞인 그림만 보고 칸마다 잡음을 숫자로 맞힘 ④ 채점: 칸마다 (예측−정답)²의 평균 = 손실(벌점) ⑤ 벌점이 줄어드는 쪽으로 가중치를 아주 조금 고침 → 다음 문제. 비유: 선생님이 사진에 직접 낙서를 해 놓고 '어디에 얼마나 낙서했게?'를 묻는 퀴즈. 정답을 선생님이 알고 있으니 채점이 된다.">
+  <div class="kicker">2.3 <span class="sec">학습과 손실, 아주 쉽게 ① · 퀴즈</span></div>
+  <h2>학습은 "정답을 아는 퀴즈"를 수백만 번 푸는 일</h2>
+  <div class="row">
+    <div class="col w2" style="gap:8px"><div class="fig"><canvas id="qzC" width="660" height="290"></canvas></div>
+      <div class="ctrl" style="margin-top:0"><button class="bt primary" id="qzAuto">⏸ 멈춤</button><button class="bt" id="qzNext">한 단계씩 ▶</button></div>
+      <p class="small" id="qzMsg" style="margin:0;min-height:48px"></p></div>
+    <div class="col" style="gap:10px">
+      <div class="card"><h4 class="a">비유: 낙서 퀴즈</h4><p class="small">선생님이 사진에 <b>직접 낙서</b>를 해 놓고 "어디에 얼마나 낙서했게?"라고 묻습니다. 낙서한 사람이 선생님이니 <b>정답을 압니다</b>. 그래서 채점이 됩니다.</p></div>
+      <div class="card"><h4 class="g">왜 이렇게 하나</h4><p class="small">사람이 정답을 일일이 달 필요가 없습니다. 그림만 있으면 문제와 정답지가 <b>자동으로</b> 생깁니다.</p></div>
+      <div class="say" data-w="asst"><img data-who="asst" data-mood="smile" alt=""><div style="font-size:15px">맞힐 대상은 그림이 아니라 <b>섞은 잡음</b>이에요!</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="채점을 손으로: 칸 4개 손실 계산" data-sec="2.3 · 용어 풀기" data-mod="msehand" data-terms="mse,loss" data-note="칸 4개로 MSE를 손으로 계산. 정답 잡음 [+0.6, −0.4, +0.2, −0.8]. 차이 = 예측 − 정답, 차이² = 벌점, 평균 = 손실. 왜 제곱? ① 플러스·마이너스로 빗나간 것이 서로 지워지지 않게(그냥 더하면 다 틀려도 0이 될 수 있음: '엉터리' 버튼) ② 크게 빗나갈수록 훨씬 크게 벌줌(0.1 빗나가면 0.01, 0.5면 0.25: 5배 빗나가면 25배). 실제 모델은 칸이 수만~수십만 개라도 계산법은 똑같다.">
+  <div class="kicker">2.3 <span class="sec">학습과 손실, 아주 쉽게 ② · 손으로 계산</span></div>
+  <h2>채점을 손으로: 칸 4개짜리 손실 계산</h2>
+  <div class="row">
+    <div class="col w2" style="gap:8px"><div class="fig"><canvas id="msC" width="660" height="300"></canvas></div>
+      <div class="msg4" style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px 14px;font-size:13px"><label style="display:flex;flex-direction:column;gap:2px;color:var(--muted)">1번 칸 예측<input type="range" id="ms0" min="-1.5" max="1.5" step="0.1" style="width:100%"></label><label style="display:flex;flex-direction:column;gap:2px;color:var(--muted)">2번 칸 예측<input type="range" id="ms1" min="-1.5" max="1.5" step="0.1" style="width:100%"></label><label style="display:flex;flex-direction:column;gap:2px;color:var(--muted)">3번 칸 예측<input type="range" id="ms2" min="-1.5" max="1.5" step="0.1" style="width:100%"></label><label style="display:flex;flex-direction:column;gap:2px;color:var(--muted)">4번 칸 예측<input type="range" id="ms3" min="-1.5" max="1.5" step="0.1" style="width:100%"></label></div>
+      <div class="ctrl" style="margin-top:0"><button class="bt" id="msBad">엉터리 (합은 0)</button><button class="bt" id="msNear">거의 맞힘</button><button class="bt primary" id="msGood">다 맞힘</button></div></div>
+    <div class="col" style="gap:10px">
+      <div class="card"><h4 class="a">계산 세 줄</h4><p class="small">① 칸마다 <b>차이 = 예측 − 정답</b><br>② 차이를 <b>제곱</b> (벌점)<br>③ 벌점을 <b>평균</b> → 손실(MSE)</p></div>
+      <div class="card"><h4 class="i">왜 제곱하나</h4><p class="small">• 그냥 더하면 +와 −가 <b>서로 지워져</b> 다 틀려도 0이 될 수 있어요.<br>• 크게 빗나갈수록 <b>훨씬 크게</b> 벌줍니다. 0.1 빗나가면 0.01, 0.5면 0.25.</p></div>
+      <p class="small" id="msMsg" style="margin:0"></p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="고르기(분류) vs 맞히기(회귀)" data-sec="2.3 · 용어 풀기" data-mod="pickguess" data-terms="ce,reg,mse" data-note="분류 = 객관식. LLM은 다음 단어를 어휘 수만 개 중에서 고른다. 벌점 = −log(정답에 준 확률): 90%면 0.11, 50%면 0.69, 10%면 2.30. 정답을 확신할수록 0에 가까움. 회귀 = 숫자 맞히기(몸무게 맞히기). 디노이저는 칸마다 잡음 값(예: +0.6)을 맞힌다. 잡음 값은 −2.137…처럼 끝없이 많은 숫자라 보기를 만들 수 없음 → 얼마나 빗나갔나(차이²)로 채점. 옛 PixelCNN은 픽셀 색을 256가지 중에서 고르는 객관식으로 풀었다.">
+  <div class="kicker">2.3 <span class="sec">학습과 손실, 아주 쉽게 ③ · 분류가 아니다</span></div>
+  <h2>LLM은 "고르기", 디노이저는 "맞히기"</h2>
+  <div class="row">
+    <div class="col w2" style="gap:8px"><div class="fig"><canvas id="pgC" width="660" height="310"></canvas></div>
+      <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 18px;font-size:13.5px"><label style="display:flex;flex-direction:column;gap:2px;color:var(--muted)"><span>정답 단어에 준 확률 <b class="val" id="pgPV"></b></span><input type="range" id="pgP" min="1" max="99" value="50" style="width:100%"></label><label style="display:flex;flex-direction:column;gap:2px;color:var(--muted)"><span>이 칸의 잡음 예측 <b class="val" id="pgGV"></b></span><input type="range" id="pgG" min="-1.5" max="1.5" step="0.1" value="0" style="width:100%"></label></div></div>
+    <div class="col" style="gap:10px">
+      <div class="card"><h4 class="i">고르기 = 객관식</h4><p class="small">LLM은 다음 단어를 단어장(수만 개)에서 <b>고릅니다</b>. 정답에 90%를 걸면 벌점 0.11, 10%면 2.30. 자신 있게 맞힐수록 0에 가까워요.</p></div>
+      <div class="card"><h4 class="a">맞히기 = 몸무게 맞히기</h4><p class="small">잡음 값은 +0.6, −2.137…처럼 <b>끝없이 많은 숫자</b>라 보기를 만들 수 없어요. 그래서 <b>얼마나 빗나갔나(차이²)</b>로 채점합니다.</p></div>
+      <div class="say" data-w="fly"><img class="flip" data-who="fly" data-mood="point" alt=""><div style="font-size:15px">옛날 PixelCNN은 색 256가지 중에서 고르는 객관식으로 풀었대요.</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="학습 = 다이얼 돌려 벌점 줄이기" data-sec="2.3 · 용어 풀기" data-mod="descent" data-terms="gd,weight,loss" data-note="경사 하강. 다이얼(가중치) 하나짜리 예: 다이얼 값에 따라 벌점이 골짜기 모양. 발밑 기울기를 보고 내려가는 쪽으로 한 걸음. 보폭(학습률)이 작으면 느리고, 너무 크면 골짜기를 건너뛰어 발산. 실제 모델은 다이얼이 13억~140억 개(Wan 2.1 1.3B·14B)이고 한 번에 모두 조금씩 돌린다. 비유: 안개 낀 산에서 발밑 기울기만 보고 내려가기.">
+  <div class="kicker">2.3 <span class="sec">학습과 손실, 아주 쉽게 ④ · 고치기</span></div>
+  <h2>학습 = 벌점이 줄어드는 쪽으로 다이얼을 조금씩</h2>
+  <div class="row">
+    <div class="col w2" style="gap:8px"><div class="fig"><canvas id="dsC" width="660" height="300"></canvas></div>
+      <div class="ctrl" style="margin-top:0"><button class="bt primary" id="dsAuto">▶ 자동으로 걷기</button><button class="bt" id="dsStep">한 걸음</button><button class="bt" id="dsReset">처음부터</button><label for="dsLr">보폭</label><select class="gsel" id="dsLr"><option value="0.05">작게</option><option value="0.3" selected>알맞게</option><option value="1.05">너무 크게</option></select></div>
+      <p class="small" id="dsMsg" style="margin:0"></p></div>
+    <div class="col" style="gap:10px">
+      <div class="card"><h4 class="g">비유: 안개 낀 산 내려가기</h4><p class="small">앞이 안 보여도 <b>발밑 기울기</b>는 압니다. 내려가는 쪽으로 한 걸음씩 가면 골짜기(벌점이 가장 낮은 곳)에 닿아요. 이 방법이 <b>경사 하강</b>입니다.</p></div>
+      <div class="card"><h4 class="a">실제 모델은</h4><p class="small">다이얼이 하나가 아니라 <b>13억~140억 개</b>(Wan 2.1 1.3B·14B). 문제 한 묶음을 풀 때마다 모두를 한꺼번에 아주 조금씩 돌립니다.</p></div>
+      <div class="say" data-w="robo"><img data-who="robo" data-mood="calc" alt=""><div style="font-size:15px">벌점을 줄이는 게 목표. 계산은 제가 할게요.</div></div>
     </div>
   </div>
 </section>
@@ -1451,6 +1510,89 @@ MOD.reality=function(){var MD={sdxl:[2.6,2,'SDXL 디노이저 2.6B · FP16'],w13
     $('#reMsg').innerHTML=(sp>0?'넘친 '+fmt(sp,1)+'GB를 단계마다 PCIe로 옮기니 실제 통로는 <b class="r">'+fmt(eff,1)+' GB/s</b>. VRAM 대역폭('+fmt(G.b*1000,0)+' GB/s)의 '+(eff/(G.b*1000)*100).toFixed(0)+'% — 루프라인의 비탈이 그만큼 내려앉음':'모두 VRAM 안. 앞 장 루프라인 그대로 적용')+' · <span class="tiny">'+G.k+'</span>'}
   [gs,ms,ps].forEach(function(s){s.onchange=u});u()};
 
+/* ===== 학습과 손실, 아주 쉽게 (4장) ===== */
+function gTile(x,X,Y,sz,n,f){var c=sz/n;for(var i=0;i<n;i++)for(var j=0;j<n;j++){x.fillStyle=f(i*n+j);x.fillRect(X+j*c,Y+i*c,Math.ceil(c),Math.ceil(c))}x.strokeStyle=C.rule;x.lineWidth=1;x.strokeRect(X,Y,sz,sz)}
+function gGray(v){var t=Math.round(clamp(128+v*110,10,245));return 'rgb('+t+','+t+','+Math.min(255,t+8)+')'}
+/* 학습 한 바퀴: 출제 → 섞기 → 풀이 → 채점 → 고치기 */
+MOD.quizloop=function(){var n=8,r=rng(7),E=[],R2=[],st=0,round=1,t=0,auto=!REDUCE;for(var i=0;i<n*n;i++){E.push(gauss(r)*.6);R2.push(gauss(r)*.6)}
+  var CAP=['① 출제: 진짜 그림을 한 장 꺼냅니다. 그림은 수억 장 있으니 문제는 얼마든지 만들 수 있어요.',
+   '② 잡음 섞기: 컴퓨터가 잡음을 뽑아 그림에 섞습니다. 내가 섞었으니 <b>정답(섞은 잡음)</b>을 정확히 압니다.',
+   '③ 풀이: 모델이 섞인 그림만 보고 "칸마다 잡음이 얼마나 섞였나"를 숫자로 맞힙니다.',
+   '④ 채점: 칸마다 (예측 − 정답)²을 구해 평균 냅니다. 이게 <b>손실</b>, 곧 벌점이에요. 빨간 칸이 많이 틀린 곳.',
+   '⑤ 고치기: 벌점이 줄어드는 쪽으로 모델 속 다이얼(가중치)을 아주 조금 돌립니다. 그리고 다음 문제로!'];
+  function Q(){return .92*(1-Math.exp(-(round-1)/3))}
+  function loss(){var q=Q(),s=0;for(var i=0;i<n*n;i++){var d=(1-q)*(R2[i]-E[i]);s+=d*d}return s/(n*n)}
+  function draw(){var x=ctx2($('#qzC')),bw=118,gap=12,y0=34,sz=96,q=Q();
+    T(x,(round)+'번째 문제',10,14,C.muted,12.5,'left',700);
+    var lab=['출제','잡음 섞기','풀이','채점','고치기'],col=[C.muted,C.amber,C.info,C.eye,C.gfp];
+    for(var k=0;k<5;k++){var X=10+k*(bw+gap),on=k===st;RR(x,X,y0,bw,186,10);x.fillStyle=on?'rgba(130,184,255,.10)':C.panel;x.fill();x.strokeStyle=on?col[k]:C.rule;x.lineWidth=on?2.5:1;x.stroke();
+      T(x,(k+1)+' '+lab[k],X+bw/2,y0+16,on?col[k]:C.text,13,'center',700);var gx=X+(bw-sz)/2,gy=y0+32;
+      if(k===0)PIC.draw(x,gx,gy,sz,{t:1,resid:0});
+      if(k===1){gTile(x,gx,gy,sz,n,function(i){return gGray(E[i])});T(x,'정답으로 보관',X+bw/2,gy+sz+16,C.amber,11.5,'center',700)}
+      if(k===2){gTile(x,gx,gy,sz,n,function(i){return gGray(q*E[i]+(1-q)*R2[i])});T(x,'모델이 맞힌 잡음',X+bw/2,gy+sz+16,C.info,11.5,'center',700)}
+      if(k===3){gTile(x,gx,gy,sz,n,function(i){var d=(1-q)*(R2[i]-E[i]);return 'rgba(240,96,77,'+clamp(d*d*1.8,0,1)+')'});T(x,'벌점 '+loss().toFixed(3),X+bw/2,gy+sz+16,C.eye,12.5,'center',700)}
+      if(k===4){var cx=X+bw/2,cy=gy+sz/2,a=-2.2+round*.25;x.strokeStyle=C.gfp;x.lineWidth=3;x.beginPath();x.arc(cx,cy,34,0,7);x.stroke();x.beginPath();x.moveTo(cx,cy);x.lineTo(cx+Math.cos(a)*28,cy+Math.sin(a)*28);x.stroke();T(x,'다이얼(가중치)',X+bw/2,gy+sz+16,C.gfp,11.5,'center',700)}
+      if(k<4)T(x,'→',X+bw+gap/2,y0+93,C.muted,15,'center',700)}
+    T(x,'↺ 다음 문제로 (실제로는 이 바퀴를 수백만 번)',x.W/2,y0+206,C.muted,12,'center');
+    var GX=10,GY=y0+222,GW=x.W-20;T(x,'벌점의 변화: '+[1,2,3,4,5,6,7,8].map(function(k2){var q2=.92*(1-Math.exp(-(k2-1)/3)),s=0;for(var i=0;i<n*n;i++){var d=(1-q2)*(R2[i]-E[i]);s+=d*d}return s/(n*n)}).slice(0,Math.min(8,round)).map(function(v){return v.toFixed(2)}).join(' → '),GX,GY+8,C.text,12.5,'left',700);
+    stamp(x,'설명용');$('#qzMsg').innerHTML=CAP[st]}
+  function go(d){st+=d;if(st>4){st=0;round=Math.min(round+1,8)}if(st<0)st=0;draw()}
+  $('#qzNext').onclick=function(){auto=false;go(1)};$('#qzAuto').onclick=function(){auto=!auto;this.textContent=auto?'⏸ 멈춤':'▶ 자동'};
+  TICK=function(dt){if(!auto)return;t+=dt;if(t>2.4){t=0;go(1)}};draw()};
+/* 채점을 손으로: 칸 4개 */
+MOD.msehand=function(){var G=[.6,-.4,.2,-.8],P=[.2,.1,.2,-.3];
+  function setP(a){P=a.slice();for(var i=0;i<4;i++)$('#ms'+i).value=P[i];draw()}
+  function draw(){var x=ctx2($('#msC')),cw=118,X0=150,d=P.map(function(p,i){return p-G[i]}),sq=d.map(function(v){return v*v}),L=sq.reduce(function(a,b){return a+b},0)/4,S=d.reduce(function(a,b){return a+b},0);
+    var rows=[['정답 (섞은 잡음)',C.amber],['모델 예측',C.info],['차이 = 예측 − 정답',C.text],['차이² (벌점)',C.eye]];
+    rows.forEach(function(rw,j){T(x,rw[0],10,40+j*44,rw[1],13,'left',700)});
+    for(var i=0;i<4;i++){var X=X0+i*cw;T(x,(i+1)+'번 칸',X+cw/2,14,C.muted,12,'center',700);
+      [G[i],P[i],d[i]].forEach(function(v,j){RR(x,X+8,26+j*44,cw-16,30,6);x.fillStyle=C.panel;x.fill();T(x,(v>0?'+':'')+v.toFixed(1),X+cw/2,41+j*44,[C.amber,C.info,C.text][j],16,'center',700)});
+      var bh=Math.min(40,sq[i]*40);x.fillStyle='rgba(240,96,77,.85)';x.fillRect(X+cw/2-18,26+3*44+34-bh,36,bh);T(x,sq[i].toFixed(2),X+cw/2,26+3*44+44,C.eye,14,'center',700)}
+    var y=26+4*44+30;RR(x,10,y,x.W-20,40,8);x.fillStyle='rgba(240,96,77,.12)';x.fill();
+    T(x,'손실 = ('+sq.map(function(v){return v.toFixed(2)}).join(' + ')+') ÷ 4 = '+L.toFixed(3),24,y+20,C.eye,15,'left',700);
+    T(x,'제곱 없이 그냥 더하면: '+(S>0?'+':'')+S.toFixed(1)+(Math.abs(S)<.05&&L>.05?'  ← 다 틀렸는데 0! 플러스·마이너스가 서로 지움':''),10,y+60,Math.abs(S)<.05&&L>.05?C.amber:C.muted,13,'left',700);
+    $('#msMsg').innerHTML=L<.001?'다 맞혔어요. 벌점 <b>0</b>.':L<.02?'거의 맞혔어요. 벌점이 아주 작습니다.':'틀린 칸이 있으면 벌점이 커집니다. 크게 빗나간 칸일수록 제곱 때문에 훨씬 크게 벌받아요.'}
+  for(var i=0;i<4;i++)(function(i){$('#ms'+i).oninput=function(){P[i]=+this.value;draw()}})(i);
+  $('#msBad').onclick=function(){setP([1.3,-1.1,.9,-1.5])};$('#msNear').onclick=function(){setP([.5,-.4,.3,-.7])};$('#msGood').onclick=function(){setP(G)};setP(P)};
+/* 고르기(분류) vs 맞히기(회귀) */
+MOD.pickguess=function(){var p=.5,g=0,GT=.6;
+  function draw(){var x=ctx2($('#pgC')),W2=(x.W-30)/2,H=x.H;
+    function panel(X,t1,t2,col){RR(x,X,6,W2,H-12,10);x.fillStyle=C.panel;x.fill();x.strokeStyle=C.rule;x.stroke();T(x,t1,X+14,26,col,14.5,'left',700);T(x,t2,X+14,46,C.muted,12,'left')}
+    panel(10,'고르기 = 분류 (LLM)','객관식: 보기 중 하나를 고른다',C.info);
+    T(x,'"오늘 하늘이 ___"',24,72,C.text,14,'left',700);var cand=[['맑다',p,1],['흐리다',(1-p)*.5,0],['파랗다',(1-p)*.35,0],['고양이',(1-p)*.15,0]];
+    cand.forEach(function(c,i){var Y=92+i*26,bw=(W2-120)*c[1];T(x,c[0]+(c[2]?' (정답)':''),24,Y+9,c[2]?C.gfp:C.muted,12.5,'left',c[2]?700:400);x.fillStyle=c[2]?C.gfp:C.panel2;x.fillRect(100,Y,Math.max(2,bw),18);T(x,Math.round(c[1]*100)+'%',106+bw,Y+9,C.text,12,'left')});
+    var LL=-Math.log(p);T(x,'벌점 = −log(정답 확률) = '+LL.toFixed(2),24,206,C.eye,14.5,'left',700);
+    var CX=24,CY=222,CW=W2-40,CH=H-CY-20;x.strokeStyle=C.rule;x.strokeRect(CX,CY,CW,CH);x.strokeStyle=C.eye;x.lineWidth=2;x.beginPath();for(var i=1;i<=100;i++){var q=i/100,X=CX+q*CW,Y=CY+CH-Math.min(1,-Math.log(q)/4.6)*CH;i>1?x.lineTo(X,Y):x.moveTo(X,Y)}x.stroke();
+    x.fillStyle=C.eye;x.beginPath();x.arc(CX+p*CW,CY+CH-Math.min(1,LL/4.6)*CH,5,0,7);x.fill();T(x,'정답 확률 →',CX+CW-4,CY+CH-8,C.muted,11,'right');
+    var X2=20+W2;panel(X2,'맞히기 = 회귀 (디노이저)','몸무게 맞히기: 숫자가 얼마나 빗나갔나',C.amber);
+    T(x,'"이 칸에 섞인 잡음은 얼마?"',X2+14,72,C.text,14,'left',700);
+    var NX=X2+24,NW=W2-48,NY=118,sx=function(v){return NX+(v+1.5)/3*NW};x.strokeStyle=C.muted;x.lineWidth=1.5;x.beginPath();x.moveTo(NX,NY);x.lineTo(NX+NW,NY);x.stroke();
+    [-1.5,-1,-.5,0,.5,1,1.5].forEach(function(v){x.beginPath();x.moveTo(sx(v),NY-4);x.lineTo(sx(v),NY+4);x.stroke();T(x,(v>0?'+':'')+v,sx(v),NY+16,C.muted,11,'center')});
+    x.fillStyle=C.amber;x.beginPath();x.arc(sx(GT),NY,7,0,7);x.fill();T(x,'정답 +0.6',sx(GT),NY-18,C.amber,12,'center',700);
+    x.fillStyle=C.info;x.beginPath();x.arc(sx(g),NY,6,0,7);x.fill();T(x,'예측 '+(g>0?'+':'')+g.toFixed(1),sx(g),NY+34,C.info,12,'center',700);
+    var Lr=(g-GT)*(g-GT);T(x,'벌점 = (예측 − 정답)² = '+Lr.toFixed(2),X2+14,206,C.eye,14.5,'left',700);
+    var CX2=X2+24;x.strokeStyle=C.rule;x.strokeRect(CX2,CY,CW,CH);x.strokeStyle=C.eye;x.lineWidth=2;x.beginPath();for(var j=0;j<=100;j++){var v=-1.5+3*j/100,X3=CX2+j/100*CW,Y3=CY+CH-Math.min(1,(v-GT)*(v-GT)/4.5)*CH;j?x.lineTo(X3,Y3):x.moveTo(X3,Y3)}x.stroke();
+    x.fillStyle=C.eye;x.beginPath();x.arc(CX2+(g+1.5)/3*CW,CY+CH-Math.min(1,Lr/4.5)*CH,5,0,7);x.fill();T(x,'예측 →',CX2+CW-4,CY+CH-8,C.muted,11,'right');
+    $('#pgPV').textContent=Math.round(p*100)+'%';$('#pgGV').textContent=(g>0?'+':'')+g.toFixed(1)}
+  $('#pgP').oninput=function(){p=+this.value/100;draw()};$('#pgG').oninput=function(){g=+this.value;draw()};draw()};
+/* 학습 = 벌점이 줄어드는 쪽으로 다이얼 돌리기 (경사 하강) */
+MOD.descent=function(){var WS=.6,w=-1.2,lr=.3,hist=[],auto=false,t=0;
+  function L(v){return (v-WS)*(v-WS)+.05}
+  function reset(){w=-1.2;hist=[L(w)];draw()}
+  function step(){var gr=2*(w-WS);w=clamp(w-lr*gr,-3,3);hist.push(L(w));if(hist.length>40)hist.shift();draw()}
+  function draw(){var x=ctx2($('#dsC')),PW=x.W*.58,H=x.H,sx=function(v){return 30+(v+1.6)/3.4*(PW-50)},sy=function(l){return H-36-Math.min(1,l/5.2)*(H-80)};
+    T(x,'벌점 (손실)',30,16,C.muted,12,'left',700);x.strokeStyle=C.rule;x.strokeRect(30,26,PW-50,H-62);
+    x.strokeStyle=C.eye;x.lineWidth=2.4;x.beginPath();for(var i=0;i<=120;i++){var v=-1.6+3.4*i/120;i?x.lineTo(sx(v),sy(L(v))):x.moveTo(sx(v),sy(L(v)))}x.stroke();
+    x.fillStyle=C.gfp;x.beginPath();x.arc(sx(WS),sy(L(WS)),4,0,7);x.fill();T(x,'가장 낮은 곳',sx(WS),sy(L(WS))+16,C.gfp,11.5,'center',700);
+    var gr=2*(w-WS),X=sx(w),Y=sy(L(w)),dx=30;x.strokeStyle=C.amber;x.lineWidth=2;x.beginPath();x.moveTo(X-dx,Y+gr*dx*(H-80)/5.2/((PW-50)/3.4));x.lineTo(X+dx,Y-gr*dx*(H-80)/5.2/((PW-50)/3.4));x.stroke();
+    x.fillStyle=C.info;x.beginPath();x.arc(X,Y,8,0,7);x.fill();T(x,'다이얼 값 →',PW-24,H-20,C.muted,11.5,'right');T(x,'발밑 기울기',X+12,Y-14,C.amber,11.5,'left',700);
+    var GX=PW+10,GW=x.W-GX-10,GH=H-62;T(x,'걸음마다 벌점',GX,16,C.muted,12,'left',700);x.strokeStyle=C.rule;x.strokeRect(GX,26,GW,GH);var mx=Math.max(3,Math.max.apply(null,hist));
+    x.strokeStyle=C.eye;x.lineWidth=2;x.beginPath();hist.forEach(function(v,i){var X2=GX+i/39*GW,Y2=26+GH-Math.min(1,v/mx)*GH;i?x.lineTo(X2,Y2):x.moveTo(X2,Y2)});x.stroke();T(x,'걸음 →',GX+GW-4,H-20,C.muted,11.5,'right');
+    T(x,'지금 벌점 '+L(w).toFixed(3)+' · '+(hist.length-1)+'걸음',GX,H-6,C.text,12,'left',700);stamp(x,'다이얼 1개짜리 예');
+    var m=lr<.1?'보폭이 작으면 안전하지만 아주 느려요.':lr>1?'보폭이 너무 크면 골짜기를 건너뛰어 오히려 벌점이 커져요(발산).':'알맞은 보폭이면 몇 걸음 만에 골짜기 바닥에 닿아요.';$('#dsMsg').innerHTML=m}
+  $('#dsStep').onclick=function(){auto=false;step()};$('#dsAuto').onclick=function(){auto=!auto;this.textContent=auto?'⏸ 멈춤':'▶ 자동으로 걷기'};$('#dsReset').onclick=reset;
+  $('#dsLr').onchange=function(){lr=+this.value;reset()};TICK=function(dt){if(!auto)return;t+=dt;if(t>.6){t=0;step()}};lr=+$('#dsLr').value;reset()};
+
 /* ===== GPU 사양 (교재 H100 + 우리 서버 카드) ===== */
 var GP={h100:{n:'H100 SXM (책)',f:989,b:3.35,w:700,m:80,pc:[5,16],k:'CUDA'},
  q:{n:'Quadro RTX 5000',f:89.2,b:0.448,w:265,m:16,pc:[3,16],k:'CUDA · Turing(BF16·FP8·FA2 없음)'},
@@ -1546,6 +1688,8 @@ var TERM={
  loss:['Loss function','손실함수','학습 중에 모델 예측이 정답과 얼마나 다른지 재는 값. 줄이는 쪽으로 모델을 고침'],
  mse:['MSE','평균제곱오차','칸마다 (예측−정답)²을 구해 평균. 연속값을 맞히는 예측(회귀)의 손실'],
  ce:['Cross-entropy','교차 엔트로피','정답 항목의 확률에 −log를 취한 값. 가짓수가 정해진 분류의 손실'],
+ reg:['Regression','회귀','보기 중에서 고르지 않고 숫자 자체를 맞히는 예측. 디노이저가 칸마다 잡음 값을 맞히는 일'],
+ gd:['Gradient descent','경사 하강','손실이 줄어드는 쪽(발밑 기울기의 반대쪽)으로 가중치를 조금씩 고치는 학습 방법'],
  sampler:['Sampler','샘플러','모델이 예측한 잡음 지도를 보고, 밑그림에서 잡음을 얼마만큼 덜어 낼지 정해 빼는 단계. 모델 밖의 간단한 계산'],
  layer:['Layer','층','모델을 이루는 공정 하나. 층마다 대부분 행렬곱을 함'],
  sdxl:['SDXL','스테이블 디퓨전 XL','Stability AI가 2023년 공개한 이미지 생성 모델. 1024² 기본, 디노이저 두 대'],
