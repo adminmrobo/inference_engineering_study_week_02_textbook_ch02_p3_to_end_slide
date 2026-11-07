@@ -8,7 +8,7 @@
 <meta name="description" content="인퍼런스러닝 3주차 발표 슬라이드: 『Inference Engineering』 2장 2.3–2.5 (2.1–2.2 복습 포함).">
 <meta property="og:type" content="website">
 <meta property="og:title" content="병목을 찾아라 · 인퍼런스러닝 3주차 발표">
-<meta property="og:description" content="AI 공장은 어디서 막히는가 — 『Inference Engineering』 2장 2.3–2.5 발표 슬라이드(본편 39장 + 부록 17장)">
+<meta property="og:description" content="AI 공장은 어디서 막히는가 — 『Inference Engineering』 2장 2.3–2.5 발표 슬라이드(본편 41장 + 부록 17장)">
 <meta property="og:url" content="https://adminmrobo.github.io/inference_engineering_study_week_02_textbook_ch02_p3_to_end_slide/">
 <meta property="og:image" content="https://adminmrobo.github.io/inference_engineering_study_week_02_textbook_ch02_p3_to_end_slide/images/og_s03.webp">
 <meta name="twitter:card" content="summary_large_image">
@@ -355,6 +355,26 @@ img.flip{transform:scaleX(-1)}
   </div>
 </section>
 
+<section class="slide" data-title="디노이저는 어떻게 배우나" data-sec="2.3 · 용어 풀기" data-mod="train" data-terms="loss,mse,ce" data-note="학습 방법: 진짜 그림을 잠재 공간으로 접고, 내가 뽑은 잡음을 섞어 학습 입력을 만든다. 모델은 섞인 잡음을 칸마다 숫자로 예측. 정답 = 내가 섞은 잡음(그래서 원래 색이 무엇이든 상관없음). 손실 = 칸마다 (예측−정답)²의 평균(MSE). 분류(−log 확률, 교차 엔트로피)가 아님: 값이 연속이라 가짓수가 없음. 비교: LLM은 다음 토큰을 어휘(수만~십수만 개) 중에서 고르는 분류라 −log 확률. 옛 PixelCNN은 픽셀 색 0–255를 고르는 256가지 분류. ▶로 학습을 돌리면 예측이 정답에 가까워지고 손실 곡선이 내려감.">
+  <div class="kicker">2.3 <span class="sec">용어 풀기 · 학습과 손실</span></div>
+  <h2>디노이저는 어떻게 배우나: 정답은 "섞은 잡음"</h2>
+  <div class="row">
+    <div class="col" style="gap:10px">
+      <table class="tb" style="font-size:14.5px"><thead><tr><th>모델</th><th>맞히는 것</th><th>가짓수</th><th>손실</th></tr></thead><tbody>
+        <tr><td>LLM (글 공장)</td><td>다음 토큰</td><td>어휘 수만~십수만</td><td>−log 확률</td></tr>
+        <tr><td>옛 픽셀 생성 (PixelCNN)</td><td>픽셀 색 값</td><td>칸마다 256</td><td>−log 확률</td></tr>
+        <tr><td><b>디노이저</b> (그림 공장)</td><td>칸마다 잡음 숫자</td><td><b>없음</b> (연속값)</td><td><b class="g">(예측−정답)²의 평균</b></td></tr>
+      </tbody></table>
+      <div class="card" style="padding:10px 16px"><p class="small">정답은 그림이 아니라 <b>내가 섞은 잡음</b>입니다. 그래서 원래 색이 무엇이든 상관없고, 그 위에 얹힌 잡음만 맞히면 됩니다. 값이 연속이라 분류의 "가짓수"가 없습니다.</p></div>
+      <div class="say" data-w="robo"><img data-who="robo" data-mood="calc" alt=""><div style="font-size:15px">정답을 우리가 만들어 넣으니, 그림만 있으면 정답지는 공짜로 생기는 셈이군.</div></div>
+    </div>
+    <div class="col w2" style="gap:8px">
+      <div class="fig"><canvas id="trC" width="660" height="290"></canvas></div>
+      <div class="ctrl" style="margin-top:0"><button class="bt primary" id="trPlay">▶ 학습 시키기</button><span class="small">학습이 진행될수록 빨간 칸(틀린 곳)이 사라집니다</span></div>
+    </div>
+  </div>
+</section>
+
 <section class="slide" data-title="한 단계 = 순전파 두 번" data-sec="2.3" data-mod="cfg" data-terms="fwd,cfg,neg" data-note="단계마다 같은 반제품을 두 번 태움: ① 지시서(프롬프트) 없이 → '그냥 그럴듯한 그림' 쪽 ② 지시서 들고 → '웃는 로봇' 쪽. 차이 = 지시서의 효과. 이 차이를 가이던스 배(보통 4 안팎)만큼 키워 적용 → 프롬프트를 확실히 따름. 너무 크면 색이 과하고, 작으면 밋밋. 50단계 = 순전파 100번. 요청별 인자 다섯 개.">
   <div class="kicker">2.3 <span class="sec">조건부 · 무조건부, 그리고 추론 인자</span></div>
   <h2>한 단계에 두 바퀴: 지시서 없이 한 번, 지시서 들고 한 번</h2>
@@ -456,6 +476,17 @@ img.flip{transform:scaleX(-1)}
       <div class="fig"><canvas id="vdC" width="620" height="330"></canvas><div class="figcap">빨강 = 한 프레임씩 이어 만들기, 초록 = 전체를 함께. 아래 = 만들어진 공이 원래 길에서 벗어난 거리(학습용 손실이 아니라 결과를 잰 값) <span class="chip toy">설명용</span></div></div>
     </div>
   </div>
+</section>
+
+<section class="slide" data-title="결과를 잰 거리 vs 학습용 손실" data-sec="2.3.3 · 용어 풀기" data-mod="lossvs" data-terms="loss,mse,errac" data-note="앞 장 아래 그래프는 손실함수가 아님. ① 학습용 손실: 학습하는 동안, 가로축은 학습 반복, 칸마다 (예측 잡음 − 섞은 잡음)²의 평균, 모델을 고치는 데 씀. ② 결과를 잰 거리: 영상을 만든 뒤, 가로축은 프레임, 공이 원래 길에서 벗어난 픽셀, 품질을 평가하는 데 씀. 연결: 학습이 끝나도 한 프레임마다 작은 오차가 남는데, 한 프레임씩 이어 만들면 그 작은 오차가 쌓여 커짐(오차 누적). 그래서 손실이 작아도 결과가 나쁠 수 있고, 현대 영상 모델은 전체를 함께 다듬는다. 슬라이더 = 한 프레임에 남는 오차. 수치는 설명용.">
+  <div class="kicker">2.3.3 <span class="sec">용어 풀기 · 그래프 읽기</span></div>
+  <h2>앞 장 그래프는 손실함수가 아니다: 결과를 잰 자 vs 학습용 손실</h2>
+  <div class="fig" style="flex:none"><canvas id="lvC" width="1150" height="250"></canvas></div>
+  <div class="ctrl" style="margin-top:6px"><label>한 프레임에 남는 오차</label><input type="range" id="lvE" min="1" max="8" value="3"><span class="val" id="lvEV"></span><span class="small" id="lvMsg"></span></div>
+  <table class="tb" style="font-size:14px;margin-top:6px"><thead><tr><th></th><th>언제 재나</th><th>가로축</th><th>무엇과 비교</th><th>계산</th><th>쓰임</th></tr></thead><tbody>
+    <tr><td><b class="r">① 학습용 손실</b></td><td>학습하는 동안</td><td>학습 반복</td><td>내가 섞은 잡음</td><td>(예측−정답)²의 평균</td><td>모델을 고치기</td></tr>
+    <tr><td><b class="g">② 결과를 잰 거리</b></td><td>영상을 만든 뒤</td><td>프레임</td><td>원래 가야 할 길</td><td>위치 차이(px)</td><td>결과 품질 평가</td></tr>
+  </tbody></table>
 </section>
 
 <section class="slide" data-title="표 · LLM 2023 vs 영상 2025" data-sec="2.3.3 · 표" data-terms="ttft,tps,selff" data-note="영상이 비싼 숫자: 영상 1초에 추론 몇 초, 배치 1에 GPU 8장 노드, 단계 수는 약 50. 책의 표: 영상의 한계는 2년 전 LLM과 겹침. Self Forcing 같은 자기회귀 요소가 어텐션 병목을 일부 덜지만 어텐션은 여전히 가장 비싼 부분. 초파리: '고사양이 아닌 작업'이라는 생각은 여기서 깨짐.">
@@ -1098,7 +1129,7 @@ MOD.cfg=function(){function u(){var S=+$('#cfS').value,g=+$('#cfG').value;$('#cf
   $('#cfS').oninput=u;$('#cfG').oninput=u;u()};
 MOD.patch=function(){var p=2,l=128,pb=$$('[data-pt]'),lb=$$('[data-lt]');function u(){var n=l/p,toks=n*n,x=ctx2($('#ptC')),side=290,c=side/Math.min(n,64);
   for(var i=0;i<Math.min(n,64);i++)for(var j=0;j<Math.min(n,64);j++){x.fillStyle=(i+j)%2?'rgba(214,114,214,.35)':'rgba(130,184,255,.25)';x.fillRect(20+i*c,20+j*c,c-.5,c-.5)}
-  T(x,n>64?'(64×64칸까지만 표시)':'',20,side+34,C.muted,12);T(x,'잠재 '+l+'×'+l+' → 패치 '+p+'×'+p,330,40,C.text,14,'left',700);T(x,'조각 '+fmt(toks)+'개',330,70,C.gfp,16,'left',700);T(x,'어텐션 쌍 ≈ '+fmt(toks*toks/1e6,1)+'M',330,100,C.amber,16,'left',700);
+  T(x,n>64?'(64×64칸까지만 표시)':'',20,side+34,C.muted,12);T(x,'잠재 '+l+'×'+l+' → 패치 '+p+'×'+p,330,58,C.text,14,'left',700);T(x,'조각 '+fmt(toks)+'개',330,88,C.gfp,16,'left',700);T(x,'어텐션 쌍 ≈ '+fmt(toks*toks/1e6,1)+'M',330,118,C.amber,16,'left',700);
   stamp(x,'설명용');kp($('#ptK'),[[fmt(toks),'패치(조각) 수','g'],[fmt(toks*toks/1e6,1)+'M','조각 쌍(어텐션)','a']])}
   pb.forEach(function(b){b.onclick=function(){p=+b.dataset.pt;press(pb,b);u()}});lb.forEach(function(b){b.onclick=function(){l=+b.dataset.lt;press(lb,b);u()}});u()};
 MOD.sdxl=function(){var k=-1,t=0,play=false;var NODES=[['잡음','128×128',C.muted],['베이스','디노이저',C.stain],['미정제 잠재','128×128',C.muted],['리파이너','디노이저',C.info],['정제 잠재','128×128',C.muted],['VAE 디코더','',C.amber],['최종 이미지','1024×1024',C.gfp]];
@@ -1190,7 +1221,7 @@ MOD.paged=function(){var COLS=16,ROWS=6,CAP=96,MAX=16,r=rng(5),LEN=[],ct,pg,cN,p
   TICK=function(dt){if(!play)return;acc+=dt;if(acc>.35){acc=0;add();draw()}};reset();for(var z=0;z<3;z++)add();draw()};
 MOD.cost=function(){var w=8192,bs=$$('[data-cw]');function u(){var nE=+$('#csN').value,N=Math.pow(2,nE),x=ctx2($('#csC')),L=50,R=x.W-20,Tp=20,Bt=x.H-34;$('#csNV').textContent=fmt(N);
   function px(e){return L+(e-10)/10*(R-L)}function py(v){return Bt-v/40*(Bt-Tp)}x.strokeStyle='rgba(157,155,184,.12)';for(var e=10;e<=20;e+=2){x.beginPath();x.moveTo(px(e),Tp);x.lineTo(px(e),Bt);x.stroke();T(x,e===20?'1M':Math.pow(2,e)/1024+'K',px(e),Bt+14,C.muted,12,'center')}
-  var lw=Math.log2(w);function line(f,col,lab){x.strokeStyle=col;x.lineWidth=2.5;x.beginPath();for(var e=10;e<=20.001;e+=.05){e===10?x.moveTo(px(e),py(f(e))):x.lineTo(px(e),py(f(e)))}x.stroke();T(x,lab,R-4,py(f(20))-12,col,13,'right',700)}
+  var lw=Math.log2(w);function line(f,col,lab){x.strokeStyle=col;x.lineWidth=2.5;x.beginPath();for(var e=10;e<=20.001;e+=.05){e===10?x.moveTo(px(e),py(f(e))):x.lineTo(px(e),py(f(e)))}x.stroke();T(x,'━ '+lab,L+10,Tp+12+(LG++)*20,col,13,'left',700)}var LG=0;
   line(function(e){return 2*e},C.eye,'전체 N²');line(function(e){return e+Math.min(e,lw)},C.amber,'윈도우 N·w');line(function(e){return e+7},C.gfp,'선형 ∝ N');
   x.strokeStyle=C.text;x.setLineDash([3,4]);x.beginPath();x.moveTo(px(nE),Tp);x.lineTo(px(nE),Bt);x.stroke();x.setLineDash([]);stamp(x,'상대값');
   kp($('#csK'),[[fmt(N*N/1e9,1)+'G','전체 쌍 N²','r'],[fmt(N/Math.min(N,w),0)+'배','전체 ÷ 윈도우','g']])}
@@ -1341,6 +1372,43 @@ MOD.attn=function(){var TK=['고양이가','생선을','훔쳤다','.','그래�
   $('#atC').onclick=function(e){var r=this.getBoundingClientRect(),X=(e.clientX-r.left)/r.width*(+this.dataset.w),i=Math.floor((X-18)/86);if(i>=1&&i<7){sel=i;hold=6;draw()}};
   TICK=function(dt){if(REDUCE)return;if(hold>0){hold-=dt;return}t+=dt;if(t>2.6){t=0;oi=(oi+1)%ORD.length;sel=ORD[oi];draw()}};draw()};
 
+/* 17 · 디노이저는 어떻게 배우나: 정답은 섞은 잡음 */
+MOD.train=function(){var S=16,r=rng(21),EPS=[],R2=[],k=0,K=200,play=false,acc=0,hist=[];for(var i=0;i<S*S;i++){EPS.push(gauss(r)*.6);R2.push(gauss(r)*.6)}
+  function q(){return .9*(1-Math.exp(-k/45))}function loss(){var Q=q(),s=0;for(var i=0;i<S*S;i++){var d=(1-Q)*(R2[i]-EPS[i]);s+=d*d}return s/(S*S)}
+  function tile(x,X,Y,sz,f){var c=sz/S;for(var i=0;i<S;i++)for(var j=0;j<S;j++){x.fillStyle=f(i*S+j);x.fillRect(X+j*c,Y+i*c,Math.ceil(c),Math.ceil(c))}x.strokeStyle=C.rule;x.lineWidth=1;x.strokeRect(X,Y,sz,sz)}
+  function g(v){var t=Math.round(clamp(128+v*110,10,245));return 'rgb('+t+','+t+','+(t+8>255?255:t+8)+')'}
+  function draw(){var x=ctx2($('#trC')),sz=84,Q=q(),L=loss();
+    T(x,'진짜 밑그림',10,14,C.muted,12,'left',700);PIC.draw(x,10,24,sz,{t:1,resid:0});T(x,'+',107,66,C.text,20,'center',700);
+    T(x,'섞은 잡음 = 정답',122,14,C.amber,12,'left',700);tile(x,122,24,sz,function(i){return g(EPS[i])});T(x,'=',219,66,C.text,20,'center',700);
+    T(x,'학습 입력',234,14,C.muted,12,'left',700);PIC.draw(x,234,24,sz,{t:.4,resid:0});
+    AR(x,276,112,276,160,C.stain);T(x,'디노이저(순전파)',284,136,C.stain,12,'left',700);
+    T(x,'모델 예측',234,166,C.info,12,'left',700);tile(x,234,176,sz,function(i){return g(Q*EPS[i]+(1-Q)*R2[i])});
+    AR(x,164,112,164,152,C.amber);T(x,'정답과 비교',172,132,C.amber,11.5,'left');
+    T(x,'칸마다 (예측−정답)²',122,166,C.eye,12,'left',700);tile(x,122,176,sz,function(i){var d=(1-Q)*(R2[i]-EPS[i]);return 'rgba(240,96,77,'+clamp(d*d*1.6,0,1)+')'});AR(x,230,218,210,218,C.eye);
+    T(x,'손실(MSE)',10,180,C.muted,12,'left',700);T(x,'= 칸 평균',10,198,C.muted,12,'left');T(x,L.toFixed(3),10,232,C.eye,22,'left',700);T(x,'학습 '+k+'회',10,258,C.muted,12,'left');
+    var GX=360,GY=36,GW=x.W-GX-12,GH=x.H-72;x.strokeStyle=C.rule;x.strokeRect(GX,GY,GW,GH);T(x,'손실 곡선 · 학습 반복 →',GX+8,GY+14,C.muted,12);var mx=hist.length?hist[0]:L||1;
+    x.strokeStyle=C.eye;x.lineWidth=2.4;x.beginPath();hist.forEach(function(v,i){var X=GX+i/K*GW,Y=GY+GH-v/mx*(GH-24);i?x.lineTo(X,Y):x.moveTo(X,Y)});x.stroke();
+    T(x,'학습할수록 예측이 정답에 가까워져 손실이 줄어듦',GX,x.H-16,C.text,12.5,'left',700);stamp(x,'설명용')}
+  $('#trPlay').onclick=function(){k=0;hist=[];acc=0;play=!REDUCE;if(REDUCE){for(k=0;k<=K;k++)hist.push(loss());k=K}draw()};
+  TICK=function(dt){if(!play)return;acc+=dt*45;var s=Math.floor(acc);if(s){acc-=s;for(var i=0;i<s&&k<K;i++){hist.push(loss());k++}draw();if(k>=K)play=false}};
+  hist=[];play=!REDUCE;if(REDUCE){for(k=0;k<=K;k++)hist.push(loss());k=K}draw()};
+
+/* 24 · 결과를 잰 거리 vs 학습용 손실 */
+MOD.lossvs=function(){var E=3;function u(){E=+$('#lvE').value;$('#lvEV').textContent=E;draw()}
+  function draw(){var x=ctx2($('#lvC')),W2=(x.W-30)/2,H=x.H,r=rng(3),floor=.02+E*.012,F=32,drift=[],joint=[],d=0;
+    for(var t=0;t<F;t++){d+=E*(.9+gauss(r)*.35);drift.push(d);joint.push(Math.abs(E*(1.1+gauss(r)*.5)))}
+    function panel(X,title,sub,col){RR(x,X,8,W2,H-16,10);x.fillStyle=C.panel;x.fill();x.strokeStyle=C.rule;x.stroke();T(x,title,X+14,28,col,14,'left',700);T(x,sub,X+14,48,C.muted,12,'left')}
+    panel(10,'① 학습용 손실 (학습하는 동안)','가로축 = 학습 반복 · 칸마다 (예측 잡음 − 섞은 잡음)²의 평균',C.eye);
+    var GX=40,GY=66,GW=W2-50,GH=H-120,pts=[];for(var i=0;i<=60;i++){pts.push(floor+(.5-floor)*Math.exp(-i/12)+gauss(r)*.004)}
+    x.strokeStyle=C.rule;x.strokeRect(GX,GY,GW,GH);x.strokeStyle=C.eye;x.lineWidth=2.4;x.beginPath();pts.forEach(function(v,i){var X=GX+i/60*GW,Y=GY+GH-v/.55*GH;i?x.lineTo(X,Y):x.moveTo(X,Y)});x.stroke();
+    var fy=GY+GH-floor/.55*GH;x.setLineDash([4,4]);x.strokeStyle='rgba(240,96,77,.6)';x.beginPath();x.moveTo(GX,fy);x.lineTo(GX+GW,fy);x.stroke();x.setLineDash([]);T(x,'학습이 끝나도 남는 작은 오차',GX+GW-6,fy-18,C.eye,12,'right',700);T(x,'학습 반복 →',GX+GW,GY+GH+14,C.muted,11,'right');
+    var X2=20+W2;panel(X2,'② 결과를 잰 거리 (만든 뒤에)','가로축 = 영상 프레임 · 공이 원래 길에서 벗어난 픽셀',C.gfp);
+    var HX=X2+30,HW=W2-50,mx=Math.max(20,drift[F-1]*1.1);x.strokeStyle=C.rule;x.strokeRect(HX,GY,HW,GH);
+    function cv(a,col){x.strokeStyle=col;x.lineWidth=2.4;x.beginPath();a.forEach(function(v,i){var X=HX+i/(F-1)*HW,Y=GY+GH-v/mx*GH;i?x.lineTo(X,Y):x.moveTo(X,Y)});x.stroke()}cv(drift,C.eye);cv(joint,C.gfp);
+    T(x,'━ 한 프레임씩 이어 만들기: 32프레임 뒤 '+Math.round(drift[F-1])+'px',HX+8,GY+16,C.eye,12.5,'left',700);T(x,'━ 전체를 함께: '+Math.round(Math.max.apply(null,joint))+'px 안쪽',HX+8,GY+34,C.gfp,12.5,'left',700);T(x,'프레임 →',HX+HW,GY+GH+14,C.muted,11,'right');
+    stamp(x,'설명용');$('#lvMsg').innerHTML='한 프레임마다 남는 오차가 <b>'+E+'px</b> 정도로 작아도, 한 프레임씩 이으면 32프레임 뒤 약 <b class="r">'+Math.round(drift[F-1])+'px</b> 벗어납니다. 손실이 작은 것과 결과가 좋은 것은 다른 이야기예요.'}
+  $('#lvE').oninput=u;u()};
+
 /* ===== GPU 사양 (교재 H100 + 우리 서버 카드) ===== */
 var GP={h100:{n:'H100 FP16 (책)',f:989,b:3.35,w:null},q:{n:'Quadro RTX 5000',f:89.2,b:0.448,w:265},n:{n:'RTX 5060 Ti',f:190,b:0.448,w:180}};
 
@@ -1423,6 +1491,9 @@ var TERM={
  pose:['Pose estimation','포즈 추정','사람 사진에서 머리·팔·다리 관절 위치를 찾아 막대 인형으로 바꾸기'],
  gen:['Generative AI','생성형 AI','글·그림·영상·동작을 새로 만들어 내는 AI'],
  weight:['Weights','가중치','학습으로 정해진 모델의 숫자들. 기계가 일할 때마다 들여오는 설계도'],
+ loss:['Loss function','손실함수','학습 중에 모델 예측이 정답과 얼마나 다른지 재는 값. 줄이는 쪽으로 모델을 고침'],
+ mse:['MSE','평균제곱오차','칸마다 (예측−정답)²을 구해 평균. 연속값을 맞히는 예측(회귀)의 손실'],
+ ce:['Cross-entropy','교차 엔트로피','정답 항목의 확률에 −log를 취한 값. 가짓수가 정해진 분류의 손실'],
  sampler:['Sampler','샘플러','모델이 예측한 잡음 지도를 보고, 밑그림에서 잡음을 얼마만큼 덜어 낼지 정해 빼는 단계. 모델 밖의 간단한 계산'],
  layer:['Layer','층','모델을 이루는 공정 하나. 층마다 대부분 행렬곱을 함'],
  sdxl:['SDXL','스테이블 디퓨전 XL','Stability AI가 2023년 공개한 이미지 생성 모델. 1024² 기본, 디노이저 두 대'],
