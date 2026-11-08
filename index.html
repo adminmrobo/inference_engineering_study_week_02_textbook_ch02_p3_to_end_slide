@@ -347,7 +347,7 @@ img.flip{transform:scaleX(-1)}
 <section class="slide" data-title="순전파란? 라인을 한 바퀴" data-sec="2.3" data-mod="fwd" data-terms="fwd,layer,sampler" data-note="순전파 = 입력을 모델의 첫 층부터 마지막 층까지 한 번 통과시켜 결과를 얻는 계산(층마다 행렬곱·어텐션). 층 하나하나가 잡음을 지우는 게 아님: 층들이 함께 '잡음 지도'(입력과 같은 크기의 숫자판, 어디에 잡음이 얼마나)를 예측. 실제로 덜어내는 건 모델 밖의 샘플러가 하는 간단한 빼기: 밑그림 − 일부 × 잡음 지도 → 조금 깨끗해진 밑그림 → 다음 단계 입력. 분류 모델이 아님: 분류는 답 하나(칭찬/불만)를 고르지만, 디노이저는 칸마다 숫자를 맞히는 예측(회귀). 학습: 진짜 그림에 잡음을 섞고, 섞은 잡음을 맞히게 해 차이를 줄임. 손실함수는 -log 확률(분류의 교차 엔트로피)이 아니라 칸마다 (예측 잡음 − 실제 잡음)²의 평균(MSE). 값이 연속이라 '가짓수'가 없음. 가짓수가 있는 분류는 글 공장: 다음 토큰을 어휘(수만~십수만 개) 중에서 고르고 -log 확률로 학습. 글 공장은 한 바퀴 = 다음 토큰 하나(이건 어휘 중 하나를 고르는 분류에 가까움). 실제로는 단계마다 두 바퀴 → 다음 장.">
   <div class="kicker">2.3 <span class="sec">용어 풀기 · Forward pass</span></div>
   <h2>순전파 = 라인 한 바퀴, 나오는 것은 "잡음 지도"</h2>
-  <div class="fig" style="flex:none"><canvas id="fwC" width="1150" height="190"></canvas><div class="figcap">모델은 층(공정)이 이어진 라인. 층들이 함께 잡음 지도를 예측하고, 덜어내기는 모델 밖에서 <span class="chip toy">설명용</span></div></div>
+  <div class="fig" style="flex:none"><canvas id="fpC" width="1150" height="190"></canvas><div class="figcap">모델은 층(공정)이 이어진 라인. 층들이 함께 잡음 지도를 예측하고, 덜어내기는 모델 밖에서 <span class="chip toy">설명용</span></div></div>
   <div class="ctrl" style="margin-top:6px"><button class="bt primary" id="fwPlay">▶ 다시 태우기</button></div>
   <div class="row" style="flex:none;margin-top:8px;gap:14px">
     <div class="card col" style="padding:10px 16px"><h4 class="g">순전파 (forward pass)</h4><p class="small">입력을 <b>첫 층부터 끝 층까지 한 번</b> 통과시키는 계산. 층 하나가 잡음을 지우는 게 아니라, 층들이 <b>함께</b> "어디에 잡음이 얼마나"를 계산합니다. 추론은 순전파만 합니다.</p></div>
@@ -410,7 +410,7 @@ img.flip{transform:scaleX(-1)}
   <div class="kicker">2.3 <span class="sec">학습과 손실, 아주 쉽게 ③ · 분류가 아니다</span></div>
   <h2>LLM은 "고르기", 디노이저는 "맞히기"</h2>
   <div class="row">
-    <div class="col w2" style="gap:8px"><div class="fig"><canvas id="pgC" width="660" height="310"></canvas></div>
+    <div class="col w2" style="gap:8px"><div class="fig"><canvas id="pkC" width="660" height="310"></canvas></div>
       <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 18px;font-size:13.5px"><label style="display:flex;flex-direction:column;gap:2px;color:var(--muted)"><span>정답 단어에 준 확률 <b class="val" id="pgPV"></b></span><input type="range" id="pgP" min="1" max="99" value="50" style="width:100%"></label><label style="display:flex;flex-direction:column;gap:2px;color:var(--muted)"><span>이 칸의 잡음 예측 <b class="val" id="pgGV"></b></span><input type="range" id="pgG" min="-1.5" max="1.5" step="0.1" value="0" style="width:100%"></label></div></div>
     <div class="col" style="gap:10px">
       <div class="card"><h4 class="i">고르기 = 객관식</h4><p class="small">LLM은 다음 단어를 단어장(수만 개)에서 <b>고릅니다</b>. 정답에 90%를 걸면 벌점 0.11, 10%면 2.30. 자신 있게 맞힐수록 0에 가까워요.</p></div>
@@ -1373,7 +1373,7 @@ MOD.imgfac=function(){var t=99,play=false;function S(){return +$('#ifS').value}
 /* 16 · 순전파 = 라인을 한 바퀴 → 잡음 지도 → 덜어내기 */
 function NMAP(x,X,Y,s){var r=rng(5),n=16,c=s/n;for(var i=0;i<n;i++)for(var j=0;j<n;j++){var v=Math.floor(60+r()*170);x.fillStyle='rgb('+v+','+v+','+v+')';x.fillRect(X+j*c,Y+i*c,Math.ceil(c),Math.ceil(c))}x.strokeStyle=C.rule;x.strokeRect(X,Y,s,s)}
 MOD.fwd=function(){var t=0,n=0,play=!REDUCE,L=5,CY=3.2;
-  function draw(){var x=ctx2($('#fwC')),X0=196,w=86,g=20,Y=50,h=78,ph=REDUCE?CY:t,pos=ph/2.2*(L+1)-.5,sz=86,OX=X0+L*(w+g)-g+34,SX=OX+sz+70;
+  function draw(){var x=ctx2($('#fpC')),X0=196,w=86,g=20,Y=50,h=78,ph=REDUCE?CY:t,pos=ph/2.2*(L+1)-.5,sz=86,OX=X0+L*(w+g)-g+34,SX=OX+sz+70;
     T(x,'들어감: 잡음 섞인 밑그림',20,18,C.muted,12.5,'left',700);PIC.draw(x,24,42,sz,{t:.35,resid:0});T(x,'+ 주문서 · 단계 번호',24,150,C.muted,11.5,'left');
     AR(x,116,Y+h/2,X0-6,Y+h/2,C.rule);
     for(var i=0;i<L;i++){var X=X0+i*(w+g),on=ph<2.2&&Math.floor(pos)===i;BX(x,X,Y,w,h,i<L-1?'층 '+(i+1):'층 N',on?C.gfp:C.stain,on,'행렬곱·어텐션');if(i<L-1)AR(x,X+w+2,Y+h/2,X+w+g-2,Y+h/2,C.rule)}
@@ -1556,7 +1556,7 @@ MOD.msehand=function(){var G=[.6,-.4,.2,-.8],P=[.2,.1,.2,-.3];
   $('#msBad').onclick=function(){setP([1.3,-1.1,.9,-1.5])};$('#msNear').onclick=function(){setP([.5,-.4,.3,-.7])};$('#msGood').onclick=function(){setP(G)};setP(P)};
 /* 고르기(분류) vs 맞히기(회귀) */
 MOD.pickguess=function(){var p=.5,g=0,GT=.6;
-  function draw(){var x=ctx2($('#pgC')),W2=(x.W-30)/2,H=x.H;
+  function draw(){var x=ctx2($('#pkC')),W2=(x.W-30)/2,H=x.H;
     function panel(X,t1,t2,col){RR(x,X,6,W2,H-12,10);x.fillStyle=C.panel;x.fill();x.strokeStyle=C.rule;x.stroke();T(x,t1,X+14,26,col,14.5,'left',700);T(x,t2,X+14,46,C.muted,12,'left')}
     panel(10,'고르기 = 분류 (LLM)','객관식: 보기 중 하나를 고른다',C.info);
     T(x,'"오늘 하늘이 ___"',24,72,C.text,14,'left',700);var cand=[['맑다',p,1],['흐리다',(1-p)*.5,0],['파랗다',(1-p)*.35,0],['고양이',(1-p)*.15,0]];
