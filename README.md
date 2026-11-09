@@ -18,7 +18,7 @@
 | 읽기용 해설 | 아홉 걸음 인터랙티브 해설 (블로그) | https://adminmrobo.github.io/inference_engineering_study_week_02_textbook_ch02_p3_to_end/ |
 | 본 발표 슬라이드 | 본편 46장 + 부록 17장, 공장 비유·GPU 10종 대시보드 | https://adminmrobo.github.io/inference_engineering_study_week_02_textbook_ch02_p3_to_end_slide/ |
 | 쉬운 가이드 | 도입 12장 + 핵심만 쉽게 17장(흰 배경, 초보자용) | https://adminmrobo.github.io/inference_engineering_study_week_02_textbook_ch02_p3_to_end_slide/easy_guide.html |
-| "캐릭터 춤춰" GPU 시뮬레이터 | 춤 영상이 만들어지는 동안 GPU의 열·전력·시간·데드락·병목을 직접 일으켜 보는 5쪽 시뮬레이터, 연구실 캐릭터 튜토리얼 13단계, GitHub 아이디로 겨루는 명예의 전당 | https://adminmrobo.github.io/inference_engineering_study_week_02_textbook_ch02_p3_to_end_slide/gpu_dance_simulator.html |
+| "캐릭터 춤춰" GPU 시뮬레이터 | 춤 영상이 만들어지는 동안 GPU의 열·전력·시간·데드락·병목을 직접 일으켜 보는 5쪽 시뮬레이터, 연구실 캐릭터 튜토리얼 13단계, GitHub 아이디로 겨루는 명예의 전당, 3시간을 넘기면 폭발하는 조수의 인내심 게이지 | https://adminmrobo.github.io/inference_engineering_study_week_02_textbook_ch02_p3_to_end_slide/gpu_dance_simulator.html |
 
 ## 구성: 본편 46장 + 부록 17장
 
@@ -120,7 +120,7 @@
 
 | 쪽 | 내용 |
 |---|---|
-| ① 공정 보기 | 춤 이벤트 6칸(프롬프트 → 텍스트 인코더 → 동작 생성 → 포즈 맵 → 포즈 기반 생성 → 영상), GPU 실물(팬·열·전력)과 구조도(SM·L2·메모리 칩·PCIe, 실행 중인 커널과 병목), 도전 모드(성공하면 "어쭈!" 하며 360p → 4K), 공장 공정도 |
+| ① 공정 보기 | 춤 이벤트 6칸(프롬프트 → 텍스트 인코더 → 동작 생성 → 포즈 맵 → 포즈 기반 생성 → 영상), GPU 실물(팬·열·전력)과 구조도(SM·L2·메모리 칩·PCIe, 실행 중인 커널과 병목), 도전 모드(성공하면 "어쭈!" 하며 360p → 4K), <b>조수의 인내심</b>(시뮬레이션 3시간 분노 게이지, 칸마다 걸린 시간·병목을 맞춰 "범인" 표시, 3시간을 넘으면 폭발과 GAME OVER), 공장 공정도 |
 | ② 조절판 · 계기판 | GPU 10종, 보드 PCIe, 모델(Wan 2.1 1.3B·14B), 정밀도, 해상도, 프레임, 단계, 가이던스, FlashAttention, 오프로딩, 동시 요청, 작업 배분, 봇 응답 제한, 전력 제한, 냉각, 실내 온도 |
 | ③ 사건 로그 · 해설 | 드라이버 로그처럼 쌓이는 사건 19종, 교재 표현을 빌린 해설과 처방 |
 | ④ GPU 10종 비교 · 진단 | 같은 설정으로 10종을 돌린 시간(로그 눈금)·전기요금·최고 온도, 카드별 실효 계산, 진단 |

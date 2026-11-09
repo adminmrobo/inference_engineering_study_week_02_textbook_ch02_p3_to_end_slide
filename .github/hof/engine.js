@@ -91,7 +91,7 @@ function plan(p,gk){var g=GPUS[gk||p.g],M=MODELS[p.m],ev=[],fail=null;
   return {segs:segs,ev:ev,fail:fail,info:info}}
 
 /* ===== 실행기: 시간·전력·열 적분 ===== */
-function Runner(p,gk){var pl=plan(p,gk),g=pl.info.g,st={t:0,si:0,sp:0,T:p.room,thr:false,E:0,P:0,done:false,failed:null,log:[],samp:[],bt:{C:0,M:0,P:0,U:0},peakT:p.room,thrN:0,timeouts:0,jobDone:[],started:{}};
+function Runner(p,gk){var pl=plan(p,gk),g=pl.info.g,st={t:0,si:0,sp:0,T:p.room,thr:false,E:0,P:0,done:false,failed:null,log:[],samp:[],bt:{C:0,M:0,P:0,U:0},peakT:p.room,thrN:0,timeouts:0,jobDone:[],started:{},pt:{}};
   var Pmax=g.w*p.cap,idle=.12*g.w,perfCap=p.cap>=1?1:Math.pow(p.cap,.4),tau=45,rise=RISE[p.cool];
   function L(t,code,msg,cls){st.log.push({t:t,code:code,msg:msg,cls:cls||'i'})}
   pl.ev.forEach(function(e){L(0,e[0],EV[e[0]].t,'w')});
@@ -105,7 +105,7 @@ function Runner(p,gk){var pl=plan(p,gk),g=pl.info.g,st={t:0,si:0,sp:0,T:p.room,t
     var P=s.bd==='U'?idle*1.25:idle+(Pmax-idle)*(.3+.7*s.uc)*(st.thr?.82:1);st.P=P;st.E+=P*dt;
     var Tt=p.room+rise*P/g.w;st.T+=(Tt-st.T)*Math.min(1,dt/tau);st.peakT=Math.max(st.peakT,st.T);
     if(!st.thr&&st.T>=TLIM){st.thr=true;st.thrN++;if(st.thrN===1)L(st.t,'THROTTLE',EV.THROTTLE.t+' · 클럭 −15%','w')}else if(st.thr&&st.T<TLIM-4)st.thr=false;
-    st.bt[s.bd]+=dt;var adv=dt*rate/Math.max(1e-6,s.dur);st.sp+=adv;st.t+=dt;
+    st.bt[s.bd]+=dt;if(!st.x3&&st.t+dt>=10800)st.x3={ph:s.ph,bd:s.bd};var pq=st.pt[s.ph]||(st.pt[s.ph]={t:0,b:{}});pq.t+=dt;pq.b[s.bd]=(pq.b[s.bd]||0)+dt;var adv=dt*rate/Math.max(1e-6,s.dur);st.sp+=adv;st.t+=dt;
     if(p.to>0&&!st.toFired&&st.t>=p.to&&st.jobDone.length<p.k){st.toFired=true;var pend=p.k-st.jobDone.length;st.timeouts=pend;L(p.to,'TIMEOUT','봇 응답 시간 초과 (httpx 예외) · 기다리던 요청 '+pend+'개 — GPU는 계속 일함','e')}
     if(st.sp>=1){st.sp=0;if(s.ph==='save'){for(var jj=0;jj<(pl.info.share?p.k:1);jj++)st.jobDone.push(st.t);L(st.t,null,'요청 '+(pl.info.share?'전체':s.job)+' 영상 완성 · '+hms(st.t),'ok')}st.si++;if(st.si>=pl.segs.length){st.done=true;L(st.t,'DONE','완료 · '+hms(st.t)+' · '+fmt(st.E/3600,1)+'Wh · 약 '+fmt(st.E/3.6e6*p.won,1)+'원'+(st.thrN?' · 열 제한 '+st.thrN+'번':''),'ok')}}}
   return {pl:pl,st:st,step:step,g:g}}
