@@ -18,7 +18,7 @@
 | 읽기용 해설 | 아홉 걸음 인터랙티브 해설 (블로그) | https://adminmrobo.github.io/inference_engineering_study_week_02_textbook_ch02_p3_to_end/ |
 | 본 발표 슬라이드 | 본편 46장 + 부록 17장, 공장 비유·GPU 10종 대시보드 | https://adminmrobo.github.io/inference_engineering_study_week_02_textbook_ch02_p3_to_end_slide/ |
 | 쉬운 가이드 | 도입 12장 + 핵심만 쉽게 17장(흰 배경, 초보자용) | https://adminmrobo.github.io/inference_engineering_study_week_02_textbook_ch02_p3_to_end_slide/easy_guide.html |
-| "캐릭터 춤춰" GPU 시뮬레이터 | 춤 영상이 만들어지는 동안 GPU의 열·전력·시간·데드락·병목을 직접 일으켜 보는 4쪽 시뮬레이터, 연구실 캐릭터 튜토리얼 13단계 | https://adminmrobo.github.io/inference_engineering_study_week_02_textbook_ch02_p3_to_end_slide/gpu_dance_simulator.html |
+| "캐릭터 춤춰" GPU 시뮬레이터 | 춤 영상이 만들어지는 동안 GPU의 열·전력·시간·데드락·병목을 직접 일으켜 보는 5쪽 시뮬레이터, 연구실 캐릭터 튜토리얼 13단계, GitHub 아이디로 겨루는 명예의 전당 | https://adminmrobo.github.io/inference_engineering_study_week_02_textbook_ch02_p3_to_end_slide/gpu_dance_simulator.html |
 
 ## 구성: 본편 46장 + 부록 17장
 
@@ -116,7 +116,7 @@
 
 ## 시뮬레이터 (gpu_dance_simulator.html)
 
-생성형 AI에 "캐릭터 춤춰"라고 했을 때 GPU 안에서 일어나는 일을 직접 조절하며 보는 4쪽 시뮬레이터입니다.
+생성형 AI에 "캐릭터 춤춰"라고 했을 때 GPU 안에서 일어나는 일을 직접 조절하며 보는 5쪽 시뮬레이터입니다.
 
 | 쪽 | 내용 |
 |---|---|
@@ -124,7 +124,17 @@
 | ② 조절판 · 계기판 | GPU 10종, 보드 PCIe, 모델(Wan 2.1 1.3B·14B), 정밀도, 해상도, 프레임, 단계, 가이던스, FlashAttention, 오프로딩, 동시 요청, 작업 배분, 봇 응답 제한, 전력 제한, 냉각, 실내 온도 |
 | ③ 사건 로그 · 해설 | 드라이버 로그처럼 쌓이는 사건 19종, 교재 표현을 빌린 해설과 처방 |
 | ④ GPU 10종 비교 · 진단 | 같은 설정으로 10종을 돌린 시간(로그 눈금)·전기요금·최고 온도, 카드별 실효 계산, 진단 |
+| ⑤ 명예의 전당 | 도전 모드 기록을 GitHub 이슈로 올려 겨루는 순위표(공식·자유 부문, 부문별 1위), 내 기기 최고 기록 |
 
 맨 위 **튜토리얼** 버튼을 누르면 박사·조수·초파리 연구원·주판봇이 13단계로 실험을 안내합니다(OOM·데드락 일으키기, FlashAttention 처방, 도전 모드).
+
+### 명예의 전당은 이렇게 돌아갑니다
+
+- 기록 글에는 판마다 **설정값만** 들어갑니다. 저장소의 GitHub Actions 검사기(`.github/workflows/hall-of-fame.yml`)가 시뮬레이터와 같은 계산 엔진(`.github/hof/engine.js`)으로 시간·전기·별을 다시 계산합니다. 숫자를 고쳐 올려도 소용이 없습니다.
+- 통과하면 `명예의 전당` 꼬리표, 계산이 맞지 않으면 `기록 오류` 꼬리표와 함께 이슈가 자동으로 닫힙니다.
+- 이름은 GitHub 아이디로만 나오고, 한 사람당 가장 좋은 기록 하나만 셉니다.
+- 관리자가 `제외` 꼬리표를 붙이면 순위에서 빠집니다.
+- 공식 부문은 프레임 81장·20단계 이상·가이던스 켬. 나머지는 자유 부문입니다.
+- `engine.js`는 `sim/build` 때 시뮬레이터 코드에서 자동으로 뽑습니다. 손으로 고치지 마세요.
 
 숫자는 사양표와 공식으로 만든 어림값입니다. 실효 계산은 NVIDIA 현행 카드에 사양의 60%를, 사양표만 큰 카드에는 공개 확산 모델 측정에 맞춘 낮은 비율(Quadro RTX 5000 23%, Radeon 18%, Arc 22%)을 씁니다. 막대 인형·조수 영상은 「동작 AI · 5-5 "춤춰"에서 춤 영상으로」(안상선)의 생성 영상입니다.
