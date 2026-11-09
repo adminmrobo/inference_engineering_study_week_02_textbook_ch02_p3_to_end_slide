@@ -56,7 +56,7 @@ var EV={
 var P={};
 function readP(){P={g:$('#cG').value,pci:+$('#cPci').value,ram:+$('#cRam').value,m:$('#cM').value,pr:$('#cPr').value,res:+$('#cRes').value,F:+$('#cF').value,S:+$('#cS').value,
   cfg:$('#cCfg').getAttribute('aria-pressed')==='true',fa:$('#cFa').getAttribute('aria-pressed')==='true',off:$('#cOff').getAttribute('aria-pressed')==='true',
-  k:+$('#cK').value,sch:$('#cSch').value,to:+$('#cTo').value,cap:+$('#cCap').value/100,cool:$('#cCool').value,room:+$('#cRoom').value,won:+$('#cWon').value};
+  k:+$('#cK').value,sch:$('#cSch').value,to:0,cap:+$('#cCap').value/100,cool:$('#cCool').value,room:+$('#cRoom').value,won:+$('#cWon').value};
   $('#vF').textContent=P.F+'장 ('+(P.F/16).toFixed(1)+'초)';$('#vS').textContent=P.S;$('#vK').textContent=P.k;$('#vCap').textContent=Math.round(P.cap*100)+'%';$('#vRoom').textContent=P.room+'°C';return P}
 
 /* ===== 계획: 공정별 길이와 사건 ===== */
@@ -120,12 +120,12 @@ function hofClean(res,q){if(!q||typeof q!=='object')throw new Error(res+'p 설�
   if(!Object.prototype.hasOwnProperty.call(GPUS,p.g))throw new Error(res+'p: GPU 이름이 맞지 않습니다');
   for(var k in HOF_OPT)if(HOF_OPT[k].indexOf(p[k])<0)throw new Error(res+'p: '+k+' 값이 허용 범위 밖입니다');
   if(!(p.S>=4&&p.S<=50))throw new Error(res+'p: 디노이징 단계는 4~50');if(!(p.k>=1&&p.k<=4))throw new Error(res+'p: 동시 요청은 1~4');
-  if(!(p.cap>=.5&&p.cap<=1))throw new Error(res+'p: 전력 제한은 50~100%');if(!(p.room>=18&&p.room<=35))throw new Error(res+'p: 실내 온도는 18~35°C');return p}
-function hofStars(st){return [!st.failed,!st.failed&&!st.timeouts,!st.failed&&st.thrN===0]}
+  if(!(p.cap>=.5&&p.cap<=1))throw new Error(res+'p: 전력 제한은 50~100%');if(!(p.room>=18&&p.room<=35))throw new Error(res+'p: 실내 온도는 18~35°C');p.to=0;return p}
+function hofStars(st,info){return [!st.failed,!st.failed&&!(info&&info.spill>0),!st.failed&&st.thrN===0]}
 function hofOfficial(p){return p.F===81&&p.S>=20&&p.cfg}
 function hofEval(rec){if(!rec||rec.v!==1||!rec.levels||typeof rec.levels!=='object')throw new Error('기록 형식(v1)이 맞지 않습니다');
   var out={levels:{},n:0,off:{maxRes:0,stars:0,t:0,wh:0,n:0},free:{maxRes:0,stars:0,t:0,wh:0,n:0}};
-  HOF.LV.forEach(function(res){var q=rec.levels[res];if(!q)return;var p=hofClean(res,q),R=fastRun(p,p.g),st=R.st,ns=hofStars(st).filter(Boolean).length,ok=!st.failed,of=ok&&hofOfficial(p);
+  HOF.LV.forEach(function(res){var q=rec.levels[res];if(!q)return;var p=hofClean(res,q),R=fastRun(p,p.g),st=R.st,ns=hofStars(st,R.pl.info).filter(Boolean).length,ok=!st.failed,of=ok&&hofOfficial(p);
     var L={p:p,ok:ok,fail:st.failed||null,stars:ok?ns:0,t:st.t,wh:st.E/3600,official:of,peakT:st.peakT};out.levels[res]=L;out.n++;
     [[ok,out.free],[of,out.off]].forEach(function(z){if(!z[0])return;var o=z[1];o.maxRes=Math.max(o.maxRes,res);o.stars+=ns;o.t+=st.t;o.wh+=L.wh;o.n++})});
   if(!out.n)throw new Error('판 기록이 하나도 없습니다');return out}
