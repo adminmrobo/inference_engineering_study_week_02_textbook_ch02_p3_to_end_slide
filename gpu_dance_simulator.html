@@ -171,7 +171,7 @@ body.tutOn main{padding-bottom:230px}body.tutOn .hoftab{border-color:#E8C46A;bac
 @media(max-width:700px){.patMain{grid-template-columns:92px 1fr;gap:12px}.patImgBox{width:90px;height:90px}#patImg{width:84px;height:84px}.patBub{font-size:14px}.patStrip{grid-template-columns:repeat(2,1fr)}.pc.wide{grid-column:span 2}.pc .pm .dv{height:118px}.goT{font-size:44px}.goS{font-size:21px}}
 @media(prefers-reduced-motion:reduce){.pat.l3 .patImgBox,.pat.l4 .patImgBox,.pat.boomed{animation:none}}
 </style>
-</head>
+<!-- px-fix v1 --><style id="px-fix">img{image-rendering:auto!important}</style><script id="px-fix-js">(function(){var R=window.ResizeObserver;function f(i){var n=i.naturalWidth,w=i.getBoundingClientRect().width;if(!n||!w)return;var s=w*(window.devicePixelRatio||1)/n;i.style.setProperty("image-rendering",s>=1.95?"pixelated":"auto","important")}var ro=R?new R(function(es){es.forEach(function(e){f(e.target)})}):null;function a(i){if(i.__px)return;i.__px=1;i.addEventListener("load",function(){f(i)});if(ro)ro.observe(i);f(i)}function all(r){(r||document).querySelectorAll&&(r||document).querySelectorAll("img").forEach(a)}function go(){all();if(window.MutationObserver)new MutationObserver(function(ms){ms.forEach(function(m){m.addedNodes.forEach(function(n){if(n.nodeType!==1)return;if(n.tagName==="IMG")a(n);else all(n)})})}).observe(document.documentElement,{childList:true,subtree:true});window.addEventListener("resize",function(){document.querySelectorAll("img").forEach(f)})}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",go);else go()})();</script><!-- /px-fix --></head>
 <body>
 <div id="errBar" role="alert" hidden></div>
 <header class="top"><div class="wrap">
