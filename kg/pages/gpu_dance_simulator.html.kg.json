@@ -1,0 +1,204 @@
+{
+ "version": "1.0",
+ "page": "gpu_dance_simulator",
+ "nodes": [
+  {
+   "id": "lab:concept/patient-identity",
+   "type": "Concept",
+   "label": {
+    "ko": "인내(숙성 후 현금화)",
+    "en": "Patient"
+   },
+   "page": "gpu_dance_simulator",
+   "anchor": "#patCard",
+   "level": 2,
+   "status": "known",
+   "confidence": "medium",
+   "coverage": "explained",
+   "domain": [
+    "llm",
+    "econ",
+    "ai"
+   ],
+   "match": [],
+   "auto": "autokg-2026-11-24",
+   "definition": {
+    "ko": "바로 쓰지 않고 오래 키운 뒤 돈으로 바꾼다"
+   }
+  },
+  {
+   "id": "lab:concept/prompt",
+   "type": "Concept",
+   "label": {
+    "ko": "프롬프트",
+    "en": "prompt"
+   },
+   "page": "gpu_dance_simulator",
+   "anchor": "#dance",
+   "level": 2,
+   "status": "known",
+   "confidence": "medium",
+   "coverage": "explained",
+   "domain": [
+    "ai",
+    "llm",
+    "genai"
+   ],
+   "match": [],
+   "auto": "autokg-2026-11-24",
+   "definition": {
+    "ko": "AI에게 무엇을 만들지 알려 주는 글."
+   }
+  },
+  {
+   "id": "lab:method/flashattention",
+   "type": "Method",
+   "label": {
+    "ko": "번개 어텐션 (FlashAttention)",
+    "en": "FlashAttention"
+   },
+   "page": "gpu_dance_simulator",
+   "anchor": "#ctlBox",
+   "level": 2,
+   "status": "known",
+   "confidence": "medium",
+   "coverage": "mentioned",
+   "domain": [
+    "ai",
+    "dl",
+    "llm"
+   ],
+   "match": [],
+   "auto": "autokg-2026-11-24",
+   "definition": {
+    "ko": "블록으로 쪼개기와 다시 계산하기로 창고 메모리(HBM) 왕복을 줄인, IO를 따지는 정확한 어텐션 알고리즘."
+   }
+  },
+  {
+   "id": "lab:concept/bottleneck",
+   "type": "Concept",
+   "label": {
+    "ko": "병목",
+    "en": "bottleneck"
+   },
+   "page": "gpu_dance_simulator",
+   "anchor": "#errBar",
+   "level": 2,
+   "status": "known",
+   "confidence": "medium",
+   "coverage": "mentioned",
+   "domain": [
+    "llm",
+    "ai",
+    "genai"
+   ],
+   "match": [],
+   "auto": "autokg-2026-11-24",
+   "definition": {
+    "ko": "상자 가운데 가장 좁은 층. 접은 지도."
+   }
+  },
+  {
+   "id": "lab:topic/ai-safety",
+   "type": "Topic",
+   "label": {
+    "ko": "안전성",
+    "en": "AI safety"
+   },
+   "page": "gpu_dance_simulator",
+   "anchor": "#kg",
+   "level": 4,
+   "status": "known",
+   "confidence": "high",
+   "coverage": "mentioned",
+   "domain": [
+    "ai"
+   ],
+   "match": []
+  },
+  {
+   "id": "lab:topic/prompting",
+   "type": "Topic",
+   "label": {
+    "ko": "프롬프팅",
+    "en": "Prompting"
+   },
+   "page": "gpu_dance_simulator",
+   "anchor": "#kg",
+   "level": 4,
+   "status": "known",
+   "confidence": "high",
+   "coverage": "mentioned",
+   "domain": [
+    "ai"
+   ],
+   "match": []
+  },
+  {
+   "id": "lab:topic/self-attention",
+   "type": "Topic",
+   "label": {
+    "ko": "셀프 어텐션",
+    "en": "Self-attention"
+   },
+   "page": "gpu_dance_simulator",
+   "anchor": "#kg",
+   "level": 4,
+   "status": "known",
+   "confidence": "high",
+   "coverage": "mentioned",
+   "domain": [
+    "ai"
+   ],
+   "match": []
+  },
+  {
+   "id": "lab:topic/autoencoder",
+   "type": "Topic",
+   "label": {
+    "ko": "오토인코더",
+    "en": "Autoencoder"
+   },
+   "page": "gpu_dance_simulator",
+   "anchor": "#kg",
+   "level": 4,
+   "status": "known",
+   "confidence": "high",
+   "coverage": "mentioned",
+   "domain": [
+    "ai"
+   ],
+   "match": []
+  }
+ ],
+ "edges": [
+  {
+   "s": "lab:concept/patient-identity",
+   "p": "lab:broader",
+   "o": "lab:topic/ai-safety",
+   "anchor": "#patCard",
+   "confidence": "medium"
+  },
+  {
+   "s": "lab:concept/prompt",
+   "p": "lab:broader",
+   "o": "lab:topic/prompting",
+   "anchor": "#dance",
+   "confidence": "medium"
+  },
+  {
+   "s": "lab:method/flashattention",
+   "p": "lab:broader",
+   "o": "lab:topic/self-attention",
+   "anchor": "#ctlBox",
+   "confidence": "medium"
+  },
+  {
+   "s": "lab:concept/bottleneck",
+   "p": "lab:broader",
+   "o": "lab:topic/autoencoder",
+   "anchor": "#errBar",
+   "confidence": "medium"
+  }
+ ]
+}

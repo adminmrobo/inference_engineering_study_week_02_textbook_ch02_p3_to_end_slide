@@ -1,0 +1,631 @@
+{
+ "version": "1.0",
+ "page": "easy_guide",
+ "nodes": [
+  {
+   "id": "lab:concept/loss",
+   "type": "Concept",
+   "label": {
+    "ko": "손실",
+    "en": "loss"
+   },
+   "page": "easy_guide",
+   "anchor": "#gMap",
+   "level": 2,
+   "status": "known",
+   "confidence": "medium",
+   "coverage": "explained",
+   "domain": [
+    "llm",
+    "ai",
+    "dl"
+   ],
+   "match": [],
+   "auto": "autokg-2026-11-24",
+   "definition": {
+    "ko": "그린 그림과 정답이 얼마나 다른지 나타내는 숫자. 이 페이지에서는 픽셀 차이의 제곱 평균."
+   }
+  },
+  {
+   "id": "lab:concept/llm",
+   "type": "Term",
+   "label": {
+    "ko": "LLM",
+    "en": "large language model"
+   },
+   "page": "easy_guide",
+   "anchor": "#gPick",
+   "level": 2,
+   "status": "known",
+   "confidence": "medium",
+   "coverage": "explained",
+   "domain": [
+    "data",
+    "llm",
+    "ai"
+   ],
+   "match": [],
+   "auto": "autokg-2026-11-24",
+   "definition": {
+    "ko": "수십억~수조 파라미터의 대규모 언어모델. 범용성·창발성."
+   }
+  },
+  {
+   "id": "lab:concept/decode",
+   "type": "Concept",
+   "label": {
+    "ko": "디코드",
+    "en": "decode"
+   },
+   "page": "easy_guide",
+   "anchor": "#pR",
+   "level": 2,
+   "status": "known",
+   "confidence": "medium",
+   "coverage": "explained",
+   "domain": [
+    "llm"
+   ],
+   "match": [],
+   "auto": "autokg-2026-11-24",
+   "definition": {
+    "ko": "순전파를 반복해 토큰을 하나씩 자기회귀로 만드는 단계."
+   }
+  },
+  {
+   "id": "lab:concept/bottleneck",
+   "type": "Concept",
+   "label": {
+    "ko": "병목",
+    "en": "bottleneck"
+   },
+   "page": "easy_guide",
+   "anchor": "#stage",
+   "level": 2,
+   "status": "known",
+   "confidence": "medium",
+   "coverage": "explained",
+   "domain": [
+    "llm",
+    "ai",
+    "genai"
+   ],
+   "match": [],
+   "auto": "autokg-2026-11-24",
+   "definition": {
+    "ko": "상자 가운데 가장 좁은 층. 접은 지도."
+   }
+  },
+  {
+   "id": "lab:concept/prefill",
+   "type": "Concept",
+   "label": {
+    "ko": "프리필",
+    "en": "prefill"
+   },
+   "page": "easy_guide",
+   "anchor": "#gMap",
+   "level": 2,
+   "status": "known",
+   "confidence": "medium",
+   "coverage": "explained",
+   "domain": [
+    "llm"
+   ],
+   "match": [],
+   "auto": "autokg-2026-11-24",
+   "definition": {
+    "ko": "입력 열 전체를 처리해 토큰마다 어텐션 값을 계산하고 KV 캐시에 저장하는 단계."
+   }
+  },
+  {
+   "id": "lab:concept/forward-pass",
+   "type": "Concept",
+   "label": {
+    "ko": "순전파",
+    "en": "Forward pass"
+   },
+   "page": "easy_guide",
+   "anchor": "#gMap",
+   "level": 2,
+   "status": "known",
+   "confidence": "medium",
+   "coverage": "explained",
+   "domain": [
+    "dl",
+    "llm"
+   ],
+   "match": [],
+   "auto": "autokg-2026-11-24",
+   "definition": {
+    "ko": "입력에서 출력 쪽으로 층마다 계산을 이어 가며 예측을 내는 과정."
+   }
+  },
+  {
+   "id": "lab:method/denoising-model",
+   "type": "Method",
+   "label": {
+    "ko": "디노이저",
+    "en": "denoising model"
+   },
+   "page": "easy_guide",
+   "anchor": "#gPick",
+   "level": 2,
+   "status": "known",
+   "confidence": "medium",
+   "coverage": "explained",
+   "domain": [
+    "llm"
+   ],
+   "match": [],
+   "auto": "autokg-2026-11-24",
+   "definition": {
+    "ko": "잡음에서 시작해 프롬프트에 맞춰 이미지를 반복해서 고치는 핵심 모델."
+   }
+  },
+  {
+   "id": "lab:concept/video-generation",
+   "type": "Concept",
+   "label": {
+    "ko": "영상 생성",
+    "en": "Video generation"
+   },
+   "page": "easy_guide",
+   "anchor": "#pIntro",
+   "level": 4,
+   "status": "known",
+   "confidence": "medium",
+   "coverage": "explained",
+   "domain": [
+    "llm",
+    "genai"
+   ],
+   "match": [],
+   "auto": "autokg-2026-11-24"
+  },
+  {
+   "id": "lab:concept/latent-space",
+   "type": "Concept",
+   "label": {
+    "ko": "잠재공간",
+    "en": "Latent space"
+   },
+   "page": "easy_guide",
+   "anchor": "#gMap",
+   "level": 2,
+   "status": "known",
+   "confidence": "medium",
+   "coverage": "explained",
+   "domain": [
+    "art",
+    "genai",
+    "ai"
+   ],
+   "match": [],
+   "auto": "autokg-2026-11-24",
+   "definition": {
+    "ko": "그림 하나 = 지도 위 점 하나"
+   }
+  },
+  {
+   "id": "lab:concept/denoising-step",
+   "type": "Concept",
+   "label": {
+    "ko": "디노이징 단계",
+    "en": "denoising step"
+   },
+   "page": "easy_guide",
+   "anchor": "#faKp",
+   "level": 2,
+   "status": "known",
+   "confidence": "medium",
+   "coverage": "explained",
+   "domain": [
+    "llm"
+   ],
+   "match": [],
+   "auto": "autokg-2026-11-24",
+   "definition": {
+    "ko": "잠재 공간 전체를 한 번 고치는 단위. 대부분 30–50단계."
+   }
+  },
+  {
+   "id": "lab:method/flashattention",
+   "type": "Method",
+   "label": {
+    "ko": "번개 어텐션 (FlashAttention)",
+    "en": "FlashAttention"
+   },
+   "page": "easy_guide",
+   "anchor": "#gFix",
+   "level": 2,
+   "status": "known",
+   "confidence": "medium",
+   "coverage": "explained",
+   "domain": [
+    "ai",
+    "dl",
+    "llm"
+   ],
+   "match": [],
+   "auto": "autokg-2026-11-24",
+   "definition": {
+    "ko": "블록으로 쪼개기와 다시 계산하기로 창고 메모리(HBM) 왕복을 줄인, IO를 따지는 정확한 어텐션 알고리즘."
+   }
+  },
+  {
+   "id": "lab:method/pagedattention",
+   "type": "Method",
+   "label": {
+    "ko": "PagedAttention",
+    "en": "PagedAttention"
+   },
+   "page": "easy_guide",
+   "anchor": "#gFix",
+   "level": 2,
+   "status": "known",
+   "confidence": "medium",
+   "coverage": "explained",
+   "domain": [
+    "ai",
+    "dl",
+    "llm"
+   ],
+   "match": [],
+   "auto": "autokg-2026-11-24",
+   "definition": {
+    "ko": "KV 캐시를 페이지로 나눠 조회표로 찾아 조각난 메모리에 저장."
+   }
+  },
+  {
+   "id": "lab:concept/dashboards",
+   "type": "Concept",
+   "label": {
+    "ko": "대시보드",
+    "en": "Dashboards"
+   },
+   "page": "easy_guide",
+   "anchor": "#pIntro",
+   "level": 1,
+   "status": "known",
+   "confidence": "medium",
+   "coverage": "explained",
+   "domain": [
+    "llm",
+    "data"
+   ],
+   "match": [],
+   "auto": "autokg-2026-11-24"
+  },
+  {
+   "id": "lab:term/gradient-descent",
+   "type": "Term",
+   "label": {
+    "ko": "경사하강",
+    "en": "gradient descent"
+   },
+   "page": "easy_guide",
+   "anchor": "#dsMsg",
+   "level": 2,
+   "status": "known",
+   "confidence": "medium",
+   "coverage": "explained",
+   "domain": [
+    "llm",
+    "math",
+    "ai"
+   ],
+   "match": [],
+   "auto": "autokg-2026-11-24",
+   "definition": {
+    "ko": "손실이 줄어드는 방향으로 가중치를 조금씩 옮기는 최적화 방법."
+   }
+  },
+  {
+   "id": "lab:concept/gradient",
+   "type": "Concept",
+   "label": {
+    "ko": "기울기",
+    "en": "gradient"
+   },
+   "page": "easy_guide",
+   "anchor": "#dsMsg",
+   "level": 2,
+   "status": "known",
+   "confidence": "medium",
+   "coverage": "explained",
+   "domain": [
+    "llm",
+    "math",
+    "ai"
+   ],
+   "match": [],
+   "auto": "autokg-2026-11-24",
+   "definition": {
+    "ko": "변수를 아주 조금 바꿨을 때 손실이 얼마나 변하는지. 손실을 줄이려면 기울기 반대쪽으로 고친다."
+   }
+  },
+  {
+   "id": "lab:topic/loss-function",
+   "type": "Topic",
+   "label": {
+    "ko": "손실 함수",
+    "en": "Loss function"
+   },
+   "page": "easy_guide",
+   "anchor": "#kg",
+   "level": 2,
+   "status": "known",
+   "confidence": "high",
+   "coverage": "mentioned",
+   "domain": [
+    "ai"
+   ],
+   "match": []
+  },
+  {
+   "id": "lab:topic/decoder-only",
+   "type": "Topic",
+   "label": {
+    "ko": "디코더 전용 트랜스포머",
+    "en": "Decoder-only transformers"
+   },
+   "page": "easy_guide",
+   "anchor": "#kg",
+   "level": 2,
+   "status": "known",
+   "confidence": "high",
+   "coverage": "mentioned",
+   "domain": [
+    "llm"
+   ],
+   "match": []
+  },
+  {
+   "id": "lab:topic/autoencoder",
+   "type": "Topic",
+   "label": {
+    "ko": "오토인코더",
+    "en": "Autoencoder"
+   },
+   "page": "easy_guide",
+   "anchor": "#kg",
+   "level": 4,
+   "status": "known",
+   "confidence": "high",
+   "coverage": "mentioned",
+   "domain": [
+    "ai"
+   ],
+   "match": []
+  },
+  {
+   "id": "lab:topic/video-generation",
+   "type": "Topic",
+   "label": {
+    "ko": "영상 생성",
+    "en": "Video generation"
+   },
+   "page": "easy_guide",
+   "anchor": "#kg",
+   "level": 4,
+   "status": "known",
+   "confidence": "high",
+   "coverage": "mentioned",
+   "domain": [
+    "genai"
+   ],
+   "match": []
+  },
+  {
+   "id": "lab:topic/embedding-space",
+   "type": "Topic",
+   "label": {
+    "ko": "임베딩 공간",
+    "en": "Embedding space"
+   },
+   "page": "easy_guide",
+   "anchor": "#kg",
+   "level": 3,
+   "status": "known",
+   "confidence": "high",
+   "coverage": "mentioned",
+   "domain": [
+    "ai"
+   ],
+   "match": []
+  },
+  {
+   "id": "lab:topic/self-attention",
+   "type": "Topic",
+   "label": {
+    "ko": "셀프 어텐션",
+    "en": "Self-attention"
+   },
+   "page": "easy_guide",
+   "anchor": "#kg",
+   "level": 4,
+   "status": "known",
+   "confidence": "high",
+   "coverage": "mentioned",
+   "domain": [
+    "ai"
+   ],
+   "match": []
+  },
+  {
+   "id": "lab:topic/dashboards",
+   "type": "Topic",
+   "label": {
+    "ko": "대시보드",
+    "en": "Dashboards"
+   },
+   "page": "easy_guide",
+   "anchor": "#kg",
+   "level": 1,
+   "status": "known",
+   "confidence": "high",
+   "coverage": "mentioned",
+   "domain": [
+    "data"
+   ],
+   "match": []
+  },
+  {
+   "id": "lab:topic/gradient-descent",
+   "type": "Topic",
+   "label": {
+    "ko": "경사하강법",
+    "en": "Gradient descent"
+   },
+   "page": "easy_guide",
+   "anchor": "#kg",
+   "level": 2,
+   "status": "known",
+   "confidence": "high",
+   "coverage": "mentioned",
+   "domain": [
+    "ai"
+   ],
+   "match": []
+  },
+  {
+   "id": "lab:topic/calculus-optimization-math",
+   "type": "Topic",
+   "label": {
+    "ko": "미적분과 최적화 수학",
+    "en": "Calculus for optimization"
+   },
+   "page": "easy_guide",
+   "anchor": "#kg",
+   "level": 1,
+   "status": "known",
+   "confidence": "high",
+   "coverage": "mentioned",
+   "domain": [
+    "ai"
+   ],
+   "match": []
+  }
+ ],
+ "edges": [
+  {
+   "s": "lab:concept/loss",
+   "p": "lab:broader",
+   "o": "lab:topic/loss-function",
+   "anchor": "#gMap",
+   "confidence": "medium"
+  },
+  {
+   "s": "lab:concept/llm",
+   "p": "lab:broader",
+   "o": "lab:topic/decoder-only",
+   "anchor": "#gPick",
+   "confidence": "medium"
+  },
+  {
+   "s": "lab:concept/bottleneck",
+   "p": "lab:broader",
+   "o": "lab:topic/autoencoder",
+   "anchor": "#stage",
+   "confidence": "medium"
+  },
+  {
+   "s": "lab:concept/video-generation",
+   "p": "lab:broader",
+   "o": "lab:topic/video-generation",
+   "anchor": "#pIntro",
+   "confidence": "medium"
+  },
+  {
+   "s": "lab:concept/latent-space",
+   "p": "lab:broader",
+   "o": "lab:topic/embedding-space",
+   "anchor": "#gMap",
+   "confidence": "medium"
+  },
+  {
+   "s": "lab:method/flashattention",
+   "p": "lab:broader",
+   "o": "lab:topic/self-attention",
+   "anchor": "#gFix",
+   "confidence": "medium"
+  },
+  {
+   "s": "lab:method/pagedattention",
+   "p": "lab:broader",
+   "o": "lab:topic/self-attention",
+   "anchor": "#gFix",
+   "confidence": "medium"
+  },
+  {
+   "s": "lab:concept/dashboards",
+   "p": "lab:broader",
+   "o": "lab:topic/dashboards",
+   "anchor": "#pIntro",
+   "confidence": "medium"
+  },
+  {
+   "s": "lab:term/gradient-descent",
+   "p": "lab:broader",
+   "o": "lab:topic/gradient-descent",
+   "anchor": "#dsMsg",
+   "confidence": "medium"
+  },
+  {
+   "s": "lab:concept/gradient",
+   "p": "lab:broader",
+   "o": "lab:topic/calculus-optimization-math",
+   "anchor": "#dsMsg",
+   "confidence": "medium"
+  },
+  {
+   "s": "lab:concept/loss",
+   "p": "lab:prerequisiteOf",
+   "o": "lab:concept/gradient",
+   "anchor": "#gMap",
+   "confidence": "medium",
+   "note": "다른 해설 페이지에서 확인된 관계"
+  },
+  {
+   "s": "lab:concept/bottleneck",
+   "p": "lab:prerequisiteOf",
+   "o": "lab:concept/latent-space",
+   "anchor": "#stage",
+   "confidence": "medium",
+   "note": "다른 해설 페이지에서 확인된 관계"
+  },
+  {
+   "s": "lab:concept/prefill",
+   "p": "lab:prerequisiteOf",
+   "o": "lab:concept/decode",
+   "anchor": "#gMap",
+   "confidence": "medium",
+   "note": "다른 해설 페이지에서 확인된 관계"
+  },
+  {
+   "s": "lab:method/denoising-model",
+   "p": "lab:relatedTo",
+   "o": "lab:concept/latent-space",
+   "anchor": "#gPick",
+   "confidence": "medium",
+   "note": "다른 해설 페이지에서 확인된 관계"
+  },
+  {
+   "s": "lab:concept/denoising-step",
+   "p": "lab:partOf",
+   "o": "lab:method/denoising-model",
+   "anchor": "#faKp",
+   "confidence": "medium",
+   "note": "다른 해설 페이지에서 확인된 관계"
+  },
+  {
+   "s": "lab:concept/forward-pass",
+   "p": "lab:partOf",
+   "o": "lab:concept/denoising-step",
+   "anchor": "#gMap",
+   "confidence": "medium",
+   "note": "다른 해설 페이지에서 확인된 관계"
+  }
+ ]
+}

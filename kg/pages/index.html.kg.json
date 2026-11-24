@@ -1,0 +1,495 @@
+{
+ "version": "1.0",
+ "page": "index",
+ "nodes": [
+  {
+   "id": "lab:concept/bottleneck",
+   "type": "Concept",
+   "label": {
+    "ko": "병목",
+    "en": "bottleneck"
+   },
+   "page": "index",
+   "anchor": "#stage",
+   "level": 2,
+   "status": "known",
+   "confidence": "medium",
+   "coverage": "explained",
+   "domain": [
+    "llm",
+    "ai",
+    "genai"
+   ],
+   "match": [],
+   "auto": "autokg-2026-11-24",
+   "definition": {
+    "ko": "상자 가운데 가장 좁은 층. 접은 지도."
+   }
+  },
+  {
+   "id": "lab:concept/llm",
+   "type": "Term",
+   "label": {
+    "ko": "LLM",
+    "en": "large language model"
+   },
+   "page": "index",
+   "anchor": "#msMsg",
+   "level": 2,
+   "status": "known",
+   "confidence": "medium",
+   "coverage": "explained",
+   "domain": [
+    "data",
+    "llm",
+    "ai"
+   ],
+   "match": [],
+   "auto": "autokg-2026-11-24",
+   "definition": {
+    "ko": "수십억~수조 파라미터의 대규모 언어모델. 범용성·창발성."
+   }
+  },
+  {
+   "id": "lab:concept/decode",
+   "type": "Concept",
+   "label": {
+    "ko": "디코드",
+    "en": "decode"
+   },
+   "page": "index",
+   "anchor": "#pR",
+   "level": 2,
+   "status": "known",
+   "confidence": "medium",
+   "coverage": "explained",
+   "domain": [
+    "llm"
+   ],
+   "match": [],
+   "auto": "autokg-2026-11-24",
+   "definition": {
+    "ko": "순전파를 반복해 토큰을 하나씩 자기회귀로 만드는 단계."
+   }
+  },
+  {
+   "id": "lab:method/denoising-model",
+   "type": "Method",
+   "label": {
+    "ko": "디노이저",
+    "en": "denoising model"
+   },
+   "page": "index",
+   "anchor": "#p23",
+   "level": 2,
+   "status": "known",
+   "confidence": "medium",
+   "coverage": "explained",
+   "domain": [
+    "llm"
+   ],
+   "match": [],
+   "auto": "autokg-2026-11-24",
+   "definition": {
+    "ko": "잡음에서 시작해 프롬프트에 맞춰 이미지를 반복해서 고치는 핵심 모델."
+   }
+  },
+  {
+   "id": "lab:concept/loss",
+   "type": "Concept",
+   "label": {
+    "ko": "손실",
+    "en": "loss"
+   },
+   "page": "index",
+   "anchor": "#p23",
+   "level": 2,
+   "status": "known",
+   "confidence": "medium",
+   "coverage": "explained",
+   "domain": [
+    "llm",
+    "ai",
+    "dl"
+   ],
+   "match": [],
+   "auto": "autokg-2026-11-24",
+   "definition": {
+    "ko": "그린 그림과 정답이 얼마나 다른지 나타내는 숫자. 이 페이지에서는 픽셀 차이의 제곱 평균."
+   }
+  },
+  {
+   "id": "lab:concept/latent-space",
+   "type": "Concept",
+   "label": {
+    "ko": "잠재공간",
+    "en": "Latent space"
+   },
+   "page": "index",
+   "anchor": "#pIntro",
+   "level": 2,
+   "status": "known",
+   "confidence": "medium",
+   "coverage": "explained",
+   "domain": [
+    "art",
+    "genai",
+    "ai"
+   ],
+   "match": [],
+   "auto": "autokg-2026-11-24",
+   "definition": {
+    "ko": "그림 하나 = 지도 위 점 하나"
+   }
+  },
+  {
+   "id": "lab:concept/prefill",
+   "type": "Concept",
+   "label": {
+    "ko": "프리필",
+    "en": "prefill"
+   },
+   "page": "index",
+   "anchor": "#reMsg",
+   "level": 2,
+   "status": "known",
+   "confidence": "medium",
+   "coverage": "explained",
+   "domain": [
+    "llm"
+   ],
+   "match": [],
+   "auto": "autokg-2026-11-24",
+   "definition": {
+    "ko": "입력 열 전체를 처리해 토큰마다 어텐션 값을 계산하고 KV 캐시에 저장하는 단계."
+   }
+  },
+  {
+   "id": "lab:method/kv-cache",
+   "type": "Method",
+   "label": {
+    "ko": "KV 캐시",
+    "en": "KV cache"
+   },
+   "page": "index",
+   "anchor": "#aR",
+   "level": 2,
+   "status": "known",
+   "confidence": "medium",
+   "coverage": "explained",
+   "domain": [
+    "llm"
+   ],
+   "match": [],
+   "auto": "autokg-2026-11-24",
+   "definition": {
+    "ko": "앞 토큰들의 키·값 쌍을 저장해 다시 계산하지 않게 하는 저장소. 기본적으로 GPU 메모리에 있다."
+   }
+  },
+  {
+   "id": "lab:concept/matmul",
+   "type": "Concept",
+   "label": {
+    "ko": "행렬곱",
+    "en": "matrix multiplication (matmul)"
+   },
+   "page": "index",
+   "anchor": "#pR",
+   "level": 2,
+   "status": "known",
+   "confidence": "medium",
+   "coverage": "explained",
+   "domain": [
+    "math",
+    "llm"
+   ],
+   "match": [],
+   "auto": "autokg-2026-11-24",
+   "definition": {
+    "ko": "입력 벡터를 가중치 행렬에 곱해 출력 벡터를 만드는 계산."
+   }
+  },
+  {
+   "id": "lab:concept/token",
+   "type": "Concept",
+   "label": {
+    "ko": "조각 (토큰)",
+    "en": "token"
+   },
+   "page": "index",
+   "anchor": "#cfEq",
+   "level": 2,
+   "status": "known",
+   "confidence": "medium",
+   "coverage": "explained",
+   "domain": [
+    "stats",
+    "ai",
+    "llm"
+   ],
+   "match": [],
+   "auto": "autokg-2026-11-24",
+   "definition": {
+    "ko": "모델이 글을 읽는 단위. 낱말보다 잘게 나뉘기도 한다."
+   }
+  },
+  {
+   "id": "lab:method/flashattention",
+   "type": "Method",
+   "label": {
+    "ko": "번개 어텐션 (FlashAttention)",
+    "en": "FlashAttention"
+   },
+   "page": "index",
+   "anchor": "#fcMsg",
+   "level": 2,
+   "status": "known",
+   "confidence": "medium",
+   "coverage": "explained",
+   "domain": [
+    "ai",
+    "dl",
+    "llm"
+   ],
+   "match": [],
+   "auto": "autokg-2026-11-24",
+   "definition": {
+    "ko": "블록으로 쪼개기와 다시 계산하기로 창고 메모리(HBM) 왕복을 줄인, IO를 따지는 정확한 어텐션 알고리즘."
+   }
+  },
+  {
+   "id": "lab:topic/autoencoder",
+   "type": "Topic",
+   "label": {
+    "ko": "오토인코더",
+    "en": "Autoencoder"
+   },
+   "page": "index",
+   "anchor": "#kg",
+   "level": 4,
+   "status": "known",
+   "confidence": "high",
+   "coverage": "mentioned",
+   "domain": [
+    "ai"
+   ],
+   "match": []
+  },
+  {
+   "id": "lab:topic/decoder-only",
+   "type": "Topic",
+   "label": {
+    "ko": "디코더 전용 트랜스포머",
+    "en": "Decoder-only transformers"
+   },
+   "page": "index",
+   "anchor": "#kg",
+   "level": 2,
+   "status": "known",
+   "confidence": "high",
+   "coverage": "mentioned",
+   "domain": [
+    "llm"
+   ],
+   "match": []
+  },
+  {
+   "id": "lab:topic/loss-function",
+   "type": "Topic",
+   "label": {
+    "ko": "손실 함수",
+    "en": "Loss function"
+   },
+   "page": "index",
+   "anchor": "#kg",
+   "level": 2,
+   "status": "known",
+   "confidence": "high",
+   "coverage": "mentioned",
+   "domain": [
+    "ai"
+   ],
+   "match": []
+  },
+  {
+   "id": "lab:topic/embedding-space",
+   "type": "Topic",
+   "label": {
+    "ko": "임베딩 공간",
+    "en": "Embedding space"
+   },
+   "page": "index",
+   "anchor": "#kg",
+   "level": 3,
+   "status": "known",
+   "confidence": "high",
+   "coverage": "mentioned",
+   "domain": [
+    "ai"
+   ],
+   "match": []
+  },
+  {
+   "id": "lab:topic/kv-cache",
+   "type": "Topic",
+   "label": {
+    "ko": "KV 캐시",
+    "en": "KV cache"
+   },
+   "page": "index",
+   "anchor": "#kg",
+   "level": 2,
+   "status": "known",
+   "confidence": "high",
+   "coverage": "mentioned",
+   "domain": [
+    "llm"
+   ],
+   "match": []
+  },
+  {
+   "id": "lab:topic/matrices-linear-maps",
+   "type": "Topic",
+   "label": {
+    "ko": "행렬과 선형사상",
+    "en": "Matrices and linear maps"
+   },
+   "page": "index",
+   "anchor": "#kg",
+   "level": 1,
+   "status": "known",
+   "confidence": "high",
+   "coverage": "mentioned",
+   "domain": [
+    "math"
+   ],
+   "match": []
+  },
+  {
+   "id": "lab:topic/tokenization",
+   "type": "Topic",
+   "label": {
+    "ko": "토큰화",
+    "en": "Tokenization"
+   },
+   "page": "index",
+   "anchor": "#kg",
+   "level": 4,
+   "status": "known",
+   "confidence": "high",
+   "coverage": "mentioned",
+   "domain": [
+    "ai"
+   ],
+   "match": []
+  },
+  {
+   "id": "lab:topic/self-attention",
+   "type": "Topic",
+   "label": {
+    "ko": "셀프 어텐션",
+    "en": "Self-attention"
+   },
+   "page": "index",
+   "anchor": "#kg",
+   "level": 4,
+   "status": "known",
+   "confidence": "high",
+   "coverage": "mentioned",
+   "domain": [
+    "ai"
+   ],
+   "match": []
+  }
+ ],
+ "edges": [
+  {
+   "s": "lab:concept/bottleneck",
+   "p": "lab:broader",
+   "o": "lab:topic/autoencoder",
+   "anchor": "#stage",
+   "confidence": "medium"
+  },
+  {
+   "s": "lab:concept/llm",
+   "p": "lab:broader",
+   "o": "lab:topic/decoder-only",
+   "anchor": "#msMsg",
+   "confidence": "medium"
+  },
+  {
+   "s": "lab:concept/loss",
+   "p": "lab:broader",
+   "o": "lab:topic/loss-function",
+   "anchor": "#p23",
+   "confidence": "medium"
+  },
+  {
+   "s": "lab:concept/latent-space",
+   "p": "lab:broader",
+   "o": "lab:topic/embedding-space",
+   "anchor": "#pIntro",
+   "confidence": "medium"
+  },
+  {
+   "s": "lab:method/kv-cache",
+   "p": "lab:broader",
+   "o": "lab:topic/kv-cache",
+   "anchor": "#aR",
+   "confidence": "medium"
+  },
+  {
+   "s": "lab:concept/matmul",
+   "p": "lab:broader",
+   "o": "lab:topic/matrices-linear-maps",
+   "anchor": "#pR",
+   "confidence": "medium"
+  },
+  {
+   "s": "lab:concept/token",
+   "p": "lab:broader",
+   "o": "lab:topic/tokenization",
+   "anchor": "#cfEq",
+   "confidence": "medium"
+  },
+  {
+   "s": "lab:method/flashattention",
+   "p": "lab:broader",
+   "o": "lab:topic/self-attention",
+   "anchor": "#fcMsg",
+   "confidence": "medium"
+  },
+  {
+   "s": "lab:concept/bottleneck",
+   "p": "lab:prerequisiteOf",
+   "o": "lab:concept/latent-space",
+   "anchor": "#stage",
+   "confidence": "medium",
+   "note": "다른 해설 페이지에서 확인된 관계"
+  },
+  {
+   "s": "lab:concept/prefill",
+   "p": "lab:prerequisiteOf",
+   "o": "lab:concept/decode",
+   "anchor": "#reMsg",
+   "confidence": "medium",
+   "note": "다른 해설 페이지에서 확인된 관계"
+  },
+  {
+   "s": "lab:concept/prefill",
+   "p": "lab:relatedTo",
+   "o": "lab:method/kv-cache",
+   "anchor": "#reMsg",
+   "confidence": "medium",
+   "note": "다른 해설 페이지에서 확인된 관계"
+  },
+  {
+   "s": "lab:method/denoising-model",
+   "p": "lab:relatedTo",
+   "o": "lab:concept/latent-space",
+   "anchor": "#p23",
+   "confidence": "medium",
+   "note": "다른 해설 페이지에서 확인된 관계"
+  }
+ ]
+}
